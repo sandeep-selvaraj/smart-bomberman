@@ -11,7 +11,7 @@ class Tile(pygame.sprite.Sprite):
     Attributes:
         pygame.sprite.Sprite
     """
-    def __init__(self, position: Tuple):
+    def __init__(self, position: Tuple, destroyable: bool):
         """
         Initialize the tile.
 
@@ -22,7 +22,12 @@ class Tile(pygame.sprite.Sprite):
             x,y co-ordinates of the tile
         size: int
             size of the tile
+        destroyable: bool
+            to check if the wall is destroyable
         """
         super().__init__()
-        self.image = pygame.image.load("graphics/wall.png")
+        if destroyable:
+            self.image = pygame.image.load("graphics/destrWall.png")
+        else:
+            self.image = pygame.image.load("graphics/wall.png")
         self.rect = self.image.get_rect(topleft=position)
