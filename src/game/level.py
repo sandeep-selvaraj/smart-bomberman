@@ -34,12 +34,9 @@ class Level:
             for column_index, column in enumerate(row):
                 y_position = row_index * settings.TILE_SIZE
                 x_position = column_index * settings.TILE_SIZE
-                if column == 'W':
-                    wall = tile.Tile((x_position, y_position), settings.TILE_SIZE, False)
+                if column in ('W', '#'):
+                    wall = tile.Tile((x_position, y_position))
                     self.walls.add(wall)
-                if column == '#':
-                    background = tile.Tile((x_position, y_position), settings.TILE_SIZE, True)
-                    self.walls.add(background)
 
     def run(self):
         """Graphically display the map layout."""
