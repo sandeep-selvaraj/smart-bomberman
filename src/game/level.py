@@ -1,4 +1,4 @@
-"""Setting up different maps in levels."""
+"""Setting up the players,obstacles and enemies in different maps."""
 from typing import List
 import pygame
 from . import tile, settings
@@ -29,14 +29,17 @@ class Level:
             The Map layout
 
         """
-        self.walls = pygame.sprite.Group()
+        self.walls: pygame.sprite.Group = pygame.sprite.Group()
         for row_index, row in enumerate(layout):
             for column_index, column in enumerate(row):
                 y_position = row_index * settings.TILE_SIZE
                 x_position = column_index * settings.TILE_SIZE
-                if column == 'X':
-                    wall = tile.Tile((x_position, y_position), settings.TILE_SIZE)
+                if column == 'W':
+                    wall = tile.Tile((x_position, y_position), settings.TILE_SIZE, False)
                     self.walls.add(wall)
+                if column == '#':
+                    background = tile.Tile((x_position, y_position), settings.TILE_SIZE, True)
+                    self.walls.add(background)
 
     def run(self):
         """Graphically display the map layout."""
