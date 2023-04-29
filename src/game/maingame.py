@@ -24,7 +24,7 @@ def start_game(level_number: int):
                 sys.exit()
         _SCREEN.fill("black")
         level_map.run()
-
+        pygame.display.set_caption("Smart-Bomberman")
         pygame.display.update()
 
 
