@@ -35,7 +35,10 @@ class Level:
                 y_position = row_index * settings.TILE_SIZE
                 x_position = column_index * settings.TILE_SIZE
                 if column in ('W', '#'):
-                    wall = tile.Tile((x_position, y_position))
+                    wall = tile.Tile((x_position, y_position), False)
+                    self.walls.add(wall)
+                if column == 'B':
+                    wall = tile.Tile((x_position, y_position), True)
                     self.walls.add(wall)
 
     def run(self):
