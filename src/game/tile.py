@@ -2,6 +2,7 @@
 from typing import Tuple
 import pygame
 
+
 class Tile(pygame.sprite.Sprite):
     # pylint: disable=too-few-public-methods
     """
@@ -10,7 +11,7 @@ class Tile(pygame.sprite.Sprite):
     Attributes:
         pygame.sprite.Sprite
     """
-    def __init__(self, position: Tuple, size: int):
+    def __init__(self, position: Tuple, size: int, is_background: bool):
         """
         Initialize the tile.
 
@@ -21,8 +22,13 @@ class Tile(pygame.sprite.Sprite):
             x,y co-ordinates of the tile
         size: int
             size of the tile
+        background: bool
+            to check if the tile is for a wall or background
         """
         super().__init__()
         self.image = pygame.Surface((size, size))
-        self.image.fill("grey")
+        if is_background:
+            self.image.fill("brown")
+        else:
+            self.image.fill("grey")
         self.rect = self.image.get_rect(topleft=position)
