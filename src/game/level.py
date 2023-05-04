@@ -1,7 +1,8 @@
 """Setting up the players,obstacles and enemies in different maps."""
 from typing import List
 import pygame
-from . import tile, settings
+from . import tile
+from .settings import Game
 
 
 class Level:
@@ -32,8 +33,8 @@ class Level:
         self.walls: pygame.sprite.Group = pygame.sprite.Group()
         for row_index, row in enumerate(layout):
             for column_index, column in enumerate(row):
-                y_position = row_index * settings.TILE_SIZE
-                x_position = column_index * settings.TILE_SIZE
+                y_position = row_index * Game.TILE_SIZE.value
+                x_position = column_index * Game.TILE_SIZE.value
                 if column in ('W', '#'):
                     wall = tile.Tile((x_position, y_position), False)
                     self.walls.add(wall)
