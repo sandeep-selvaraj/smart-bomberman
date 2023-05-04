@@ -4,15 +4,17 @@ from pathlib import Path
 from typing import List
 import csv
 import pygame
-from . import settings, level
+from . import level
+from .settings import GameWindow
 
-_SCREEN = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
+_SCREEN = pygame.display.set_mode((GameWindow.SCREEN_WIDTH.value, GameWindow.SCREEN_HEIGHT.value))
 _CURRENT_PATH = Path.cwd()
 _MAP_FOLDER = "maps"
 _MAP_PATH = _CURRENT_PATH.joinpath(_MAP_FOLDER)
 _CLOCK = pygame.time.Clock()
 _TIMER_DURATION = 300
 _WHITE_FONT_TEXT = (255, 255, 255)
+
 
 def start_game(level_number: int):
     """Run the game."""
