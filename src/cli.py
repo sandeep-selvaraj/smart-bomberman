@@ -4,9 +4,9 @@ import fire  # type: ignore
 from game.maingame import start_game
 
 
-def run_the_game():
+def run_the_game(level: int = 1):
     """Main function to run the game"""
-    start_game(1)
+    start_game(level)
 
 
 if __name__ == "__main__":
