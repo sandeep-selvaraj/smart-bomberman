@@ -35,13 +35,13 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT]:
-            self.direction.x = 1
+            self.direction = pygame.math.Vector2(1,0)
         elif keys[pygame.K_LEFT]:
-            self.direction.x = -1
+            self.direction = pygame.math.Vector2(-1,0)
         elif keys[pygame.K_UP]:
-            self.direction.y = -1
+            self.direction = pygame.math.Vector2(0,-1)
         elif keys[pygame.K_DOWN]:
-            self.direction.y = 1
+            self.direction = pygame.math.Vector2(0,1)
         else:
             self.direction = pygame.math.Vector2(0,0)
 
@@ -50,5 +50,3 @@ class Player(pygame.sprite.Sprite):
         updates player state like position based on input
         """
         self.player_input()
-        self.rect.x += self.direction.x * self.speed
-        self.rect.y += self.direction.y * self.speed

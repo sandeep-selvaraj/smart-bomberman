@@ -80,14 +80,58 @@ class Level:
             self.level_shift = (0,0)
             bomberman_player.speed = PlayerBomberman.SPEED.value
 
+    def horizontal_collision(self):
+        """
+        Handles player collision in horizontal direction
+        """
+        bomberman_player = self.bomberman_player.sprite
+
+        #move the player horizontally
+        bomberman_player.rect.x += bomberman_player.direction.x * bomberman_player.speed
+
+        #detect collision with all game tiles in horizontal direction
+        for sprite in self.walls.sprites():
+            if sprite.rect.colliderect(bomberman_player.rect):
+                if bomberman_player.direction.x < 0:
+                    #if player collides with a tile and was moving left,
+                    #set the player to right of collider
+                    bomberman_player.rect.left = sprite.rect.right
+                elif bomberman_player.direction.x > 0:
+                    #if player collides with a tile and was moving right,
+                    #set the player to left of collider
+                    bomberman_player.rect.right = sprite.rect.left
+
+    def vertical_collision(self):
+        """
+        Handles player collision in vertical direction
+        """
+        bomberman_player = self.bomberman_player.sprite
+
+        #move the player vertically
+        bomberman_player.rect.y += bomberman_player.direction.y * bomberman_player.speed
+
+        #detect collision with all game tiles in vertical direction
+        for sprite in self.walls.sprites():
+            if sprite.rect.colliderect(bomberman_player.rect):
+                if bomberman_player.direction.y < 0:
+                    #if player collides with a tile and was moving top,
+                    #set the player to bottom of collider
+                    bomberman_player.rect.top = sprite.rect.bottom
+                elif bomberman_player.direction.y > 0:
+                    #if player collides with a tile and was moving down,
+                    #set the player to top of collider
+                    bomberman_player.rect.bottom = sprite.rect.top
+
     def run(self):
         """Graphically display all components of the level"""
 
-        #render level tiles like walls
+        #handle level tiles like walls
         self.walls.update(self.level_shift)
         self.walls.draw(self.display_surface)
-
-        #render player
-        self.bomberman_player.update()
-        self.bomberman_player.draw(self.display_surface)
         self.scroll()
+
+        #handle player
+        self.bomberman_player.update()
+        self.horizontal_collision()
+        self.vertical_collision()
+        self.bomberman_player.draw(self.display_surface)
