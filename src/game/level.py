@@ -3,7 +3,8 @@ from typing import List
 import pygame
 from . import tile
 from . import player
-from .settings import Game, Camera, PlayerBomberman
+from .settings import Game
+from .constants import Camera, PlayerBomberman
 
 
 class Level:

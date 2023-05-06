@@ -1,6 +1,7 @@
 """Processing of a simple Tile of a game."""
 from typing import Tuple
 import pygame
+from .utils.fileutils import import_sprite
 
 
 class Tile(pygame.sprite.Sprite):
@@ -27,9 +28,9 @@ class Tile(pygame.sprite.Sprite):
         """
         super().__init__()
         if destroyable:
-            self.image = pygame.image.load("graphics/destrWall.png")
+            self.image = import_sprite("graphics/destrWall.png")
         else:
-            self.image = pygame.image.load("graphics/wall.png")
+            self.image = import_sprite("graphics/wall.png")
         self.rect = self.image.get_rect(topleft=position)
 
     def update(self, level_shift: Tuple):
