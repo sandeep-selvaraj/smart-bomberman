@@ -31,3 +31,16 @@ class Tile(pygame.sprite.Sprite):
         else:
             self.image = pygame.image.load("graphics/wall.png")
         self.rect = self.image.get_rect(topleft=position)
+
+    def update(self, level_shift: Tuple):
+        """
+        Scrolls the tile in x and y direction to simulate camera movement
+
+        Parameters
+        ----------
+
+        scroll: Tuple
+            amount to scroll in the x and y direction
+        """
+        self.rect.x += level_shift[0]
+        self.rect.y += level_shift[1]
