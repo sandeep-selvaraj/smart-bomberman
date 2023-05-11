@@ -20,9 +20,26 @@ class PlayerBomberman(Enum):
     SPRITE_WIDTH = 34
     SPRITE_HEIGHT = 34
 
+class EnemyBomberman(Enum):
+    """
+    Constants related to player character
+    """
+    SPEED = 1
+    ANIMATION_SPEED = 0.05
+    SPRITE_WIDTH = 32
+    SPRITE_HEIGHT = 32
+
 class PlayerStatus(Enum):
     """
     Player status constants to track player state
     """
     IDLE = 'idle'
     RUN = 'run'
+
+
+class EnemyStatus(Enum):
+    """
+    Player status constants to track player state
+    """
+    IDLE = 'idle'
+    MOVE = 'move'
