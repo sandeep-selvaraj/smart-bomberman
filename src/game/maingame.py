@@ -26,11 +26,16 @@ def start_game(level_number: int):
     font = pygame.font.Font(pygame.font.get_default_font(), 18)
     while True:
         time_remaining = max(0, _TIMER_DURATION - pygame.time.get_ticks() // 1000)
-        timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+        if level_map.player_hit_enemy or time_remaining == 0:
+            pygame.time.wait(1000)
+            _endgame_screen(font, time_remaining)
+            pygame.display.update()
+            continue
+        timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
         _SCREEN.fill("black")
         _SCREEN.blit(timer_text, (10, 10))
         level_map.run()
@@ -47,3 +52,13 @@ def _get_all_levels() -> List:
             reader = csv.reader(file)
             all_maps.append(list(reader))
     return all_maps
+
+
+def _endgame_screen(font, time_remaining):
+    """Endgame screen once player is killed."""
+    _SCREEN.fill("black")
+    gameover_text = font.render('GAMEOVER', True, _WHITE_FONT_TEXT)
+    if time_remaining == 0:
+        time_up_text = font.render("You ran out of time!", True, _WHITE_FONT_TEXT)
+        _SCREEN.blit(time_up_text, (150, 200))
+    _SCREEN.blit(gameover_text,  (150, 150))
