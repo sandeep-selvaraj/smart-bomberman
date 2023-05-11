@@ -35,6 +35,10 @@ class Enemy(pygame.sprite.Sprite):
         """Adding directions specific positioning of the enemy."""
         self.rect.x += self.direction
 
+    def enemy_collision(self):
+        """Reverse the enemy once it collides with a wall"""
+        self.direction *= -1
+
     def update(self, level_shift) -> None:
         """
         Updating the status of the enemy on the map per frame.
