@@ -1,8 +1,10 @@
 """Setting up the players,obstacles and enemies in different maps."""
 from typing import List
+import random
 import pygame
 from . import tile
 from . import player
+from . import enemy
 from .settings import Game
 from .constants import Camera, PlayerBomberman
 
@@ -21,7 +23,7 @@ class Level:
         """
         self.display_surface = surface
         self.setup_level(level_data)
-
+        self.player_hit_enemy = False
         self.level_shift = (0,0)
 
     def setup_level(self, layout: List):
@@ -36,7 +38,8 @@ class Level:
         """
         self.walls: pygame.sprite.Group = pygame.sprite.Group()
         self.bomberman_player: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
-
+        self.bomberman_enemy: pygame.sprite.Group = pygame.sprite.Group()
+        locations_for_enemy = self.get_locations_for_enemy(layout)
         for row_index, row in enumerate(layout):
             for column_index, column in enumerate(row):
                 y_position = row_index * Game.TILE_SIZE.value
@@ -49,6 +52,8 @@ class Level:
                     self.walls.add(wall)
                 if column == 'P':
                     self.bomberman_player.add(player.Player((x_position, y_position)))
+                if (row_index, column_index) in locations_for_enemy:
+                    self.bomberman_enemy.add(enemy.Enemy((x_position, y_position)))
 
     def scroll(self):
         """
@@ -123,6 +128,45 @@ class Level:
                     #set the player to top of collider
                     bomberman_player.rect.bottom = sprite.rect.top
 
+    def enemy_collision_reverse(self):
+        """Redirect enemy after collision with wall."""
+        for enemy_sprite in self.bomberman_enemy.sprites():
+            if pygame.sprite.spritecollide(enemy_sprite, self.walls.sprites(), False):
+                enemy_sprite.enemy_collision()
+
+    def enemy_collides_with_player(self):
+        """Check for enemy collision with player."""
+        for enemy_sprite in self.bomberman_enemy.sprites():
+            if enemy_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                self.player_hit_enemy = True
+
+    def unavailable_locations_for_enemy(self, mapdata):
+        """Extract spots on the map where enemy cannot be placed."""
+        unavaiable_locations = []
+        for row_index, row in enumerate(mapdata):
+            for column_index, column in enumerate(row):
+                if column in ('W', '#', 'B', 'P'):
+                    unavaiable_locations.append((row_index, column_index))
+        return unavaiable_locations
+
+    def get_locations_for_enemy(self, mapdata):
+        """Get all possible random spots where enemy can be placed."""
+        median_row = int(len(mapdata)/2)
+        median_col = int(len(mapdata[0])/2)
+        unavailable_locations = self.unavailable_locations_for_enemy(mapdata)
+        number_of_iterations = 50
+        while number_of_iterations:
+            enemy_start_locations = [
+                (random.randint(median_row, len(mapdata) - 1),
+                 random.randint(median_col, len(mapdata[0]) - 1))
+                for i in range(0, 3)]
+            locations_conflicted = [True for location in enemy_start_locations
+                                    if location in unavailable_locations]
+            if not locations_conflicted:
+                break
+            number_of_iterations = - 1
+        return enemy_start_locations
+
     def run(self):
         """Graphically display all components of the level"""
 
@@ -136,3 +180,9 @@ class Level:
         self.horizontal_collision()
         self.vertical_collision()
         self.bomberman_player.draw(self.display_surface)
+
+        # handle enemy
+        self.enemy_collision_reverse()
+        self.enemy_collides_with_player()
+        self.bomberman_enemy.update(self.level_shift)
+        self.bomberman_enemy.draw(self.display_surface)
