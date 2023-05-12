@@ -162,3 +162,5 @@ cython_debug/
 
 #Ignore virtual environments
 bomberman_env
+.github/.DS_Store
+.DS_Store
