@@ -43,3 +43,9 @@ class EnemyStatus(Enum):
     """
     IDLE = 'idle'
     MOVE = 'move'
+
+class ItemType(Enum):
+    """
+    Item type constants
+    """
+    EXTRA_TIME = 0
