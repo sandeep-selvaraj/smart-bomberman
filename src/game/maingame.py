@@ -24,8 +24,9 @@ def start_game(level_number: int):
     level_maps = _get_all_levels()
     level_map = level.Level(level_maps[level_number - 1], _SCREEN)
     font = pygame.font.Font(pygame.font.get_default_font(), 18)
+    extra_time = 0
     while True:
-        time_remaining = max(0, _TIMER_DURATION - pygame.time.get_ticks() // 1000)
+        time_remaining = max(0, _TIMER_DURATION + extra_time - pygame.time.get_ticks() // 1000)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -35,6 +36,9 @@ def start_game(level_number: int):
             _endgame_screen(font, time_remaining)
             pygame.display.update()
             continue
+        if level_map.player_hit_item:
+            extra_time += 50
+            level_map.player_hit_item = False
         timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
         _SCREEN.fill("black")
         _SCREEN.blit(timer_text, (10, 10))
