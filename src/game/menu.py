@@ -1,4 +1,6 @@
-import pygame # type: ignore
+"""Setting up the Main Menu of the Game"""
+
+import pygame
 # from .settings import GameWindow
 from .maingame import start_game
 from .utils.fileutils import import_sprite
@@ -7,15 +9,28 @@ from .button import Button
 
 
 def main_menu(level_number: int):
+    """
+    Run the game via Menu
+
+    Parameters
+    ----------
+    level_number: int
+        initial level of the map
+    """
+    # pylint: disable=no-member
+    # pylint: disable=line-too-long
 
     pygame.init()
-    BG = import_sprite("graphics/bomberman_title.png")  #https://miscrave.com/articles/bomberman-history/
-    SCREEN = pygame.display.set_mode((BG.get_width(),BG.get_height()))
+
+    #https://miscrave.com/articles/bomberman-history/
+    BG = import_sprite("graphics/bomberman_title.png") # pylint: disable=invalid-name
+    SCREEN = pygame.display.set_mode((BG.get_width(),BG.get_height())) # pylint: disable=invalid-name
     pygame.display.set_caption("Menu")
 
-    play_img = import_sprite("graphics/Start.png")  #https://www.freepik.com/premium-vector/set-pixel-graphics-icons-game-art-play-buttons-animation_36747298.htm
-    score_img = import_sprite("graphics/Score.png")  #https://www.freepik.com/premium-vector/set-pixel-graphics-icons-game-art-play-buttons-animation_36747298.htm
-    exit_img = import_sprite("graphics/Exit.png")  #https://www.freepik.com/premium-vector/set-pixel-graphics-icons-game-art-play-buttons-animation_36747298.htm
+    #https://www.freepik.com/premium-vector/set-pixel-graphics-icons-game-art-play-buttons-animation_36747298.htm
+    play_img = import_sprite("graphics/Start.png")
+    score_img = import_sprite("graphics/Score.png")
+    exit_img = import_sprite("graphics/Exit.png")
 
     height_align = 70
     width_align = 60
@@ -42,3 +57,4 @@ def main_menu(level_number: int):
         pygame.display.update()
 
     pygame.quit()
+    
