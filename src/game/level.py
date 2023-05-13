@@ -11,6 +11,7 @@ from .constants import Camera, PlayerBomberman, ItemType
 
 
 class Level:
+    # pylint: disable=too-many-instance-attributes
     """
     Storing and graphically setting up the map for each level.
 
@@ -172,7 +173,7 @@ class Level:
                 break
             number_of_iterations = - 1
         return enemy_start_locations
-    
+
     def item_collides_with_player(self):
         """Check for item collision with player."""
         for item_sprite in self.items.sprites():
