@@ -36,7 +36,6 @@ class PlayerStatus(Enum):
     IDLE = 'idle'
     RUN = 'run'
 
-
 class EnemyStatus(Enum):
     """
     Player status constants to track player state
