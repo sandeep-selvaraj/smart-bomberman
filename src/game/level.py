@@ -5,8 +5,9 @@ import pygame
 from . import tile
 from . import player
 from . import enemy
+from . import item
 from .settings import Game
-from .constants import Camera, PlayerBomberman
+from .constants import Camera, PlayerBomberman, ItemType
 
 
 class Level:
@@ -24,6 +25,7 @@ class Level:
         self.display_surface = surface
         self.setup_level(level_data)
         self.player_hit_enemy = False
+        self.player_hit_item = False
         self.level_shift = (0,0)
 
     def setup_level(self, layout: List):
@@ -39,6 +41,7 @@ class Level:
         self.walls: pygame.sprite.Group = pygame.sprite.Group()
         self.bomberman_player: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
         self.bomberman_enemy: pygame.sprite.Group = pygame.sprite.Group()
+        self.items: pygame.sprite.Group = pygame.sprite.Group()
         locations_for_enemy = self.get_locations_for_enemy(layout)
         for row_index, row in enumerate(layout):
             for column_index, column in enumerate(row):
@@ -50,6 +53,9 @@ class Level:
                 if column == 'B':
                     wall = tile.Tile((x_position, y_position), True)
                     self.walls.add(wall)
+                if column == 'I':
+                    star = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
+                    self.items.add(star)
                 if column == 'P':
                     self.bomberman_player.add(player.Player((x_position, y_position)))
                 if (row_index, column_index) in locations_for_enemy:
@@ -145,7 +151,7 @@ class Level:
         unavaiable_locations = []
         for row_index, row in enumerate(mapdata):
             for column_index, column in enumerate(row):
-                if column in ('W', '#', 'B', 'P'):
+                if column in ('W', '#', 'B', 'I', 'P'):
                     unavaiable_locations.append((row_index, column_index))
         return unavaiable_locations
 
@@ -166,6 +172,13 @@ class Level:
                 break
             number_of_iterations = - 1
         return enemy_start_locations
+    
+    def item_collides_with_player(self):
+        """Check for item collision with player."""
+        for item_sprite in self.items.sprites():
+            if item_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                self.player_hit_item = True
+                self.items.remove(item_sprite)
 
     def run(self):
         """Graphically display all components of the level"""
@@ -186,3 +199,8 @@ class Level:
         self.enemy_collides_with_player()
         self.bomberman_enemy.update(self.level_shift)
         self.bomberman_enemy.draw(self.display_surface)
+
+        #handle items
+        self.items.update(self.level_shift)
+        self.items.draw(self.display_surface)
+        self.item_collides_with_player()
