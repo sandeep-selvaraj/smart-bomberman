@@ -8,9 +8,7 @@ from . import level
 from .settings import GameWindow
 
 _SCREEN = pygame.display.set_mode((GameWindow.SCREEN_WIDTH.value, GameWindow.SCREEN_HEIGHT.value))
-_CURRENT_PATH = Path.cwd()
 _MAP_FOLDER = "maps"
-_MAP_PATH = _CURRENT_PATH.joinpath(_MAP_FOLDER)
 _CLOCK = pygame.time.Clock()
 _TIMER_DURATION = 300
 _WHITE_FONT_TEXT = (255, 255, 255)
@@ -49,7 +47,8 @@ def start_game(level_number: int):
 
 def _get_all_levels() -> List:
     """Read  and store different maps."""
-    available_level_files = list(_MAP_PATH.iterdir())
+    map_path = Path.cwd().joinpath(_MAP_FOLDER)
+    available_level_files = list(map_path.iterdir())
     all_maps = []
     for level_file in available_level_files:
         with open(level_file, newline='', encoding="utf-8-sig") as file:
