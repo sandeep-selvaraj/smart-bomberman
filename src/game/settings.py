@@ -6,7 +6,7 @@ class Game(Enum):
     """
     Constants related to general Game definitions.
     """
-    TILE_SIZE = 34
+    TILE_SIZE = 32
 
 class GameWindow(Enum):
     """
