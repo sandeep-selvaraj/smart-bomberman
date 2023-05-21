@@ -31,7 +31,7 @@ def start_game(level_number: int):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        if level_map.player_hit_enemy or time_remaining == 0:
+        if level_map.player_hit_enemy or level_map.player_hit_explosion or time_remaining == 0:
             pygame.time.wait(1000)
             _endgame_screen(font, time_remaining)
             pygame.display.update()
@@ -40,7 +40,7 @@ def start_game(level_number: int):
             extra_time += 50
             level_map.player_hit_item = False
         timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
-        _SCREEN.fill("black")
+        _SCREEN.fill((128, 128, 128)) #fill bg with grey color
         _SCREEN.blit(timer_text, (10, 10))
         level_map.run()
         _CLOCK.tick(60)
