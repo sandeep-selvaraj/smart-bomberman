@@ -32,6 +32,7 @@ class Tile(pygame.sprite.Sprite):
         else:
             self.image = import_sprite("graphics/wall.png")
         self.rect = self.image.get_rect(topleft=position)
+        self.destroyable = destroyable
 
     def update(self, level_shift: Tuple):
         """
