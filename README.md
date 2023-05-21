@@ -10,3 +10,4 @@ _(Tip: Do it in your virtual environment)_
 
 #### Game controls
 - Arrow keys to move
+- 'X' to place bomb
