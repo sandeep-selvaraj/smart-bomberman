@@ -153,6 +153,14 @@ class Level:
                 if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
                     self.player_hit_explosion = True
 
+    def enemy_collides_with_explosion(self):
+        """Check if any enemy is hit by the explosion"""
+        for bomb in self.bomberman_player.sprite.bombs:
+            for explosion in bomb.sprite.explosions:
+                for enemy_sprite in self.bomberman_enemy.sprites():
+                    if explosion.sprite.rect.colliderect(enemy_sprite):
+                        enemy_sprite.enemy_hit_by_bomb()
+
     def enemy_collision_reverse(self):
         """Redirect enemy after collision with wall."""
         for enemy_sprite in self.bomberman_enemy.sprites():
@@ -218,6 +226,11 @@ class Level:
                round(self.bomberman_player.sprite.rect.y/32)
 
 
+    def get_enemy_count(self) -> int:
+        """Get the number of enemies alive."""
+        return len(self.bomberman_enemy.sprites())
+
+
     def run(self):
         """Graphically display all components of the level"""
         self.scroll()
@@ -239,6 +252,7 @@ class Level:
         #handle explosions
         self.render_and_update_explosions()
         self.player_collides_with_explosion()
+        self.enemy_collides_with_explosion()
 
         # handle enemy
         self.enemy_collision_reverse()
