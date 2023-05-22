@@ -199,7 +199,6 @@ class Level:
                 self.player_hit_item = True
                 self.items.remove(item_sprite)
 
-
     def render_and_update_bombs(self):
         """render and update bombs placed by player in the level"""
         for bomb in self.bomberman_player.sprite.bombs:
@@ -214,6 +213,7 @@ class Level:
                 expl.draw(self.display_surface)
 
     def get_player_location_on_map(self) -> tuple:
+        """Get the player's current location."""
         return round(self.bomberman_player.sprite.rect.x/32),\
                round(self.bomberman_player.sprite.rect.y/32)
 
@@ -243,7 +243,9 @@ class Level:
         # handle enemy
         self.enemy_collision_reverse()
         self.enemy_collides_with_player()
-        self.bomberman_enemy.update(self.level_shift, self.get_player_location_on_map(), self.map_data)
+        self.bomberman_enemy.update(self.level_shift,
+                                    self.get_player_location_on_map(),
+                                    self.map_data)
         self.bomberman_enemy.draw(self.display_surface)
 
         #handle items

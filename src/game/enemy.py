@@ -3,7 +3,7 @@
 import pygame
 from .utils.fileutils import import_from_spritesheet
 from .constants import EnemyStatus, EnemyBomberman
-from src.game.algorithms import a_star
+from .algorithms import a_star
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -21,7 +21,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.animations[EnemyStatus.IDLE][0]
         self.rect = self.image.get_rect(topleft=position)
         self.direction = -1
-        self.current_location = (None,None)
+        self.current_location = (None, None)
 
     def build_enemy_animation(self):
         """Animate the enemy movements."""
@@ -36,16 +36,17 @@ class Enemy(pygame.sprite.Sprite):
 
     def enemy_movement(self, path_to_player):
         """Adding directions specific positioning of the enemy."""
-        if path_to_player:
-            x_direction, y_direction = path_to_player
-            x_current, y_current = self.current_location
-            y_difference = (y_direction - y_current)
-            if y_difference != 0:
-                self.rect.y += y_difference
-            else:
-                self.rect.x += (x_direction - x_current)
-        else:
-            self.rect.x += self.direction
+        _ = path_to_player  # To be removed
+        # if path_to_player:
+        #     x_direction, y_direction = path_to_player
+        #     x_current, y_current = self.current_location
+        #     y_difference = (y_direction - y_current)
+        #     if y_difference != 0:
+        #         self.rect.y += y_difference
+        #     else:
+        #         self.rect.x += (x_direction - x_current)
+        # else:
+        self.rect.x += self.direction
 
     def enemy_collision(self):
         """Reverse the enemy once it collides with a wall"""
@@ -54,7 +55,7 @@ class Enemy(pygame.sprite.Sprite):
     def get_location_on_map(self) -> tuple:
         """Get player location on the map."""
         return round(self.rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
-            round(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)
+               round(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)
 
     def update(self, level_shift, player_location, mapdata) -> None:
         """

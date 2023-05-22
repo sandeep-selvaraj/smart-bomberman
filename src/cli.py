@@ -1,10 +1,10 @@
 """Command Line Interface for running the game"""
+import os
+from pathlib import Path
 import fire  # type: ignore
 
 # from game.maingame import start_game
 from game.menu import main_menu
-from pathlib import Path
-import os
 
 
 def run_the_game(level: int = 1):
