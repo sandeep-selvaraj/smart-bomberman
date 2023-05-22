@@ -24,9 +24,11 @@ class Level:
             The Map layout for a level
         """
         self.display_surface = surface
+        self.map_data = level_data
         self.setup_level(level_data)
         self.player_hit_enemy = False
         self.player_hit_item = False
+        self.player_hit_explosion = False
         self.level_shift = (0,0)
 
     def setup_level(self, layout: List):
@@ -58,7 +60,7 @@ class Level:
                     star = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
                     self.items.add(star)
                 if column == 'P':
-                    self.bomberman_player.add(player.Player((x_position, y_position)))
+                    self.bomberman_player.add(player.Player((x_position, y_position), self.walls))
                 if (row_index, column_index) in locations_for_enemy:
                     self.bomberman_enemy.add(enemy.Enemy((x_position, y_position)))
 
@@ -71,27 +73,36 @@ class Level:
         direction_x = bomberman_player.direction.x
         player_y = bomberman_player.rect.centery
         direction_y = bomberman_player.direction.y
+        is_scroll_to_be_added = False
 
         if player_x < Camera.CAMERA_X_LIMIT_LEFT.value and direction_x < 0:
             #if player has reached left end of screen and wants to keep moving left
             self.level_shift = (PlayerBomberman.SPEED.value,0)
             bomberman_player.speed = 0
+            is_scroll_to_be_added = True
         elif player_x > Camera.CAMERA_X_LIMIT_RIGHT.value and direction_x > 0:
             #if player has reached right end of screen and wants to keep moving right
             self.level_shift = (-PlayerBomberman.SPEED.value,0)
             bomberman_player.speed = 0
+            is_scroll_to_be_added = True
         elif player_y < Camera.CAMERA_Y_LIMIT_TOP.value and direction_y < 0:
             #if player has reached top end of screen and wants to keep moving top
             self.level_shift = (0,PlayerBomberman.SPEED.value)
             bomberman_player.speed = 0
+            is_scroll_to_be_added = True
         elif player_y > Camera.CAMERA_Y_LIMIT_BOTTOM.value and direction_y > 0:
             #if player has reached bottom end of screen and wants to keep moving down
             self.level_shift = (0,-PlayerBomberman.SPEED.value)
             bomberman_player.speed = 0
+            is_scroll_to_be_added = True
         else:
             #if the player is within limits of screen - no scroll needed
             self.level_shift = (0,0)
             bomberman_player.speed = PlayerBomberman.SPEED.value
+            is_scroll_to_be_added = False
+        if is_scroll_to_be_added:
+            bomberman_player.level_shifted[0] += self.level_shift[0]
+            bomberman_player.level_shifted[1] += self.level_shift[1]
 
     def horizontal_collision(self):
         """
@@ -134,6 +145,21 @@ class Level:
                     #if player collides with a tile and was moving down,
                     #set the player to top of collider
                     bomberman_player.rect.bottom = sprite.rect.top
+
+    def player_collides_with_explosion(self):
+        """Check for player collision with explosion"""
+        for bomb in self.bomberman_player.sprite.bombs:
+            for explosion in bomb.sprite.explosions:
+                if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                    self.player_hit_explosion = True
+
+    def enemy_collides_with_explosion(self):
+        """Check if any enemy is hit by the explosion"""
+        for bomb in self.bomberman_player.sprite.bombs:
+            for explosion in bomb.sprite.explosions:
+                for enemy_sprite in self.bomberman_enemy.sprites():
+                    if explosion.sprite.rect.colliderect(enemy_sprite):
+                        enemy_sprite.enemy_hit_by_bomb()
 
     def enemy_collision_reverse(self):
         """Redirect enemy after collision with wall."""
@@ -181,24 +207,59 @@ class Level:
                 self.player_hit_item = True
                 self.items.remove(item_sprite)
 
+    def render_and_update_bombs(self):
+        """render and update bombs placed by player in the level"""
+        for bomb in self.bomberman_player.sprite.bombs:
+            bomb.update(self.level_shift)
+            bomb.draw(self.display_surface)
+
+    def render_and_update_explosions(self):
+        """render and update explosions caused by bombs placed by player in the level"""
+        for bomb in self.bomberman_player.sprite.bombs:
+            for expl in bomb.sprite.explosions:
+                expl.update(self.level_shift)
+                expl.draw(self.display_surface)
+
+    def get_player_location_on_map(self) -> tuple:
+        """Get the player's current location."""
+        return round(self.bomberman_player.sprite.rect.x/32),\
+               round(self.bomberman_player.sprite.rect.y/32)
+
+
+    def get_enemy_count(self) -> int:
+        """Get the number of enemies alive."""
+        return len(self.bomberman_enemy.sprites())
+
+
     def run(self):
         """Graphically display all components of the level"""
+        self.scroll()
 
         #handle level tiles like walls
         self.walls.update(self.level_shift)
         self.walls.draw(self.display_surface)
-        self.scroll()
 
         #handle player
         self.bomberman_player.update()
         self.horizontal_collision()
         self.vertical_collision()
         self.bomberman_player.draw(self.display_surface)
+        # print(self.get_player_location_on_map())
+
+        #handle bombs
+        self.render_and_update_bombs()
+
+        #handle explosions
+        self.render_and_update_explosions()
+        self.player_collides_with_explosion()
+        self.enemy_collides_with_explosion()
 
         # handle enemy
         self.enemy_collision_reverse()
         self.enemy_collides_with_player()
-        self.bomberman_enemy.update(self.level_shift)
+        self.bomberman_enemy.update(self.level_shift,
+                                    self.get_player_location_on_map(),
+                                    self.map_data)
         self.bomberman_enemy.draw(self.display_surface)
 
         #handle items

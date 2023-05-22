@@ -8,9 +8,7 @@ from . import level
 from .settings import GameWindow
 
 _SCREEN = pygame.display.set_mode((GameWindow.SCREEN_WIDTH.value, GameWindow.SCREEN_HEIGHT.value))
-_CURRENT_PATH = Path.cwd()
 _MAP_FOLDER = "maps"
-_MAP_PATH = _CURRENT_PATH.joinpath(_MAP_FOLDER)
 _CLOCK = pygame.time.Clock()
 _TIMER_DURATION = 300
 _WHITE_FONT_TEXT = (255, 255, 255)
@@ -31,16 +29,18 @@ def start_game(level_number: int):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        if level_map.player_hit_enemy or time_remaining == 0:
+        enemies_alive = level_map.get_enemy_count()
+        if level_map.player_hit_enemy or level_map.player_hit_explosion or time_remaining == 0\
+                or enemies_alive == 0:
             pygame.time.wait(1000)
-            _endgame_screen(font, time_remaining)
+            _endgame_screen(font, time_remaining, enemies_alive)
             pygame.display.update()
             continue
         if level_map.player_hit_item:
             extra_time += 50
             level_map.player_hit_item = False
         timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
-        _SCREEN.fill("black")
+        _SCREEN.fill((128, 128, 128)) #fill bg with grey color
         _SCREEN.blit(timer_text, (10, 10))
         level_map.run()
         _CLOCK.tick(60)
@@ -49,7 +49,8 @@ def start_game(level_number: int):
 
 def _get_all_levels() -> List:
     """Read  and store different maps."""
-    available_level_files = list(_MAP_PATH.iterdir())
+    map_path = Path.cwd().joinpath(_MAP_FOLDER)
+    available_level_files = list(map_path.iterdir())
     all_maps = []
     for level_file in available_level_files:
         with open(level_file, newline='', encoding="utf-8-sig") as file:
@@ -58,10 +59,15 @@ def _get_all_levels() -> List:
     return all_maps
 
 
-def _endgame_screen(font, time_remaining):
+def _endgame_screen(font, time_remaining, enemies_alive):
     """Endgame screen once player is killed."""
     _SCREEN.fill("black")
-    gameover_text = font.render('GAMEOVER', True, _WHITE_FONT_TEXT)
+    text_to_render = ""
+    if enemies_alive > 0:
+        text_to_render = "GAMEOVER"
+    else:
+        text_to_render = "You have finished the level!! <3"
+    gameover_text = font.render(text_to_render, True, _WHITE_FONT_TEXT)
     if time_remaining == 0:
         time_up_text = font.render("You ran out of time!", True, _WHITE_FONT_TEXT)
         _SCREEN.blit(time_up_text, (150, 200))

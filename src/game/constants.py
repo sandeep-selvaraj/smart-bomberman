@@ -17,8 +17,10 @@ class PlayerBomberman(Enum):
     """
     SPEED = 2
     ANIMATION_SPEED = 0.05
-    SPRITE_WIDTH = 34
-    SPRITE_HEIGHT = 34
+    SPRITE_WIDTH = 32
+    SPRITE_HEIGHT = 32
+    BOMB_RANGE = 1 #initial bomb range of player
+    BOMB_LIMIT = 1 #initial bomb limit of player
 
 class EnemyBomberman(Enum):
     """
@@ -48,3 +50,13 @@ class ItemType(Enum):
     Item type constants
     """
     EXTRA_TIME = 0
+
+class BombItem(Enum):
+    """
+    Bomb item constants
+    """
+    EXPLOSION_TIME_DURATION = 2
+    EXPLOSION_END_TIME_DURATION = 3 #3-2 = 1 is amt of time explosion remains
+    ANIMATION_SPEED = 0.02
+    SPRITE_WIDTH = 32
+    SPRITE_HEIGHT = 32
