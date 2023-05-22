@@ -22,6 +22,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=position)
         self.direction = -1
         self.current_location = (None, None)
+        self.hit_by_bomb = False
 
     def build_enemy_animation(self):
         """Animate the enemy movements."""
@@ -52,10 +53,14 @@ class Enemy(pygame.sprite.Sprite):
         """Reverse the enemy once it collides with a wall"""
         self.direction *= -1
 
+    def enemy_hit_by_bomb(self):
+        """Update flag if enemy is hit by bomb."""
+        self.hit_by_bomb = True
+
     def get_location_on_map(self) -> tuple:
         """Get player location on the map."""
         return round(self.rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
-               round(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)
+            round(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)
 
     def update(self, level_shift, player_location, mapdata) -> None:
         """
@@ -72,4 +77,6 @@ class Enemy(pygame.sprite.Sprite):
         next_path = None
         if path:
             *_, next_path, _ = path
+        if self.hit_by_bomb:
+            self.kill()
         self.enemy_movement(next_path)
