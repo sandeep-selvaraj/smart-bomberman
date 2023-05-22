@@ -24,6 +24,7 @@ class Level:
             The Map layout for a level
         """
         self.display_surface = surface
+        self.map_data = level_data
         self.setup_level(level_data)
         self.player_hit_enemy = False
         self.player_hit_item = False
@@ -198,6 +199,7 @@ class Level:
                 self.player_hit_item = True
                 self.items.remove(item_sprite)
 
+
     def render_and_update_bombs(self):
         """render and update bombs placed by player in the level"""
         for bomb in self.bomberman_player.sprite.bombs:
@@ -210,6 +212,11 @@ class Level:
             for expl in bomb.sprite.explosions:
                 expl.update(self.level_shift)
                 expl.draw(self.display_surface)
+
+    def get_player_location_on_map(self) -> tuple:
+        return round(self.bomberman_player.sprite.rect.x/32),\
+               round(self.bomberman_player.sprite.rect.y/32)
+
 
     def run(self):
         """Graphically display all components of the level"""
@@ -224,6 +231,7 @@ class Level:
         self.horizontal_collision()
         self.vertical_collision()
         self.bomberman_player.draw(self.display_surface)
+        # print(self.get_player_location_on_map())
 
         #handle bombs
         self.render_and_update_bombs()
@@ -235,7 +243,7 @@ class Level:
         # handle enemy
         self.enemy_collision_reverse()
         self.enemy_collides_with_player()
-        self.bomberman_enemy.update(self.level_shift)
+        self.bomberman_enemy.update(self.level_shift, self.get_player_location_on_map(), self.map_data)
         self.bomberman_enemy.draw(self.display_surface)
 
         #handle items
