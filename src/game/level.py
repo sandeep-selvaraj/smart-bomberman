@@ -66,6 +66,8 @@ class Level:
                 if column == 'I':
                     star = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
                     self.items.add(star)
+                    wall = tile.Tile((x_position, y_position), True)
+                    self.walls.add(wall)
                 if column == 'P':
                     self.bomberman_player.add(player.Player((x_position, y_position), self.walls))
                 if (row_index, column_index) in locations_for_enemy:
@@ -276,6 +278,11 @@ class Level:
         if enemies_alive == 0 and not self.gateway_flag:
             self.set_gateway()
             self.gateway_flag = True
+        
+        #handle items
+        self.items.update(self.level_shift)
+        self.items.draw(self.display_surface)
+        self.item_collides_with_player()
 
         #handle level tiles like walls
         self.walls.update(self.level_shift)
@@ -303,11 +310,6 @@ class Level:
                                     self.get_player_location_on_map(),
                                     self.map_data)
         self.bomberman_enemy.draw(self.display_surface)
-
-        #handle items
-        self.items.update(self.level_shift)
-        self.items.draw(self.display_surface)
-        self.item_collides_with_player()
 
         #handle gateway
         self.gateway.update(self.level_shift)
