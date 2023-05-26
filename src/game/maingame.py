@@ -30,8 +30,12 @@ def start_game(level_number: int):
                 pygame.quit()
                 sys.exit()
         enemies_alive = level_map.get_enemy_count()
-        if level_map.player_hit_enemy or level_map.player_hit_explosion or time_remaining == 0\
-                or enemies_alive == 0:
+        if level_map.player_hit_gateway:
+            pygame.time.wait(1000)
+            _endgame_screen(font, time_remaining, enemies_alive)
+            pygame.display.update()
+            continue
+        if level_map.player_hit_enemy or level_map.player_hit_explosion or time_remaining == 0:
             pygame.time.wait(1000)
             _endgame_screen(font, time_remaining, enemies_alive)
             pygame.display.update()
@@ -66,7 +70,7 @@ def _endgame_screen(font, time_remaining, enemies_alive):
     if enemies_alive > 0:
         text_to_render = "GAMEOVER"
     else:
-        text_to_render = "You have finished the level!! <3"
+        text_to_render = "You have killed all the enemies!! <3"
     gameover_text = font.render(text_to_render, True, _WHITE_FONT_TEXT)
     if time_remaining == 0:
         time_up_text = font.render("You ran out of time!", True, _WHITE_FONT_TEXT)
