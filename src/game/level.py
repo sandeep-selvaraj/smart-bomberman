@@ -278,7 +278,7 @@ class Level:
         if enemies_alive == 0 and not self.gateway_flag:
             self.set_gateway()
             self.gateway_flag = True
-        
+
         #handle items
         self.items.update(self.level_shift)
         self.items.draw(self.display_surface)
