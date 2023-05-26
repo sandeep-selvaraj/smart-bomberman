@@ -6,6 +6,7 @@ from . import tile
 from . import player
 from . import enemy
 from . import item
+from . import gateway
 from .settings import Game
 from .constants import Camera, PlayerBomberman, ItemType
 
@@ -29,7 +30,10 @@ class Level:
         self.player_hit_enemy = False
         self.player_hit_item = False
         self.player_hit_explosion = False
+        self.player_hit_gateway = False
+        self.gateway_flag = False
         self.level_shift = (0,0)
+        self.shift_accumulated = [0,0]
 
     def setup_level(self, layout: List):
         """
@@ -45,7 +49,10 @@ class Level:
         self.bomberman_player: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
         self.bomberman_enemy: pygame.sprite.Group = pygame.sprite.Group()
         self.items: pygame.sprite.Group = pygame.sprite.Group()
+        self.gateway: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
         locations_for_enemy = self.get_locations_for_enemy(layout)
+        locations_for_gateway = self.get_locations_for_gateway(layout)
+        self.gateway_index = []
         for row_index, row in enumerate(layout):
             for column_index, column in enumerate(row):
                 y_position = row_index * Game.TILE_SIZE.value
@@ -63,6 +70,9 @@ class Level:
                     self.bomberman_player.add(player.Player((x_position, y_position), self.walls))
                 if (row_index, column_index) in locations_for_enemy:
                     self.bomberman_enemy.add(enemy.Enemy((x_position, y_position)))
+                if (row_index, column_index) in locations_for_gateway:
+                    self.gateway_index.append(x_position)
+                    self.gateway_index.append(y_position)
 
     def scroll(self):
         """
@@ -200,6 +210,22 @@ class Level:
             number_of_iterations = - 1
         return enemy_start_locations
 
+    def get_locations_for_gateway(self, mapdata):
+        """Get all possible random spots where gateway can be placed."""
+        unavailable_locations = self.unavailable_locations_for_enemy(mapdata)
+        number_of_iterations = 50
+        while number_of_iterations:
+            gateway_locations = [
+                (random.randint(2, len(mapdata) - 1),
+                 random.randint(1, len(mapdata[0]) - 1))
+                for i in range(0, 1)]
+            locations_conflicted = [True for location in gateway_locations
+                                    if location in unavailable_locations]
+            if not locations_conflicted:
+                break
+            number_of_iterations = - 1
+        return gateway_locations
+
     def item_collides_with_player(self):
         """Check for item collision with player."""
         for item_sprite in self.items.sprites():
@@ -230,10 +256,26 @@ class Level:
         """Get the number of enemies alive."""
         return len(self.bomberman_enemy.sprites())
 
+    def set_gateway(self) :
+        """Make a Gateway to next level when all enemies are killed"""
+        self.gateway_index[0] += self.shift_accumulated[0]
+        self.gateway_index[1] += self.shift_accumulated[1]
+        self.gateway.add(gateway.Gateway(self.gateway_index))
+
+    def gateway_collides_with_player(self):
+        """Check for gateway collision with player."""
+        for gateway_sprite in self.gateway.sprites():
+            if gateway_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                self.player_hit_gateway = True
 
     def run(self):
         """Graphically display all components of the level"""
         self.scroll()
+
+        enemies_alive = self.get_enemy_count()
+        if enemies_alive == 0 and not self.gateway_flag:
+            self.set_gateway()
+            self.gateway_flag = True
 
         #handle level tiles like walls
         self.walls.update(self.level_shift)
@@ -266,3 +308,13 @@ class Level:
         self.items.update(self.level_shift)
         self.items.draw(self.display_surface)
         self.item_collides_with_player()
+
+        #handle gateway
+        self.gateway.update(self.level_shift)
+        self.gateway.draw(self.display_surface)
+        self.gateway_collides_with_player()
+
+        #track camera movement
+        if self.level_shift != (0,0):
+            self.shift_accumulated[0] += self.level_shift[0]
+            self.shift_accumulated[1] += self.level_shift[1]
