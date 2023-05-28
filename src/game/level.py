@@ -16,6 +16,7 @@ class Level:
     Storing and graphically setting up the map for each level.
 
     """
+
     player_hit_skate = False
 
     def __init__(self, level_data: List, surface: pygame.Surface):
@@ -279,6 +280,14 @@ class Level:
             if gateway_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
                 self.player_hit_gateway = True
 
+    def cheat_key(self):
+        """cheat key for deleting all enemies"""
+        # pylint: disable=no-member
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_0]:
+            for enemy_sprite in self.bomberman_enemy.sprites():
+                enemy_sprite.kill()
+
     def run(self):
         """Graphically display all components of the level"""
         self.scroll()
@@ -329,3 +338,6 @@ class Level:
         if self.level_shift != (0,0):
             self.shift_accumulated[0] += self.level_shift[0]
             self.shift_accumulated[1] += self.level_shift[1]
+
+        #cheat key
+        self.cheat_key()
