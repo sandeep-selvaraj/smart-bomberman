@@ -1,4 +1,5 @@
 """Setting up the player character, interaction"""
+# pylint: disable=cyclic-import
 
 from typing import Tuple, List
 import pygame
