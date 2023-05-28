@@ -1,4 +1,5 @@
 """utility code related to file reading/writing like sprite, spritesheet loading"""
+# pylint: disable=cyclic-import
 from typing import List
 import pygame
 
