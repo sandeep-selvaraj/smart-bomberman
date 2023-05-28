@@ -6,6 +6,7 @@ import csv
 import pygame
 from . import level
 from .settings import GameWindow
+from .constants import ItemType
 
 _SCREEN = pygame.display.set_mode((GameWindow.SCREEN_WIDTH.value, GameWindow.SCREEN_HEIGHT.value))
 _MAP_FOLDER = "maps"
@@ -41,7 +42,8 @@ def start_game(level_number: int):
             pygame.display.update()
             continue
         if level_map.player_hit_item:
-            extra_time += 50
+            if level_map.item_class == ItemType.EXTRA_TIME.value:
+                extra_time += 50
             level_map.player_hit_item = False
         timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
         _SCREEN.fill((128, 128, 128)) #fill bg with grey color
