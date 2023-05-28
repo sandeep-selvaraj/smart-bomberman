@@ -5,6 +5,7 @@ import pygame
 from .constants import PlayerBomberman, PlayerStatus
 from .utils.fileutils import import_from_spritesheet
 from . import bomb
+from . import level
 from .settings import Game
 
 class Player(pygame.sprite.Sprite):
@@ -48,7 +49,6 @@ class Player(pygame.sprite.Sprite):
 
         self.level_shifted = [0,0]
 
-
     def build_player_animation_spritesheet(self):
         """creates an internal dictionary of player state animations"""
         self.animations = {PlayerStatus.IDLE: [], PlayerStatus.RUN: []}
@@ -78,14 +78,19 @@ class Player(pygame.sprite.Sprite):
         # pylint: disable=c-extension-no-member
         keys = pygame.key.get_pressed()
 
+        if level.Level.player_hit_skate:
+            player_vel = 2
+        else:
+            player_vel = 1
+
         if keys[pygame.K_RIGHT]:
-            self.direction = pygame.math.Vector2(1,0)
+            self.direction = pygame.math.Vector2(player_vel,0)
         elif keys[pygame.K_LEFT]:
-            self.direction = pygame.math.Vector2(-1,0)
+            self.direction = pygame.math.Vector2(-player_vel,0)
         elif keys[pygame.K_UP]:
-            self.direction = pygame.math.Vector2(0,-1)
+            self.direction = pygame.math.Vector2(0,-player_vel)
         elif keys[pygame.K_DOWN]:
-            self.direction = pygame.math.Vector2(0,1)
+            self.direction = pygame.math.Vector2(0,player_vel)
         elif ( not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]
                and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]):
             # nested if here to ensure player stops to place the bomb, cant place bomb when moving
