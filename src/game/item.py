@@ -17,7 +17,11 @@ class Item(pygame.sprite.Sprite):
     def __init__(self, position: Tuple, item_type):
         pygame.sprite.Sprite.__init__(self)
         if item_type == ItemType.EXTRA_TIME.value:
-            self.image = import_sprite("graphics/star.png")
+            self.image = import_sprite("graphics/extra_time.png")
+            self.item_num = ItemType.EXTRA_TIME.value
+        elif item_type == ItemType.SKATE.value:
+            self.image = import_sprite("graphics/skate.png")
+            self.item_num = ItemType.SKATE.value
         self.rect = self.image.get_rect(topleft=position)
 
     def update(self, level_shift: Tuple):
