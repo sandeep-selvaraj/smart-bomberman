@@ -10,13 +10,14 @@ from . import gateway
 from .settings import Game
 from .constants import Camera, PlayerBomberman, ItemType
 
-
 class Level:
     # pylint: disable=too-many-instance-attributes
     """
     Storing and graphically setting up the map for each level.
 
     """
+    player_hit_skate = False
+
     def __init__(self, level_data: List, surface: pygame.Surface):
         """
         Parameters
@@ -34,6 +35,7 @@ class Level:
         self.gateway_flag = False
         self.level_shift = (0,0)
         self.shift_accumulated = [0,0]
+        self.item_class = 0
 
     def setup_level(self, layout: List):
         """
@@ -64,8 +66,12 @@ class Level:
                     wall = tile.Tile((x_position, y_position), True)
                     self.walls.add(wall)
                 if column == 'I':
-                    star = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
-                    self.items.add(star)
+                    prob = random.random()
+                    if prob < 0.5:
+                        powerup = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
+                    else:
+                        powerup = item.Item((x_position, y_position), ItemType.SKATE.value)
+                    self.items.add(powerup)
                     wall = tile.Tile((x_position, y_position), True)
                     self.walls.add(wall)
                 if column == 'P':
@@ -233,6 +239,9 @@ class Level:
         for item_sprite in self.items.sprites():
             if item_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
                 self.player_hit_item = True
+                self.item_class = item_sprite.item_num
+                if self.item_class == ItemType.SKATE.value:
+                    Level.player_hit_skate = True
                 self.items.remove(item_sprite)
 
     def render_and_update_bombs(self):
