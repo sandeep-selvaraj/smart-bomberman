@@ -27,7 +27,7 @@ def _encode_map(mapdata: list) -> list:
     for row in mapdata:
         encoded_column = []
         for column in row:
-            if column in ('W', '#', 'B'):
+            if column in ('W', '#', 'B_1', 'B_2'):
                 encoded_column.append(0)
             else:
                 encoded_column.append(1)
