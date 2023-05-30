@@ -61,3 +61,12 @@ class BombItem(Enum):
     ANIMATION_SPEED = 0.02
     SPRITE_WIDTH = 32
     SPRITE_HEIGHT = 32
+
+class TileType(Enum):
+    """
+    Tile type constants
+    """
+    NONE = 0
+    ONE_EXPLOSION_BOMB = 1
+    TWO_EXPLOSION = 2
+    ONE_EXPLOSION_NO_BOMB = 3
