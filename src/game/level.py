@@ -8,7 +8,7 @@ from . import enemy
 from . import item
 from . import gateway
 from .settings import Game
-from .constants import Camera, PlayerBomberman, ItemType
+from .constants import Camera, PlayerBomberman, ItemType, TileType
 
 class Level:
     # pylint: disable=too-many-instance-attributes
@@ -18,6 +18,7 @@ class Level:
     """
 
     player_hit_skate = False
+    level_bombs: pygame.sprite.Group = pygame.sprite.Group()
 
     def __init__(self, level_data: List, surface: pygame.Surface):
         """
@@ -61,10 +62,19 @@ class Level:
                 y_position = row_index * Game.TILE_SIZE.value
                 x_position = column_index * Game.TILE_SIZE.value
                 if column in ('W', '#'):
-                    wall = tile.Tile((x_position, y_position), False)
+                    wall = tile.Tile((x_position, y_position), False, TileType.NONE)
                     self.walls.add(wall)
-                if column == 'B':
-                    wall = tile.Tile((x_position, y_position), True)
+                #if column == 'B':
+                if column.startswith('B'):
+                    tile_type = column.split('_')[1]
+                    if tile_type == '1':
+                        wall = tile.Tile(
+                                            (x_position, y_position),
+                                            True,
+                                            TileType.ONE_EXPLOSION_BOMB
+                                         )
+                    elif tile_type == '2':
+                        wall = tile.Tile((x_position, y_position), True, TileType.TWO_EXPLOSION)
                     self.walls.add(wall)
                 if column == 'I':
                     prob = random.random()
@@ -73,10 +83,14 @@ class Level:
                     else:
                         powerup = item.Item((x_position, y_position), ItemType.SKATE.value)
                     self.items.add(powerup)
-                    wall = tile.Tile((x_position, y_position), True)
+                    wall = tile.Tile((x_position, y_position), True, TileType.ONE_EXPLOSION_NO_BOMB)
                     self.walls.add(wall)
                 if column == 'P':
-                    self.bomberman_player.add(player.Player((x_position, y_position), self.walls))
+                    self.bomberman_player.add(player.Player(
+                                                                (x_position, y_position),
+                                                                self.walls,
+                                                                self.display_surface
+                                                            ))
                 if (row_index, column_index) in locations_for_enemy:
                     self.bomberman_enemy.add(enemy.Enemy((x_position, y_position)))
                 if (row_index, column_index) in locations_for_gateway:
@@ -171,6 +185,11 @@ class Level:
             for explosion in bomb.sprite.explosions:
                 if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
                     self.player_hit_explosion = True
+        for bomb in Level.level_bombs:
+            for explosion in bomb.explosions:
+                if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                    self.player_hit_explosion = True
+
 
     def enemy_collides_with_explosion(self):
         """Check if any enemy is hit by the explosion"""
@@ -197,7 +216,7 @@ class Level:
         unavaiable_locations = []
         for row_index, row in enumerate(mapdata):
             for column_index, column in enumerate(row):
-                if column in ('W', '#', 'B', 'I', 'P'):
+                if column in ('W', '#', 'B_1', 'B_2', 'I', 'P'):
                     unavaiable_locations.append((row_index, column_index))
         return unavaiable_locations
 
@@ -248,15 +267,24 @@ class Level:
     def render_and_update_bombs(self):
         """render and update bombs placed by player in the level"""
         for bomb in self.bomberman_player.sprite.bombs:
-            bomb.update(self.level_shift)
             bomb.draw(self.display_surface)
+            bomb.update(self.level_shift)
 
-    def render_and_update_explosions(self):
-        """render and update explosions caused by bombs placed by player in the level"""
-        for bomb in self.bomberman_player.sprite.bombs:
-            for expl in bomb.sprite.explosions:
-                expl.update(self.level_shift)
-                expl.draw(self.display_surface)
+    #moved below code to bomb.py for better encapsulation, keep this commented here
+    #in case we wanna undo anything
+    #def render_and_update_explosions(self):
+    #    """render and update explosions caused by bombs placed by player in the level"""
+    #    for bomb in self.bomberman_player.sprite.bombs:
+    #        for expl in bomb.sprite.explosions:
+    #            expl.update(self.level_shift)
+    #            expl.draw(self.display_surface)
+
+    @staticmethod
+    def _clean_up_level_bombs_after_explosion():
+        """remove bombs which have been exploded from levels internal list"""
+        for temp_bomb in Level.level_bombs.copy():
+            if temp_bomb.has_explosion_ended:
+                Level.level_bombs.remove(temp_bomb)
 
     def get_player_location_on_map(self) -> tuple:
         """Get the player's current location."""
@@ -297,6 +325,11 @@ class Level:
             self.set_gateway()
             self.gateway_flag = True
 
+        #handle level bombs spawned after breaking a wall
+        Level.level_bombs.draw(self.display_surface)
+        Level.level_bombs.update(self.level_shift)
+        Level._clean_up_level_bombs_after_explosion()
+
         #handle items
         self.items.update(self.level_shift)
         self.items.draw(self.display_surface)
@@ -317,7 +350,7 @@ class Level:
         self.render_and_update_bombs()
 
         #handle explosions
-        self.render_and_update_explosions()
+        #self.render_and_update_explosions()
         self.player_collides_with_explosion()
         self.enemy_collides_with_explosion()
 
