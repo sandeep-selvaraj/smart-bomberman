@@ -1,11 +1,12 @@
 """Setting up the bomb item used by bomberman"""
 
-from typing import Tuple, List
+from typing import List
 import pygame
 from .utils.fileutils import import_from_spritesheet
-from .constants import BombItem
+from .constants import BombItem, TileType
 from .settings import Game
 from . import explosion
+from . import level
 
 class Bomb(pygame.sprite.Sprite):
     """
@@ -13,7 +14,8 @@ class Bomb(pygame.sprite.Sprite):
     
     """
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, position: Tuple, bomb_range: int, walls: pygame.sprite.Group):
+    def __init__(self, position: List, bomb_range: int,
+                 walls: pygame.sprite.Group, display_surface: pygame.Surface):
         """ 
         Parameters
         ----------
@@ -38,6 +40,7 @@ class Bomb(pygame.sprite.Sprite):
         self.has_bomb_exploded = False
         self.has_explosion_ended = False
         self.walls = walls
+        self.display_surface = display_surface
 
     def build_bomb_animations(self):
         """
@@ -58,27 +61,46 @@ class Bomb(pygame.sprite.Sprite):
         self.image = self.animations[int(self.frame_index)]
 
     def _get_bomb_explosion_tiles(self):
+        # pylint: disable=line-too-long
         """get the position of tiles where a bomb explosion is valid"""
         bomb_pos = [self.rect.x, self.rect.y]
         self.explosion_tiles_pos.append(bomb_pos) #center explosion tile
+        top_tile_check = True
+        bottom_tile_check = True
+        left_tile_check = True
+        right_tile_check = True
         for i in range(1, self.range+1):
             # top explosion tile
-            if self._can_explosion_happen_on_tile([bomb_pos[0]-i*Game.TILE_SIZE.value,bomb_pos[1]]):
+            if ( top_tile_check and
+                self._can_explosion_happen_on_tile([bomb_pos[0]-i*Game.TILE_SIZE.value,bomb_pos[1]])):
                 self.explosion_tiles_pos.append([bomb_pos[0]-i*Game.TILE_SIZE.value,bomb_pos[1]])
+            else:
+                top_tile_check = False
             # bottom explosion tile
-            if self._can_explosion_happen_on_tile([bomb_pos[0]+i*Game.TILE_SIZE.value,bomb_pos[1]]):
+            if ( bottom_tile_check and
+                self._can_explosion_happen_on_tile([bomb_pos[0]+i*Game.TILE_SIZE.value,bomb_pos[1]])):
                 self.explosion_tiles_pos.append([bomb_pos[0]+i*Game.TILE_SIZE.value,bomb_pos[1]])
+            else:
+                bottom_tile_check = False
             # right explosion tile
-            if self._can_explosion_happen_on_tile([bomb_pos[0],bomb_pos[1]+i*Game.TILE_SIZE.value]):
+            if ( right_tile_check and
+                self._can_explosion_happen_on_tile([bomb_pos[0],bomb_pos[1]+i*Game.TILE_SIZE.value])):
                 self.explosion_tiles_pos.append([bomb_pos[0],bomb_pos[1]+i*Game.TILE_SIZE.value])
+            else:
+                right_tile_check = False
             # left explosion tile
-            if self._can_explosion_happen_on_tile([bomb_pos[0],bomb_pos[1]-i*Game.TILE_SIZE.value]):
+            if ( left_tile_check and
+                self._can_explosion_happen_on_tile([bomb_pos[0],bomb_pos[1]-i*Game.TILE_SIZE.value])):
                 self.explosion_tiles_pos.append([bomb_pos[0],bomb_pos[1]-i*Game.TILE_SIZE.value])
+            else:
+                left_tile_check = False
 
     def _can_explosion_happen_on_tile(self, explosion_pos: List):
         """
-        detemine if an explosion can occur on a tile or not based on whether is a destroyable
-        tile or not 
+        detemine tile explosion behavior based on 
+        1. whether it is a destroyable tile or not
+        2. whether it breaks after 2 explosions or not
+        3. whether it hides a bomb 
         ----------
         Parameters
         ----------
@@ -89,9 +111,33 @@ class Bomb(pygame.sprite.Sprite):
             if wall.rect.x == explosion_pos[0] and wall.rect.y == explosion_pos[1]:
                 if not wall.destroyable:
                     return False
-                self.walls.remove(wall)
+                if wall.tile_type == TileType.TWO_EXPLOSION:
+                    wall.update_tile_type(TileType.TWO_EXPLOSION, TileType.ONE_EXPLOSION_BOMB)
+                elif wall.does_wall_contain_bomb:
+                    level.Level.level_bombs.add(
+                        Bomb(  [wall.rect.x, wall.rect.y],
+                                2,
+                                self.walls,
+                                self.display_surface
+                             ))
+                    self.walls.remove(wall)
+                else:
+                    self.walls.remove(wall)
                 return True
         return True
+
+    def render_and_update_explosions(self, level_shift: List):
+        """
+        render and update explosions caused by bombs placed in the level
+        ----------
+        Parameters
+        ----------
+        level_shift: List
+            amount the level has shifted in x and y direction
+        """
+        for expl in self.explosions:
+            expl.draw(self.display_surface)
+            expl.update(level_shift)
 
     def update(self, level_shift: List):
         """
@@ -120,3 +166,4 @@ class Bomb(pygame.sprite.Sprite):
              not self.has_explosion_ended ):
             # bomb explosion ends here
             self.has_explosion_ended = True
+        self.render_and_update_explosions(level_shift)
