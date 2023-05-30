@@ -16,7 +16,9 @@ class Player(pygame.sprite.Sprite):
     """
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, position: Tuple, walls: pygame.sprite.Group):
+    def __init__(self, position: Tuple,
+                 walls: pygame.sprite.Group,
+                 display_surface: pygame.Surface):
         """ 
         Parameters
         ----------
@@ -44,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.bomb_range = PlayerBomberman.BOMB_RANGE.value
         self.bomb_limit = PlayerBomberman.BOMB_LIMIT.value
         self.walls = walls
+        self.display_surface = display_surface
 
         # to ensure that holding down bomb deploy button doesnt spam bombs
         self.bomb_deploy_key_pressed = False
@@ -115,7 +118,7 @@ class Player(pygame.sprite.Sprite):
     def deploy_bomb(self) -> pygame.sprite.Sprite:
         """places the bomb on level"""
         bomb_deploy_pos = self._get_grid_aligned_bomb_position([self.rect.x, self.rect.y])
-        return bomb.Bomb(bomb_deploy_pos, self.bomb_range, self.walls)
+        return bomb.Bomb(bomb_deploy_pos, self.bomb_range, self.walls, self.display_surface)
 
     def _clean_up_bombs_after_explosion(self):
         """remove bombs which have been exploded from players internal list"""
