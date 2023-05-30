@@ -1,7 +1,9 @@
 """Processing of a simple Tile of a game."""
 from typing import Tuple
+import random
 import pygame
 from .utils.fileutils import import_sprite
+from .constants import TileType
 
 
 class Tile(pygame.sprite.Sprite):
@@ -12,7 +14,7 @@ class Tile(pygame.sprite.Sprite):
     Attributes:
         pygame.sprite.Sprite
     """
-    def __init__(self, position: Tuple, destroyable: bool):
+    def __init__(self, position: Tuple, destroyable: bool, tile_type: TileType):
         """
         Initialize the tile.
 
@@ -25,6 +27,8 @@ class Tile(pygame.sprite.Sprite):
             size of the tile
         destroyable: bool
             to check if the wall is destroyable
+        tile_type: TileType(Enum)
+            to identify the type of tile in terms of explosion
         """
         super().__init__()
         if destroyable:
@@ -33,6 +37,35 @@ class Tile(pygame.sprite.Sprite):
             self.image = import_sprite("graphics/wall.png")
         self.rect = self.image.get_rect(topleft=position)
         self.destroyable = destroyable
+        self.tile_type = tile_type
+        self._init_hidden_bomb()
+
+    def _init_hidden_bomb(self):
+        """sets the internal field about whether the wall hides a bomb or not"""
+        if self.tile_type == TileType.ONE_EXPLOSION_BOMB:
+            prob = random.random()
+            if prob < 0.5:
+                self.does_wall_contain_bomb = True
+            else:
+                self.does_wall_contain_bomb = False
+        else:
+            self.does_wall_contain_bomb = False
+
+    def update_tile_type(self, from_tile_type: TileType, to_tile_type: TileType):
+        # pylint: disable=unused-argument
+        """
+        Updates the tile type for the tile including its graphics
+        Parameters
+        ----------
+
+        from_tile_type: TileType(Enum)
+            original tile type
+        to_tile_type: TileType(Enum)
+            updated tile type
+        """
+        self.tile_type = to_tile_type
+        self.image = import_sprite("graphics/destrWall_1.png")
+        self._init_hidden_bomb()
 
     def update(self, level_shift: Tuple):
         """
