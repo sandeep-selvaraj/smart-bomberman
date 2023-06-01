@@ -21,7 +21,7 @@ def start_game(level_number: int):
     pygame.init()
     pygame.display.set_caption("Smart-Bomberman")
     level_maps = _get_all_levels()
-    level_map = level.Level(level_maps[level_number - 1], _SCREEN)
+    level_map = level.Level(level_maps[level_number - 1], _SCREEN, level_number)
     font = pygame.font.Font(pygame.font.get_default_font(), 18)
     extra_time = 0
     while True:
