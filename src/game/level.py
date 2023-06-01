@@ -20,7 +20,7 @@ class Level:
     player_hit_skate = False
     level_bombs: pygame.sprite.Group = pygame.sprite.Group()
 
-    def __init__(self, level_data: List, surface: pygame.Surface):
+    def __init__(self, level_data: List, surface: pygame.Surface, level_number: int):
         """
         Parameters
         ----------
@@ -29,6 +29,7 @@ class Level:
         """
         self.display_surface = surface
         self.map_data = level_data
+        self.level_number = level_number
         self.setup_level(level_data)
         self.player_hit_enemy = False
         self.player_hit_item = False
@@ -92,7 +93,8 @@ class Level:
                                                                 self.display_surface
                                                             ))
                 if (row_index, column_index) in locations_for_enemy:
-                    self.bomberman_enemy.add(enemy.Enemy((x_position, y_position)))
+                    self.bomberman_enemy.add(enemy.Enemy((x_position, y_position),
+                                                         self.level_number))
                 if (row_index, column_index) in locations_for_gateway:
                     self.gateway_index.append(x_position)
                     self.gateway_index.append(y_position)
@@ -196,13 +198,17 @@ class Level:
         for bomb in self.bomberman_player.sprite.bombs:
             for explosion in bomb.sprite.explosions:
                 for enemy_sprite in self.bomberman_enemy.sprites():
-                    if explosion.sprite.rect.colliderect(enemy_sprite):
+                    if explosion.sprite.rect.colliderect(enemy_sprite) and \
+                            not enemy_sprite.is_paused():
                         enemy_sprite.enemy_hit_by_bomb()
+                        enemy_sprite.set_pause(30)
 
     def enemy_collision_reverse(self):
         """Redirect enemy after collision with wall."""
         for enemy_sprite in self.bomberman_enemy.sprites():
-            if pygame.sprite.spritecollide(enemy_sprite, self.walls.sprites(), False):
+            if pygame.sprite.spritecollide(enemy_sprite,
+                                           self.walls.sprites(),
+                                           False):
                 enemy_sprite.enemy_collision()
 
     def enemy_collides_with_player(self):
