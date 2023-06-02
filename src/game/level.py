@@ -18,6 +18,7 @@ class Level:
     """
 
     player_hit_skate = False
+    player_hit_bomb_length = False
     level_bombs: pygame.sprite.Group = pygame.sprite.Group()
 
     def __init__(self, level_data: List, surface: pygame.Surface, level_number: int):
@@ -81,12 +82,14 @@ class Level:
                     self.walls.add(wall)
                 if column == 'I':
                     prob = random.random()
-                    if prob < 0.3:
-                        powerup = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
-                    elif prob < 0.6:
+                    if prob < 0.25:
                         powerup = item.Item((x_position, y_position), ItemType.SKATE.value)
-                    else:
+                    elif prob < 0.50:
+                        powerup = item.Item((x_position, y_position), ItemType.BOMB.value)
+                    elif prob < 0.75:
                         powerup = item.Item((x_position, y_position), ItemType.INVINCIBLE.value)
+                    else:
+                        powerup = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
                     self.items.add(powerup)
                     wall = tile.Tile((x_position, y_position), True, TileType.ONE_EXPLOSION_NO_BOMB)
                     self.walls.add(wall)
@@ -280,6 +283,8 @@ class Level:
                 self.item_class = item_sprite.item_num
                 if self.item_class == ItemType.SKATE.value:
                     Level.player_hit_skate = True
+                elif self.item_class == ItemType.BOMB.value:
+                    Level.player_hit_bomb_length = True
                 elif self.item_class == ItemType.INVINCIBLE.value:
                     self.player_hit_invincible = True
                 self.items.remove(item_sprite)
