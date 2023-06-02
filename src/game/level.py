@@ -33,6 +33,7 @@ class Level:
         self.setup_level(level_data)
         self.player_hit_enemy = False
         self.player_hit_item = False
+        self.player_hit_invincible = False
         self.player_hit_explosion = False
         self.player_hit_gateway = False
         self.gateway_flag = False
@@ -41,6 +42,7 @@ class Level:
         self.item_class = 0
 
     def setup_level(self, layout: List):
+        # pylint: disable=too-many-branches
         """
         Setup up the map for a level.
 
@@ -79,10 +81,12 @@ class Level:
                     self.walls.add(wall)
                 if column == 'I':
                     prob = random.random()
-                    if prob < 0.5:
+                    if prob < 0.3:
                         powerup = item.Item((x_position, y_position), ItemType.EXTRA_TIME.value)
-                    else:
+                    elif prob < 0.6:
                         powerup = item.Item((x_position, y_position), ItemType.SKATE.value)
+                    else:
+                        powerup = item.Item((x_position, y_position), ItemType.INVINCIBLE.value)
                     self.items.add(powerup)
                     wall = tile.Tile((x_position, y_position), True, TileType.ONE_EXPLOSION_NO_BOMB)
                     self.walls.add(wall)
@@ -183,14 +187,15 @@ class Level:
 
     def player_collides_with_explosion(self):
         """Check for player collision with explosion"""
-        for bomb in self.bomberman_player.sprite.bombs:
-            for explosion in bomb.sprite.explosions:
-                if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
-                    self.player_hit_explosion = True
-        for bomb in Level.level_bombs:
-            for explosion in bomb.explosions:
-                if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
-                    self.player_hit_explosion = True
+        if not self.player_hit_invincible:
+            for bomb in self.bomberman_player.sprite.bombs:
+                for explosion in bomb.sprite.explosions:
+                    if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                        self.player_hit_explosion = True
+            for bomb in Level.level_bombs:
+                for explosion in bomb.explosions:
+                    if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                        self.player_hit_explosion = True
 
 
     def enemy_collides_with_explosion(self):
@@ -213,9 +218,16 @@ class Level:
 
     def enemy_collides_with_player(self):
         """Check for enemy collision with player."""
-        for enemy_sprite in self.bomberman_enemy.sprites():
-            if enemy_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
-                self.player_hit_enemy = True
+        if self.player_hit_invincible:
+            for enemy_sprite in self.bomberman_enemy.sprites():
+                if enemy_sprite.rect.colliderect(self.bomberman_player.sprite.rect) and \
+                            not enemy_sprite.is_paused():
+                    enemy_sprite.enemy_hit_by_bomb()
+                    enemy_sprite.set_pause(30)
+        else:
+            for enemy_sprite in self.bomberman_enemy.sprites():
+                if enemy_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                    self.player_hit_enemy = True
 
     def unavailable_locations_for_enemy(self, mapdata):
         """Extract spots on the map where enemy cannot be placed."""
@@ -268,6 +280,8 @@ class Level:
                 self.item_class = item_sprite.item_num
                 if self.item_class == ItemType.SKATE.value:
                     Level.player_hit_skate = True
+                elif self.item_class == ItemType.INVINCIBLE.value:
+                    self.player_hit_invincible = True
                 self.items.remove(item_sprite)
 
     def render_and_update_bombs(self):
