@@ -51,6 +51,7 @@ class ItemType(Enum):
     """
     EXTRA_TIME = 0
     SKATE = 1
+    INVINCIBLE = 2
 
 class BombItem(Enum):
     """
