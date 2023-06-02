@@ -16,6 +16,8 @@ class Enemy(pygame.sprite.Sprite):
     """
 
     # pylint: disable=too-many-instance-attributes
+    # pylint: disable=superfluous-parens
+    # pylint: disable=unused-argument
 
     def __init__(self, position, level_number):
         pygame.sprite.Sprite.__init__(self)
@@ -134,7 +136,7 @@ class Enemy(pygame.sprite.Sprite):
             self.vertical_avail = True
         if (((ava_list[2] not in unavailable_move) or (ava_list[3] not in unavailable_move))):
             self.horizontal_avail = True
-            
+
         # path = a_star.get_path(mapdata, player_location, self.current_location)
         next_path = None
         # if path:
