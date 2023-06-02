@@ -13,7 +13,7 @@ _MAP_FOLDER = "maps"
 _CLOCK = pygame.time.Clock()
 _TIMER_DURATION = 300
 _WHITE_FONT_TEXT = (255, 255, 255)
-_ITEM_COLOR = [(0, 0, 255), (255, 255, 0), (255, 0, 0)]
+_ITEM_COLOR = [(0, 0, 255), (255, 0, 0), (255, 255, 0)]
 
 
 def start_game(level_number: int):
@@ -27,8 +27,8 @@ def start_game(level_number: int):
     level_map = level.Level(level_maps[level_number - 1], _SCREEN, level_number)
     font = pygame.font.Font(pygame.font.get_default_font(), 18)
     extra_time = 0
-    item_start = [0, 0, 0]
-    item_seconds = [0, 0, 0]
+    item_start = [0, 0, 0, 0]
+    item_seconds = [0, 0, 0, 0]
     item_text = [font.render('', True, 0), font.render('', True, 0), font.render('', True, 0)]
     item_duration = 15
     while True:
@@ -68,6 +68,8 @@ def start_game(level_number: int):
                 if item_seconds[i.value] > item_duration:
                     if i.value == ItemType.SKATE.value:
                         level.Level.player_hit_skate = False
+                    elif i.value == ItemType.BOMB.value:
+                        level.Level.player_hit_bomb_length = False
                     elif i.value == ItemType.INVINCIBLE.value:
                         level_map.player_hit_invincible = False
                     item_start[i.value] = 0
@@ -78,7 +80,7 @@ def start_game(level_number: int):
         for i in ItemType:
             if i.value == ItemType.EXTRA_TIME.value:
                 continue
-            _SCREEN.blit(item_text[i.value], (220+120*i.value, 10))
+            _SCREEN.blit(item_text[i.value], (220 + 120*i.value, 10))
         level_map.run()
         _CLOCK.tick(60)
         pygame.display.update()
