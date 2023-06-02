@@ -118,7 +118,11 @@ class Player(pygame.sprite.Sprite):
     def deploy_bomb(self) -> pygame.sprite.Sprite:
         """places the bomb on level"""
         bomb_deploy_pos = self._get_grid_aligned_bomb_position([self.rect.x, self.rect.y])
-        return bomb.Bomb(bomb_deploy_pos, self.bomb_range, self.walls, self.display_surface)
+        if level.Level.player_hit_bomb_length:
+            bomb_length = self.bomb_range + 1
+        else:
+            bomb_length = self.bomb_range
+        return bomb.Bomb(bomb_deploy_pos, bomb_length, self.walls, self.display_surface)
 
     def _clean_up_bombs_after_explosion(self):
         """remove bombs which have been exploded from players internal list"""
