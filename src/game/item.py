@@ -22,6 +22,9 @@ class Item(pygame.sprite.Sprite):
         elif item_type == ItemType.SKATE.value:
             self.image = import_sprite("graphics/skate.png")
             self.item_num = ItemType.SKATE.value
+        elif item_type == ItemType.INVINCIBLE.value:
+            self.image = import_sprite("graphics/invincible.png")
+            self.item_num = ItemType.INVINCIBLE.value
         self.rect = self.image.get_rect(topleft=position)
 
     def update(self, level_shift: Tuple):
