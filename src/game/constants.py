@@ -49,9 +49,9 @@ class ItemType(Enum):
     """
     Item type constants
     """
-    EXTRA_TIME = 0
-    SKATE = 1
-    INVINCIBLE = 2
+    SKATE = 0
+    INVINCIBLE = 1
+    EXTRA_TIME = 2
 
 class BombItem(Enum):
     """
