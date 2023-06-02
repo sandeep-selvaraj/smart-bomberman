@@ -3,7 +3,7 @@
 import pygame
 from .utils.fileutils import import_from_spritesheet
 from .constants import EnemyStatus, EnemyBomberman
-from .algorithms import a_star
+# from .algorithms import a_star
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -95,7 +95,8 @@ class Enemy(pygame.sprite.Sprite):
         """Change enemy color once it's come in contact with bomb."""
         self.image = self.animations[EnemyStatus.MOVE][0]
 
-    def update(self, level_shift, player_location, mapdata) -> None:
+    def update(self, level_shift) -> None:
+    # def update(self, level_shift, player_location, mapdata) -> None:
         """
         Updating the status of the enemy on the map per frame.
 
@@ -106,10 +107,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += level_shift[0]
         self.rect.y += level_shift[1]
         self.current_location = self.get_location_on_map()
-        path = a_star.get_path(mapdata, player_location, self.current_location)
+        # path = a_star.get_path(mapdata, player_location, self.current_location)
         next_path = None
-        if path:
-            *_, next_path, _ = path
+        # if path:
+        #     *_, next_path, _ = path
         if self.pause:
             self.pause -= 1
         if self.hit_by_bomb and not self.pause:
