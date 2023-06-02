@@ -60,6 +60,7 @@ class Level:
         self.gateway: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
         locations_for_enemy = self.get_locations_for_enemy(layout)
         locations_for_gateway = self.get_locations_for_gateway(layout)
+        self.unavailable_locations = self.unavailable_locations_for_enemy(layout)
         self.gateway_index = []
         for row_index, row in enumerate(layout):
             for column_index, column in enumerate(row):
@@ -384,7 +385,8 @@ class Level:
         self.enemy_collides_with_player()
         self.bomberman_enemy.update(self.level_shift,
                                     self.get_player_location_on_map(),
-                                    self.map_data)
+                                    self.map_data,
+                                    self.unavailable_locations)
         self.bomberman_enemy.draw(self.display_surface)
 
         #handle gateway
