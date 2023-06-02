@@ -29,7 +29,7 @@ def start_game(level_number: int):
     extra_time = 0
     item_start = [0, 0, 0]
     item_seconds = [0, 0, 0]
-    item_text = [0, 0, 0]
+    item_text = [font.render('', True, 0), font.render('', True, 0), font.render('', True, 0)]
     item_duration = 15
     while True:
         time_remaining = max(0, _TIMER_DURATION + extra_time - pygame.time.get_ticks() // 1000)
@@ -63,7 +63,7 @@ def start_game(level_number: int):
                 continue
             item_seconds[i.value] = (pygame.time.get_ticks() - item_start[i.value])  // 1000
             if item_start[i.value] == 0:
-                item_text[i.value] = font.render('', True, _WHITE_FONT_TEXT)
+                item_text[i.value] = font.render('', True, 0)
             else:
                 if item_seconds[i.value] > item_duration:
                     if i.value == ItemType.SKATE.value:
