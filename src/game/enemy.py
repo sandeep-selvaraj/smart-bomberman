@@ -25,8 +25,11 @@ class Enemy(pygame.sprite.Sprite):
         self.direction = -1
         self.current_location = (None, None)
         self.hit_by_bomb = False
+        self.horizontal_avail = False
+        self.vertical_avail = False
         self.set_life(level_number)
         self.pause = 0
+        self.prev_move = 1 # 0 for horizontal 1 for vertical
 
     def build_enemy_animation(self):
         """Animate the enemy movements."""
@@ -42,9 +45,9 @@ class Enemy(pygame.sprite.Sprite):
         self.animations[EnemyStatus.IDLE].append(enemy_sprites[1])
         self.animations[EnemyStatus.MOVE].append(color_different_enemy[1])
 
-    def enemy_movement(self, path_to_player):
+    def enemy_movement(self, path_to_player, h_ava, v_ava):
         """Adding directions specific positioning of the enemy."""
-        _ = path_to_player  # To be removed
+        # _ = path_to_player  # To be removed
         # if path_to_player:
         #     x_direction, y_direction = path_to_player
         #     x_current, y_current = self.current_location
@@ -54,7 +57,20 @@ class Enemy(pygame.sprite.Sprite):
         #     else:
         #         self.rect.x += (x_direction - x_current)
         # else:
-        self.rect.x += self.direction
+        #     self.rect.x += self.direction
+        if (h_ava and v_ava):
+            if (self.prev_move == 0):
+                self.rect.x += self.direction
+                self.prev_move = 0
+            else:
+                self.rect.y += self.direction
+                self.prev_move = 1
+        elif h_ava:
+            self.rect.x += self.direction
+            self.prev_move = 0
+        else:
+            self.rect.y += self.direction
+            self.prev_move = 1
 
     def enemy_collision(self):
         """Reverse the enemy once it collides with a wall"""
@@ -95,8 +111,7 @@ class Enemy(pygame.sprite.Sprite):
         """Change enemy color once it's come in contact with bomb."""
         self.image = self.animations[EnemyStatus.MOVE][0]
 
-    def update(self, level_shift, player_location, mapdata) -> None:
-        # pylint: disable=unused-argument
+    def update(self, level_shift, player_location, mapdata, unavailable_move) -> None:
         """
         Updating the status of the enemy on the map per frame.
 
@@ -104,9 +119,22 @@ class Enemy(pygame.sprite.Sprite):
         ----------
         level_shift [Tuple] : The position of the enemy
         """
+        ava_list = []
+
+
         self.rect.x += level_shift[0]
         self.rect.y += level_shift[1]
+
         self.current_location = self.get_location_on_map()
+        ava_list.append((self.current_location[1]+1,self.current_location[0]))
+        ava_list.append((self.current_location[1]-1,self.current_location[0]))
+        ava_list.append((self.current_location[1],self.current_location[0]+1))
+        ava_list.append((self.current_location[1],self.current_location[0]-1))
+        if (((ava_list[0] not in unavailable_move) or (ava_list[1] not in unavailable_move))):
+            self.vertical_avail = True
+        if (((ava_list[2] not in unavailable_move) or (ava_list[3] not in unavailable_move))):
+            self.horizontal_avail = True
+            
         # path = a_star.get_path(mapdata, player_location, self.current_location)
         next_path = None
         # if path:
@@ -117,4 +145,4 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
         if self.pause == 0:
-            self.enemy_movement(next_path)
+            self.enemy_movement(next_path, self.horizontal_avail, self.vertical_avail)
