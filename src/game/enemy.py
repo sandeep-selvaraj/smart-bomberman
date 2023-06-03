@@ -127,7 +127,7 @@ class Enemy(pygame.sprite.Sprite):
         """Change enemy color once it's come in contact with bomb."""
         self.image = self.animations[EnemyStatus.MOVE][0]
 
-    def update(self, level_shift, player_location, mapdata, unavailable_move, acc_shift) -> None:
+    def update(self, level_shift, unavailable_move, acc_shift) -> None:
         """
         Updating the status of the enemy on the map per frame.
 
