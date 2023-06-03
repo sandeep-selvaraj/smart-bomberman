@@ -391,8 +391,6 @@ class Level:
         self.enemy_collision_reverse()
         self.enemy_collides_with_player()
         self.bomberman_enemy.update(self.level_shift,
-                                    self.get_player_location_on_map(),
-                                    self.map_data,
                                     self.unavailable_locations,
                                     self.shift_accumulated)
         self.bomberman_enemy.draw(self.display_surface)
