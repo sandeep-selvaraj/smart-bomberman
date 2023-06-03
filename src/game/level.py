@@ -380,24 +380,27 @@ class Level:
         self.player_collides_with_explosion()
         self.enemy_collides_with_explosion()
 
+
+
+        #track camera movement
+        if self.level_shift != (0,0):
+            self.shift_accumulated[0] += self.level_shift[0]
+            self.shift_accumulated[1] += self.level_shift[1]
+
         # handle enemy
         self.enemy_collision_reverse()
         self.enemy_collides_with_player()
         self.bomberman_enemy.update(self.level_shift,
                                     self.get_player_location_on_map(),
                                     self.map_data,
-                                    self.unavailable_locations)
+                                    self.unavailable_locations,
+                                    self.shift_accumulated)
         self.bomberman_enemy.draw(self.display_surface)
 
         #handle gateway
         self.gateway.update(self.level_shift)
         self.gateway.draw(self.display_surface)
         self.gateway_collides_with_player()
-
-        #track camera movement
-        if self.level_shift != (0,0):
-            self.shift_accumulated[0] += self.level_shift[0]
-            self.shift_accumulated[1] += self.level_shift[1]
 
         #cheat key
         self.cheat_key()
