@@ -1,6 +1,7 @@
 """Setting up the Enemy character."""
 
-import pygame, math
+import math
+import pygame
 from .utils.fileutils import import_from_spritesheet
 from .constants import EnemyStatus, EnemyBomberman
 # from .algorithms import a_star
@@ -18,6 +19,7 @@ class Enemy(pygame.sprite.Sprite):
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=superfluous-parens
     # pylint: disable=unused-argument
+    # pylint: disable=line-too-long
 
     def __init__(self, position, level_number):
         pygame.sprite.Sprite.__init__(self)
@@ -98,7 +100,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.life == 0:
             self.hit_by_bomb = True
 
-    def get_location_on_map(self) -> tuple:
+    def get_location_on_map(self) -> list:
         """Get player location on the map."""
         return [math.ceil(self.rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
             math.ceil(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)]
@@ -138,7 +140,7 @@ class Enemy(pygame.sprite.Sprite):
         ava_list = []
         vertical_avail = False
         horizontal_avail = False
-        
+
         self.timer = self.timer - 1
         self.rect.x += level_shift[0]
         self.rect.y += level_shift[1]
