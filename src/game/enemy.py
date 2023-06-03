@@ -1,6 +1,6 @@
 """Setting up the Enemy character."""
 
-import pygame
+import pygame, math
 from .utils.fileutils import import_from_spritesheet
 from .constants import EnemyStatus, EnemyBomberman
 # from .algorithms import a_star
@@ -27,11 +27,10 @@ class Enemy(pygame.sprite.Sprite):
         self.direction = -1
         self.current_location = (None, None)
         self.hit_by_bomb = False
-        self.horizontal_avail = False
-        self.vertical_avail = False
         self.set_life(level_number)
         self.pause = 0
         self.prev_move = 1 # 0 for horizontal 1 for vertical
+        self.timer = 150
 
     def build_enemy_animation(self):
         """Animate the enemy movements."""
@@ -60,19 +59,34 @@ class Enemy(pygame.sprite.Sprite):
         #         self.rect.x += (x_direction - x_current)
         # else:
         #     self.rect.x += self.direction
-        if (h_ava and v_ava):
-            if (self.prev_move == 0):
+        if self.timer > 75:
+            if h_ava:
                 self.rect.x += self.direction
                 self.prev_move = 0
+            elif (not h_ava and not v_ava):
+                if (self.prev_move == 0):
+                    self.rect.x += self.direction
+                    self.prev_move = 0
+                else:
+                    self.rect.y += self.direction
+                    self.prev_move = 1
             else:
                 self.rect.y += self.direction
                 self.prev_move = 1
-        elif h_ava:
-            self.rect.x += self.direction
-            self.prev_move = 0
         else:
-            self.rect.y += self.direction
-            self.prev_move = 1
+            if v_ava:
+                self.rect.y += self.direction
+                self.prev_move = 1
+            elif (not h_ava and not v_ava):
+                if (self.prev_move == 0):
+                    self.rect.x += self.direction
+                    self.prev_move = 0
+                else:
+                    self.rect.y += self.direction
+                    self.prev_move = 1
+            else:
+                self.rect.x += self.direction
+                self.prev_move = 0
 
     def enemy_collision(self):
         """Reverse the enemy once it collides with a wall"""
@@ -86,8 +100,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def get_location_on_map(self) -> tuple:
         """Get player location on the map."""
-        return round(self.rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
-            round(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)
+        return [math.ceil(self.rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
+            math.ceil(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)]
 
     def set_pause(self, time_frame):
         """Pause the enemy sprite once it hits the bomb."""
@@ -113,7 +127,7 @@ class Enemy(pygame.sprite.Sprite):
         """Change enemy color once it's come in contact with bomb."""
         self.image = self.animations[EnemyStatus.MOVE][0]
 
-    def update(self, level_shift, player_location, mapdata, unavailable_move) -> None:
+    def update(self, level_shift, player_location, mapdata, unavailable_move, acc_shift) -> None:
         """
         Updating the status of the enemy on the map per frame.
 
@@ -122,20 +136,26 @@ class Enemy(pygame.sprite.Sprite):
         level_shift [Tuple] : The position of the enemy
         """
         ava_list = []
-
-
+        vertical_avail = False
+        horizontal_avail = False
+        
+        self.timer = self.timer - 1
         self.rect.x += level_shift[0]
         self.rect.y += level_shift[1]
 
+
         self.current_location = self.get_location_on_map()
+        self.current_location[0] = self.current_location[0]+((-1)*math.ceil(acc_shift[0]/32))
+
         ava_list.append((self.current_location[1]+1,self.current_location[0]))
         ava_list.append((self.current_location[1]-1,self.current_location[0]))
         ava_list.append((self.current_location[1],self.current_location[0]+1))
         ava_list.append((self.current_location[1],self.current_location[0]-1))
-        if (((ava_list[0] not in unavailable_move) or (ava_list[1] not in unavailable_move))):
-            self.vertical_avail = True
-        if (((ava_list[2] not in unavailable_move) or (ava_list[3] not in unavailable_move))):
-            self.horizontal_avail = True
+
+        if (((ava_list[0] not in unavailable_move) or (ava_list[1] not in unavailable_move)) and self.rect.x-acc_shift[0] == self.current_location[0]*32 and self.rect.y-acc_shift[1] == self.current_location[1]*32):
+            vertical_avail = True
+        if (((ava_list[2] not in unavailable_move) or (ava_list[3] not in unavailable_move)) and self.rect.x-acc_shift[0] == self.current_location[0]*32 and self.rect.y-acc_shift[1] == self.current_location[1]*32):
+            horizontal_avail = True
 
         # path = a_star.get_path(mapdata, player_location, self.current_location)
         next_path = None
@@ -147,4 +167,6 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
         if self.pause == 0:
-            self.enemy_movement(next_path, self.horizontal_avail, self.vertical_avail)
+            self.enemy_movement(next_path, horizontal_avail, vertical_avail)
+        if (self.timer == 0):
+            self.timer = 150
