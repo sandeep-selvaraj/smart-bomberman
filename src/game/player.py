@@ -1,10 +1,12 @@
 """Setting up the player character, interaction"""
+# pylint: disable=cyclic-import
 
 from typing import Tuple, List
 import pygame
 from .constants import PlayerBomberman, PlayerStatus
 from .utils.fileutils import import_from_spritesheet
 from . import bomb
+from . import level
 from .settings import Game
 
 class Player(pygame.sprite.Sprite):
@@ -14,7 +16,9 @@ class Player(pygame.sprite.Sprite):
     """
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, position: Tuple, walls: pygame.sprite.Group):
+    def __init__(self, position: Tuple,
+                 walls: pygame.sprite.Group,
+                 display_surface: pygame.Surface):
         """ 
         Parameters
         ----------
@@ -42,12 +46,12 @@ class Player(pygame.sprite.Sprite):
         self.bomb_range = PlayerBomberman.BOMB_RANGE.value
         self.bomb_limit = PlayerBomberman.BOMB_LIMIT.value
         self.walls = walls
+        self.display_surface = display_surface
 
         # to ensure that holding down bomb deploy button doesnt spam bombs
         self.bomb_deploy_key_pressed = False
 
         self.level_shifted = [0,0]
-
 
     def build_player_animation_spritesheet(self):
         """creates an internal dictionary of player state animations"""
@@ -78,14 +82,19 @@ class Player(pygame.sprite.Sprite):
         # pylint: disable=c-extension-no-member
         keys = pygame.key.get_pressed()
 
+        if level.Level.player_hit_skate:
+            player_vel = 2
+        else:
+            player_vel = 1
+
         if keys[pygame.K_RIGHT]:
-            self.direction = pygame.math.Vector2(1,0)
+            self.direction = pygame.math.Vector2(player_vel,0)
         elif keys[pygame.K_LEFT]:
-            self.direction = pygame.math.Vector2(-1,0)
+            self.direction = pygame.math.Vector2(-player_vel,0)
         elif keys[pygame.K_UP]:
-            self.direction = pygame.math.Vector2(0,-1)
+            self.direction = pygame.math.Vector2(0,-player_vel)
         elif keys[pygame.K_DOWN]:
-            self.direction = pygame.math.Vector2(0,1)
+            self.direction = pygame.math.Vector2(0,player_vel)
         elif ( not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]
                and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]):
             # nested if here to ensure player stops to place the bomb, cant place bomb when moving
@@ -109,7 +118,11 @@ class Player(pygame.sprite.Sprite):
     def deploy_bomb(self) -> pygame.sprite.Sprite:
         """places the bomb on level"""
         bomb_deploy_pos = self._get_grid_aligned_bomb_position([self.rect.x, self.rect.y])
-        return bomb.Bomb(bomb_deploy_pos, self.bomb_range, self.walls)
+        if level.Level.player_hit_bomb_length:
+            bomb_length = self.bomb_range + 1
+        else:
+            bomb_length = self.bomb_range
+        return bomb.Bomb(bomb_deploy_pos, bomb_length, self.walls, self.display_surface)
 
     def _clean_up_bombs_after_explosion(self):
         """remove bombs which have been exploded from players internal list"""
