@@ -67,7 +67,7 @@ class Enemy(pygame.sprite.Sprite):
             self.hit_by_bomb = True
 
     def get_location_on_map(self) -> tuple:
-        """Get player location on the map."""
+        """Get enemy location on the map."""
         return round(self.rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
             round(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)
 
@@ -106,10 +106,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += level_shift[0]
         self.rect.y += level_shift[1]
         self.current_location = self.get_location_on_map()
-        path = a_star.get_path(mapdata, player_location, self.current_location)
+        # path = a_star.get_path(mapdata, player_location, self.current_location)
         next_path = None
-        if path:
-            *_, next_path, _ = path
+        # if path:
+        #     *_, next_path, _ = path
         if self.pause:
             self.pause -= 1
         if self.hit_by_bomb and not self.pause:

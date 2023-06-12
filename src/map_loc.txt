@@ -1,0 +1,13 @@
+																															
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
+#				I		W	W	W									W	W													#
+#		W	W	W	W		W		W	W	B_1	W	W	W	W		W	W	W		W		W	W	W	W	W	W	W		#
+#		W							P		W										W		W								#
+#	I	W		W	W	W	W	W	W		W		W	W	W	W	W	W		B_2	W				W	W	W			W	#
+#		W										B_2		W				W			W			W	W	W	W	W	B_1	W	#
+#		W	W	B_1	W	W	W	W	W	W		W				W				E	W						E			W	#
+#					I		W					W	B_2	W	W	W	W	W	W	W			W	W	W	W	W	W	W	W	#
+#	W	W	W		W				W	W								W												W	#
+#	W	W			W	W	W	W	W	W	W	W	W	W	W	W		W		W	W	W	W	W	W	W	W	W		W	#
+#			B_1						B_1			W	W	W	W				E			W	W	W	W	W			B_2	W	#
+#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
