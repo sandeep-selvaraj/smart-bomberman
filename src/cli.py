@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from typing import Optional
 import datetime
+import tqdm  # type: ignore
 import fire  # type: ignore
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
@@ -24,15 +25,23 @@ class CustomCallback(BaseCallback):
     def __init__(self, env, verbose=0):
         super(CustomCallback, self).__init__(verbose)
         self.env = env
+        self.progress_bar = None
+
+    def _on_training_start(self):
+        self.progress_bar = tqdm.tqdm(total=self.locals['total_timesteps'])
 
     def _on_step(self) -> bool:
         """Get weights for each training step."""
         # Access the neural network of the policy model
+        self.progress_bar.update(1)
         neural_network = self.model.policy
         parameters_per_layer = [param.cpu().data.numpy() for param in neural_network.parameters()]
         self.env.update_policy_parameters(parameters_per_layer)
         return True
 
+    def _on_training_end(self):
+        self.progress_bar.close()
+        self.progress_bar = None
 
 def train_the_agent(existing_model_name: Optional[str] = None):
     """
