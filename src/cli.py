@@ -8,6 +8,7 @@ import fire  # type: ignore
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from game.agent_enviornment.gym_environment import BombermanGameEnv
+from game.agent_enviornment import inference
 from game.menu import main_menu
 
 
@@ -78,7 +79,8 @@ def main(args=None) -> None:
         {
             "info": information_on_game,
             "play": run_the_game,
-            "train": train_the_agent
+            "train": train_the_agent,
+            "inference": inference.run_inference
         },
         command=args,
     )
