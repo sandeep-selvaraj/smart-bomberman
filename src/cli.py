@@ -1,6 +1,7 @@
 """Command Line Interface for running the game"""
 import os
 from pathlib import Path
+from typing import Optional
 import datetime
 import fire  # type: ignore
 from stable_baselines3 import PPO
@@ -33,7 +34,7 @@ class CustomCallback(BaseCallback):
         return True
 
 
-def train_the_agent(existing_model_name: str):
+def train_the_agent(existing_model_name: Optional[str] = None):
     """
     Train the agent by creating a new model or load an existing model.
 
