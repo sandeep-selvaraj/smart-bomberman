@@ -98,7 +98,7 @@ class Player(pygame.sprite.Sprite):
                and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]) or agent_action:
             # nested if here to ensure player stops to place the bomb, cant place bomb when moving
             self.direction = pygame.math.Vector2(0,0)
-            if ( (keys[pygame.K_x] or agent_action == 5) and len(self.bombs) < self.bomb_limit
+            if ( (keys[pygame.K_x] or agent_action == 4) and len(self.bombs) < self.bomb_limit
                                   and not self.bomb_deploy_key_pressed ):
                 self.bomb_deploy_key_pressed = True
                 temp_bomb = pygame.sprite.GroupSingle()

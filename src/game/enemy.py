@@ -3,7 +3,7 @@
 import pygame
 from .utils.fileutils import import_from_spritesheet
 from .constants import EnemyStatus, EnemyBomberman
-from .algorithms import a_star
+# from .algorithms import a_star
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -106,6 +106,8 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += level_shift[0]
         self.rect.y += level_shift[1]
         self.current_location = self.get_location_on_map()
+        if mapdata or player_location:
+            pass
         # path = a_star.get_path(mapdata, player_location, self.current_location)
         next_path = None
         # if path:

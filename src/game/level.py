@@ -5,7 +5,6 @@ import math
 
 import numpy as np
 import pygame
-import gym
 from . import tile
 from . import player
 from . import enemy
@@ -16,6 +15,7 @@ from .constants import Camera, PlayerBomberman, ItemType, TileType
 
 class Level:
     # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-public-methods
     """
     Storing and graphically setting up the map for each level.
 
@@ -48,7 +48,7 @@ class Level:
         self.initial_map_data = level_data
         self.initial_level_number = level_number
         # agent action
-        self.agent_action = 4  # initial action is WAIT
+        self.agent_action = 5  # initial action is WAIT
         # collision detection for rewards
         self.agent_collided_horizontal = False
         self.agent_collided_vertical = False
@@ -340,6 +340,7 @@ class Level:
                 enemy_sprite.kill()
 
     def reset(self):
+        """Reset the environment for the AI agent."""
         self.display_surface = self.initial_surface
         self.map_data = self.initial_map_data
         self.level_number = self.initial_level_number
@@ -354,30 +355,44 @@ class Level:
         self.item_class = 0
 
     def is_done(self) -> bool:
+        """Check if enemy is alive or dead."""
         if self.player_hit_enemy or self.player_hit_explosion:
             return True
         return False
 
     def get_observation(self):
+        """Get the current observation state space for AI."""
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
+        # pylint: disable=consider-using-in
+        # pylint: disable=too-many-locals
         encoded_state = []
         encoded_state_loc = []
-        for row_index, row in enumerate(self.map_data):
-            for column_index, column in enumerate(row):
+        for row in self.map_data:
+            for column in row:
                 if column == "X":
                     encoded_state_loc.append(1)
                 elif column == "B_1" or column == "B_2":
                     encoded_state_loc.append(2)
                 elif column == "E":
                     encoded_state_loc.append(3)
+                elif column == "X":
+                    encoded_state_loc.append(4)
+                elif column == "#":
+                    encoded_state_loc.append(5)
                 else:
                     encoded_state_loc.append(0)
+
+        while len(encoded_state_loc) < 416:
+            encoded_state_loc.append(0)
+
+
 
         # Check for bomb nearby (Size 1 or 2)
         player_location = self.get_player_location_on_map()
         bomb_position = []
         for bomb in self.bomberman_player.sprite.bombs:
             bomb_location = tuple((round(bomb.sprite.rect.x / 32), round(bomb.sprite.rect.y / 32)))
-            x, y = bomb_location
             bomb_position.append(bomb_location)
             dist = math.dist(player_location, bomb_location)
             if dist < 5:
@@ -390,10 +405,10 @@ class Level:
 
         # Check for enemies nearby (Size 3)
         enemy_loc = []
-        for enemy in self.bomberman_enemy.sprites():
-            enemy_location = enemy.get_location_on_map()
+        for enemy_sprite in self.bomberman_enemy.sprites():
+            enemy_location = enemy_sprite.get_location_on_map()
             enemy_loc.append(list(enemy_location))
-            dist = math.dist(enemy.get_location_on_map(), player_location)
+            dist = math.dist(enemy_sprite.get_location_on_map(), player_location)
             if dist < 10:
                 encoded_state.append(0.5)
             if dist < 3:
@@ -405,7 +420,8 @@ class Level:
 
         # Check for breakable walls nearby
         for wall in self.walls.sprites():
-            if wall.tile_type == TileType.TWO_EXPLOSION or wall.tile_type == TileType.ONE_EXPLOSION_BOMB:
+            if wall.tile_type == TileType.TWO_EXPLOSION\
+                    or wall.tile_type == TileType.ONE_EXPLOSION_BOMB:
                 wall_location = tuple((wall.rect.x/32, wall.rect.y/32))
                 dist = math.dist(player_location, wall_location)
                 if dist < 2:
@@ -423,7 +439,6 @@ class Level:
                 encoded_state.append(0)
                 iterator -= 1
 
-        n, m = player_location
         if not bomb_position:
             bomb_position.append([0,0])
         if len(enemy_loc) < 3:
@@ -435,25 +450,30 @@ class Level:
             "enemy_positions": np.array(enemy_loc)
         }
 
+        if observation_space:
+            pass
         # return observation_space
         return np.array(encoded_state_loc)
 
     def write_map_data(self):
+        """Write map data to local disk for debug purpose."""
         # file = "map_loc.txt"
-        with open("map_loc.txt", "w") as file:
+        with open("map_loc.txt", "w", encoding="utf-8") as file:
             for row_data in self.map_data:
                 file.write("\t".join(row_data))
                 file.write("\n")
 
     def update_map_data(self):
+        """Update the current map data."""
         enemy_locations = []
-        for enemy in self.bomberman_enemy.sprites():
-            enemy_locations.append(enemy.get_location_on_map())
+        for enemy_loc in self.bomberman_enemy.sprites():
+            enemy_locations.append(enemy_loc.get_location_on_map())
         player_location = self.get_player_location_on_map()
         updated_map = []
         for row in self.map_data:
-            updated_row = [" " if row_value == "E" or row_value == "P" else row_value for row_value in row]
+            updated_row = [" " if row_value in ('E', 'P') else row_value for row_value in row]
             updated_map.append(updated_row)
+        bomb_location = self.get_bomb_location()
         # print(updated_map)
         refreshed_map = []
         for row_index, row in enumerate(updated_map):
@@ -463,6 +483,8 @@ class Level:
                     refreshed_row.append("E")
                 elif (column_index, row_index) == player_location:
                     refreshed_row.append("P")
+                elif (column_index, row_index) == bomb_location:
+                    refreshed_row.append("X")
                 else:
                     refreshed_row.append(column)
             # print(updated_row)
@@ -470,22 +492,34 @@ class Level:
         self.map_data = refreshed_map
 
     def update_by_agent(self, action):
+        """Update the current AI agent action."""
         self.agent_action = action
 
     def reset_collision_flags(self):
+        """Reset collision flags."""
         self.agent_collided_vertical = False
         self.agent_collided_horizontal = False
 
+    def get_bomb_location(self) -> tuple:
+        """Get current bomb location."""
+        bomb_location: tuple = ()
+        for bomb in self.bomberman_player.sprite.bombs:
+            bomb_location = tuple((round(bomb.sprite.rect.x/32), round(bomb.sprite.rect.y/32)))
+        return bomb_location
+
     def get_reward(self):
+        """Get the reward for AI agent's action."""
+        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-public-methods
         reward = 0
         # Avoid getting hit by bomb
         if self.player_hit_enemy or self.player_hit_explosion:
             reward -= 10
         player_location = self.get_player_location_on_map()
 
-        # Getting close to enemy and killing it
-        for enemy in self.bomberman_enemy.sprites():
-            dist = math.dist(enemy.get_location_on_map(), player_location)
+        # Getting close to enemy_loc and killing it
+        for enemy_loc in self.bomberman_enemy.sprites():
+            dist = math.dist(enemy_loc.get_location_on_map(), player_location)
             if dist < 10:
                 reward += 5
             if dist < 3 and self.agent_action == 5:
@@ -496,8 +530,10 @@ class Level:
                 reward -= 10
 
         # Get closer to the breakable walls
+        # pylint: disable=consider-using-in
         for wall in self.walls.sprites():
-            if wall.tile_type == TileType.TWO_EXPLOSION or wall.tile_type == TileType.ONE_EXPLOSION_BOMB:
+            if wall.tile_type == TileType.TWO_EXPLOSION \
+                    or wall.tile_type == TileType.ONE_EXPLOSION_BOMB:
                 wall_location = tuple((wall.rect.x/32, wall.rect.y/32))
                 dist = math.dist(player_location, wall_location)
                 if dist < 5 and self.agent_action == 5:
@@ -511,7 +547,7 @@ class Level:
         for bomb in self.bomberman_player.sprite.bombs:
             bomb_location = tuple((round(bomb.sprite.rect.x/32), round(bomb.sprite.rect.y/32)))
             dist = math.dist(player_location, bomb_location)
-            print(f"dist: {dist}")
+            # print(f"dist: {dist}")
             if dist < 10:
                 reward -= 15
 
