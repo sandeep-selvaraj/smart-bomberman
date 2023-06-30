@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         self.direction = -1
         self.current_location = (None, None)
         self.hit_by_bomb = False
-        self.set_life(level_number)
+        self.set_life(0)  # TODO: Remove after training
         self.pause = 0
 
     def build_enemy_animation(self):

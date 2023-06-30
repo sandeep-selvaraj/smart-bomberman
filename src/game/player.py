@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations[PlayerStatus.IDLE][self.frame_index]
 
         #reduce the size of the bounding box of player for easier player manueverability
-        self.rect = self.image.get_rect(topleft = position).inflate(-3,-3)
+        self.rect = self.image.get_rect(topleft = position).inflate(-2,-2)
         self.direction = pygame.math.Vector2(0,0)
         self.speed = PlayerBomberman.SPEED.value
         self.status = PlayerStatus.IDLE

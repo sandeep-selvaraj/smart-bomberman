@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 from typing import Optional
-import datetime
+# import datetime
 import tqdm  # type: ignore
 import fire  # type: ignore
 from stable_baselines3 import PPO
@@ -54,16 +54,17 @@ def train_the_agent(existing_model_name: Optional[str] = None):
     log_path = os.path.join("Training", "Logs")
     env = BombermanGameEnv()
     if existing_model_name is not None:
-        model = PPO.load(f"Training/{existing_model_name}.zip", model='cuda',
+        model_path = os.path.join("Training", existing_model_name)
+        model = PPO.load(model_path, device='cuda',
                          env=env, tensorboard_log=log_path, gamma=0.998,
-                         learning_rate=0.0002)
+                         learning_rate=0.0002, ent_coef=0.03)
     # new_logger = configure(log_path, ["stdout", "csv", "tensorboard"])
     else:
-        model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=log_path)
+        model = PPO("MultiInputPolicy", env, verbose=1, tensorboard_log=log_path, ent_coef=0.01)
     callback = CustomCallback(env=env)
-    model.learn(total_timesteps=250000, callback=callback)
-    now = datetime.datetime.now()
-    model_path = os.path.join("Training", f"Saved Models_Stone_Cold_{now}")
+    model.learn(total_timesteps=100000, callback=callback)
+    # now = datetime.datetime.now()
+    model_path = os.path.join("Training", "Saved Models_Stone_Cold_Enemy_train_Dict_2")
     model.save(model_path)
 
 
@@ -84,3 +85,7 @@ def main(args=None) -> None:
         },
         command=args,
     )
+
+
+if __name__ == "__main__":
+    train_the_agent()
