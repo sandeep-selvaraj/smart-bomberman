@@ -1,9 +1,9 @@
 """Package to create the environment for AI Agent training."""
 from pathlib import Path
 import dash
-from dash import dcc
-from dash import html
-from dash.dependencies import Output, Input
+# from dash import dcc
+# from dash import html
+# from dash.dependencies import Output, Input
 import threading
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
@@ -126,30 +126,30 @@ class BombermanGameEnv(gymnasium.Env):
         # You can store the parameters in an instance variable
         self.policy_parameters = [layer for layer in policy_parameters]
 
-    def run_dash_app(self):
-        app = dash.Dash(__name__)
-        app.layout = html.Div([
-            html.H1("Neuron Weights Visualization"),
-            dcc.Graph(
-                id='neuron-weights',
-            ),
-            dcc.Interval(
-                id='interval-component',
-                interval=1,  # in milliseconds
-                n_intervals=3
-            )
-        ])
-
-        @app.callback(Output('neuron-weights', 'figure'),
-                      Output('neuron-weights', 'responsive'),
-                      Output('neuron-weights', 'config'),
-                      Output('neuron-weights', 'style'),
-                      Input('interval-component', 'n_intervals'))
-        def update_neuron_weights(n):
-            # Update the figure
-            fig = self.visualize_neuron_weights_4(self.policy_parameters)
-            return fig, True, {'displayModeBar': False}, {'width': '100%', 'height': '100vh'}
-        app.run_server(debug=False, use_reloader=False)
+    # def run_dash_app(self):
+    #     app = dash.Dash(__name__)
+    #     app.layout = html.Div([
+    #         html.H1("Neuron Weights Visualization"),
+    #         dcc.Graph(
+    #             id='neuron-weights',
+    #         ),
+    #         dcc.Interval(
+    #             id='interval-component',
+    #             interval=1,  # in milliseconds
+    #             n_intervals=3
+    #         )
+    #     ])
+    #
+    #     @app.callback(Output('neuron-weights', 'figure'),
+    #                   Output('neuron-weights', 'responsive'),
+    #                   Output('neuron-weights', 'config'),
+    #                   Output('neuron-weights', 'style'),
+    #                   Input('interval-component', 'n_intervals'))
+    #     def update_neuron_weights(n):
+    #         # Update the figure
+    #         fig = self.visualize_neuron_weights_4(self.policy_parameters)
+    #         return fig, True, {'displayModeBar': False}, {'width': '100%', 'height': '100vh'}
+    #     app.run_server(debug=False, use_reloader=False)
 
     def run_matplotlib_gui(self):
         plt.ion()
