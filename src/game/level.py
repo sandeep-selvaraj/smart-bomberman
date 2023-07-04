@@ -13,6 +13,8 @@ from . import item
 from . import gateway
 from .settings import Game
 from .constants import Camera, PlayerBomberman, ItemType, TileType
+from .constants import Camera, PlayerBomberman, ItemType
+import math
 
 class Level:
     # pylint: disable=too-many-instance-attributes
@@ -54,6 +56,11 @@ class Level:
         self.agent_collided_horizontal = False
         self.agent_collided_vertical = False
         self.player_location_track = deque()
+        self.bombing_possibility = 0.0
+        self.all_positions_of_player = {}
+        for i in range(32):
+            for j in range(14):
+                self.all_positions_of_player[tuple((i,j))] = 0
 
     def setup_level(self, layout: List):
         """
@@ -71,8 +78,10 @@ class Level:
         self.items: pygame.sprite.Group = pygame.sprite.Group()
         self.gateway: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
         locations_for_enemy = self.get_locations_for_enemy(layout)
+        location_for_player = self.get_location_for_player(layout)
+        self.unavailable_locations = self.unavailable_locations_for_enemy(layout)
         # TODO: Remove after training
-        ctr_flg = 0  # For enenmy to be 1, need to be removed
+        ctr_flg = 1  # For enenmy to be 1, need to be removed
         locations_for_gateway = self.get_locations_for_gateway(layout)
         self.gateway_index = []
         for row_index, row in enumerate(layout):
@@ -103,13 +112,15 @@ class Level:
                     self.items.add(powerup)
                     wall = tile.Tile((x_position, y_position), True, TileType.ONE_EXPLOSION_NO_BOMB)
                     self.walls.add(wall)
-                if column == 'P':
+                # TODO: Remove for random spawning
+                # if column == 'P':
+                if (row_index, column_index) == location_for_player:
                     self.bomberman_player.add(player.Player(
                                                                 (x_position, y_position),
                                                                 self.walls,
                                                                 self.display_surface
                                                             ))
-                if (row_index, column_index) in locations_for_enemy and ctr_flg < 2:
+                if (row_index, column_index) in locations_for_enemy and ctr_flg < 3:
                     self.bomberman_enemy.add(enemy.Enemy((x_position, y_position),
                                                          self.level_number))
                     ctr_flg += 1
@@ -248,6 +259,15 @@ class Level:
                     unavaiable_locations.append((row_index, column_index))
         return unavaiable_locations
 
+    def unavailable_locations_for_player(self, mapdata):
+        """Extract spots on the map where enemy cannot be placed."""
+        unavaiable_locations = []
+        for row_index, row in enumerate(mapdata):
+            for column_index, column in enumerate(row):
+                if column in ('W', '#', 'B_1', 'B_2', 'I', 'E'):
+                    unavaiable_locations.append((row_index, column_index))
+        return unavaiable_locations
+
     def get_locations_for_enemy(self, mapdata):
         """Get all possible random spots where enemy can be placed."""
         median_row = int(len(mapdata)/2)
@@ -265,6 +285,21 @@ class Level:
                 break
             number_of_iterations = - 1
         return enemy_start_locations
+
+    def get_location_for_player(self, mapdata):
+        """Get all possible random spots where enemy can be placed."""
+        unavailable_locations = self.unavailable_locations_for_player(mapdata)
+        number_of_iterations = 50
+        while number_of_iterations:
+            player_start_locations = [
+                (random.randint(4, len(mapdata) - 1),
+                 random.randint(4, len(mapdata[0]) - 1))]
+            locations_conflicted = [True for location in player_start_locations
+                                    if location in unavailable_locations]
+            if not locations_conflicted:
+                break
+            number_of_iterations = - 1
+        return player_start_locations[0]
 
     def get_locations_for_gateway(self, mapdata):
         """Get all possible random spots where gateway can be placed."""
@@ -359,6 +394,7 @@ class Level:
         self.shift_accumulated = [0, 0]
         self.item_class = 0
         self.player_location_track = deque()
+        self.bombing_possibility = 0.0
 
     def is_done(self) -> bool:
         """Check if enemy is alive or dead."""
@@ -374,6 +410,9 @@ class Level:
         # pylint: disable=too-many-locals
         encoded_state = []
         encoded_state_loc = []
+        bomb_present = 0
+        bomb_explosion = 0
+        self.bombing_possibility = 0
         for row in self.map_data:
             for column in row:
                 if column == "X":
@@ -396,8 +435,13 @@ class Level:
 
         # Check for bomb nearby (Size 1 or 2)
         player_location = self.get_player_location_on_map()
+        try:
+            self.all_positions_of_player[player_location] += 1
+        except:
+            print(player_location)
         bomb_position = []
         for bomb in self.bomberman_player.sprite.bombs:
+            bomb_present = 1
             bomb_location = tuple((round(bomb.sprite.rect.x / 32), round(bomb.sprite.rect.y / 32)))
             bomb_position.append(bomb_location)
             dist = math.dist(player_location, bomb_location)
@@ -417,11 +461,16 @@ class Level:
             dist = math.dist(enemy_sprite.get_location_on_map(), player_location)
             if dist < 10:
                 encoded_state.append(0.5)
-            if dist < 3:
+            elif dist < 1:
+                encoded_state.append(1.5)
+                self.bombing_possibility = 1
+            elif dist < 3:
                 encoded_state.append(1)
+                self.bombing_possibility = 0.6
             elif dist < 15:
                 encoded_state.append(0.2)
             else:
+                self.bombing_possibility = 0.3
                 encoded_state.append(0)
 
         # Check for breakable walls nearby
@@ -449,15 +498,31 @@ class Level:
             bomb_position.append([0,0])
         if len(enemy_loc) < 3:
             enemy_loc.append([0,0])
+        bomb_explosion_location = []
+        for bomb in self.bomberman_player.sprite.bombs:
+            for explosion in bomb.sprite.explosions:
+                bomb_explosion = 1
+                bomb_explosion_location.append(tuple((
+                    round(explosion.sprite.rect.x / 32),
+                    round(explosion.sprite.rect.y / 32)
+                    ))
+                )
+        if not bomb_position:
+            bomb_position.append([-1, -1])
+        while len(enemy_loc) < 3:
+            enemy_loc.append([-1, -1])
+        while len(bomb_explosion_location) < 5:
+            bomb_explosion_location.append([-1, -1])
         observation_space = {
             "grid": np.array(encoded_state_loc),
             "player_position": np.array(player_location),
             "bomb_position": np.array(bomb_position),
-            "enemy_positions": np.array(enemy_loc)
+            "enemy_positions": np.array(enemy_loc),
+            "bomb_explosion_location": np.array(bomb_explosion_location),
+            "bomb_present": int(bomb_present),
+            "explosion": int(bomb_explosion),
+            "bombing_possibility": np.array([self.bombing_possibility])
         }
-
-        if observation_space:
-            pass
         return observation_space
         # return np.array(encoded_state_loc)
 
@@ -485,7 +550,7 @@ class Level:
         for row_index, row in enumerate(updated_map):
             refreshed_row = []
             for column_index, column in enumerate(row):
-                if (column_index, row_index) in enemy_locations:
+                if [column_index, row_index] in enemy_locations:
                     refreshed_row.append("E")
                 elif (column_index, row_index) == player_location:
                     refreshed_row.append("P")
@@ -522,9 +587,16 @@ class Level:
         # Avoid getting hit by bomb
         if self.player_hit_enemy or self.player_hit_explosion:
             # reward -= 40
-            reward -= 4
+            reward -= 10
+            # reward -= 10.0
+        else:
+            reward += 1  # Prevented player from bombing when 1.0 and changed back from 0.5
         player_location = self.get_player_location_on_map()
-
+        try:
+            if self.all_positions_of_player[player_location] < 5:
+                reward += 10.0
+        except:
+            print(f"Invalid pos:{player_location}")
         dist = 0
         # Getting close to enemy_loc and killing it
         for enemy_loc in self.bomberman_enemy.sprites():
@@ -532,27 +604,48 @@ class Level:
             if dist < 3 and self.agent_action != 4:
                 # reward += 5
                 reward += 0.5
+                # reward += 0.05
             elif dist < 2 and self.agent_action == 4:
                 # reward += 25
-                reward += 2.5
+                # reward += 0.25
+                # reward += 2.0
+                reward += 15.0
             elif dist < 2 and self.agent_action != 4:
                 # reward -= 10
-                reward -= 1.0
+                # reward -= 0.10
+                # reward += 7.5
+                reward += 0.5
             elif dist < 1 and self.agent_action == 4:
                 # reward += 35
-                reward += 3.5
+                # reward += 0.8
+                reward += 10.8
+            elif dist < 1 and self.agent_action != 4:
+                # reward += 35
+                # reward += 0.8
+                reward += 8.5
             elif dist < 2 and self.agent_action != 4:
                 # reward -= 15
-                reward -= 1.5
+                reward += 0.15
+                # reward += 5
             elif dist < 3 and self.agent_action == 4:
                 # reward += 10
-                reward += 1.0
-            elif dist < 5 and self.agent_action == 4:
+                # reward += 0.10
+                reward += 11.50
+            elif dist < 5:
                 # reward += 1
-                reward += 0.1
+                reward += 0.015
+            elif dist < 7:
+                # reward += 1
+                reward += 0.010
+            # elif dist < 8:
+            #     # reward += 1
+            #     reward += 0.015
+            # elif dist < 9:
+            #     # reward += 1
+            #     reward += 0.001
             else:
                 # reward -= 35
-                reward -= 3.5
+                reward -= 0.35
 
         dist = 0
         # Get closer to the breakable walls
@@ -564,10 +657,10 @@ class Level:
                 dist = math.dist(player_location, wall_location)
                 if dist < 5 and self.agent_action == 5:
                     # reward += 2
-                    reward += 0.2
+                    reward += 0.02
                 elif dist < 5 and self.agent_action == 4:
                     # reward += 1
-                    reward += 0.1
+                    reward += 0.01
                 else:
                     pass
 
@@ -579,13 +672,16 @@ class Level:
             # print(f"dist: {dist}")
             if dist < 1:
                 # reward -= 35
-                reward -= 3.5
+                reward -= 5
             elif dist < 3:
                 # reward -= 10
-                reward -= 1.0
-            elif dist > 3:
+                reward -= 3
+            elif dist > 3 and dist < 4:
                 # reward += 25
-                reward += 5
+                reward += 6
+            elif dist > 4:
+                # reward += 25
+                reward += 8
 
         dist = 0
         for bomb in self.bomberman_player.sprite.bombs:
@@ -594,14 +690,14 @@ class Level:
                 dist = math.dist(enemy_loc.get_location_on_map(), bomb_location)
                 if dist < 2:
                     # reward += 10
-                    reward += 1.0
+                    reward += 5.0
                 elif dist < 1:
                     # reward += 20
-                    reward += 2.0
+                    reward += 10.0
         # Avoid collisions
         if self.agent_collided_horizontal or self.agent_collided_vertical:
             # reward -= 5
-            reward -= 0.05
+            reward -= 0.005
             self.reset_collision_flags()
 
         # Enemy get his by bomb
@@ -611,20 +707,38 @@ class Level:
                     if explosion.sprite.rect.colliderect(enemy_sprite) and \
                             not enemy_sprite.is_paused():
                         # reward += 50
-                        reward += 5.0
+                        # reward += 5.0
+                        reward += 15.0
         # Encourage bombing
         if self.agent_action == 4:
-            reward += 0.05
+            reward += 0.5
+            # reward += 8.0
+
+        if self.bombing_possibility > 0.5 and self.agent_action == 4:
+            # reward += 0.01
+            reward += 2
+        elif self.bombing_possibility > 0.5 and self.agent_action != 4:
+            reward -= 0.01
+        elif self.bombing_possibility < 0.5 and self.agent_action != 4:
+            reward -= 0.005
+        else:
+            pass
         # If player is in the same spot for 10 seconds, penalize
-        if set(self.player_location_track) == 1:
+        if len(set(self.player_location_track)) == 1:
             # reward -= 50
-            reward -= 0.5
-            print("Wasting Time!!")
+            reward -= 0.05
+        else:
+            reward += 0.05
         return reward
+
+    def update_player_data(self):
+        with open("all_loc.txt", "w", encoding="utf-8") as file:
+            for key, value in self.all_positions_of_player.items():
+                file.write(f'{key}:{value}\n')
 
     def track_player_location(self):
         """Get the current location of the player."""
-        if len(list(self.player_location_track)) == 500:
+        if len(list(self.player_location_track)) == 400:
             self.player_location_track.pop()
         self.player_location_track.appendleft(self.get_player_location_on_map())
 
@@ -666,12 +780,16 @@ class Level:
         self.player_collides_with_explosion()
         self.enemy_collides_with_explosion()
 
+        if self.level_shift != (0, 0):
+            self.shift_accumulated[0] += self.level_shift[0]
+            self.shift_accumulated[1] += self.level_shift[1]
+
         # handle enemy
         self.enemy_collision_reverse()
         self.enemy_collides_with_player()
         self.bomberman_enemy.update(self.level_shift,
-                                    self.get_player_location_on_map(),
-                                    self.map_data)
+                                    self.unavailable_locations,
+                                    self.shift_accumulated)
         self.bomberman_enemy.draw(self.display_surface)
 
         #handle gateway
@@ -688,5 +806,7 @@ class Level:
         self.cheat_key()
         # print(self.map_data)
         self.update_map_data()
-        self.write_map_data()
+        # self.write_map_data()
         self.track_player_location()
+        # self.get_reward()
+        # self.update_player_data()

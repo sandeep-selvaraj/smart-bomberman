@@ -5,6 +5,7 @@ import dash
 # from dash import html
 # from dash.dependencies import Output, Input
 import threading
+import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import matplotlib
@@ -42,10 +43,15 @@ class BombermanGameEnv(gymnasium.Env):
             "grid": gymnasium.spaces.Box(low=0, high=7, shape=(416,)),
             "player_position": gymnasium.spaces.Box(low=0, high=33, shape=(2,)),
             "bomb_position": gymnasium.spaces.Box(low=0, high=33, shape=(2,)),
-            "enemy_positions": gymnasium.spaces.Box(low=0, high=33, shape=(3,2,))
+            "enemy_positions": gymnasium.spaces.Box(low=0, high=33, shape=(3,2,)),
+            "bomb_explosion_location": gymnasium.spaces.Box(low=0, high=33, shape=(5,2,)),
+            "bomb_present": gymnasium.spaces.Discrete(2),
+            "explosion": gymnasium.spaces.Discrete(2),
+            'bombing_possibility': gymnasium.spaces.Box(low=0, high=1, shape=(1,), dtype=np.float32)
         })
+
         self.observation_space = initial_observation
-        # self.observation_space = gymnasium.spaces.Box(low=0, high=255, shape=(416,), dtype=int)
+        # self.observation_space = gymnasium.spaces.Box(low=0, high=8, shape=(416,), dtype=int)
         # self.seed()
         # self.reset()
         self.policy_parameters = None
@@ -73,10 +79,11 @@ class BombermanGameEnv(gymnasium.Env):
         # assert self.action_space.contains(action), "Invalid action"
         # action_dict = {0: "Up", 1: "Down", 2: "left", 3:"right", 5: "bomb", 4:"wait"}
         self.level.update_by_agent(action)  # Update the level based on the action
+        # print(action)
         reward = self.level.get_reward()  # Get the reward
         done = self.level.is_done()  # Check if the episode is done
         observation = self.level.get_observation()  # Get the new observation
-        # self.render()
+        self.render(None)
         truncated = False
         self.current_step += 1
         if self.current_step > self.max_episode_length:
@@ -87,38 +94,39 @@ class BombermanGameEnv(gymnasium.Env):
     def render(self, mode='human'):
         # pylint: disable=duplicate-code
         # pylint: disable=no-member
-        if mode == 'human':
-            pass
-        pygame.init()
-        pygame.display.set_caption("Smart-Bomberman-Training")
-        font = pygame.font.Font(pygame.font.get_default_font(), 18)
-        time_remaining = 0
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        if mode != 'human':
+            self.level.run()
+        else:
+            pygame.init()
+            pygame.display.set_caption("Smart-Bomberman-Training")
+            font = pygame.font.Font(pygame.font.get_default_font(), 18)
+            time_remaining = 0
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
 
-        enemies_alive = self.level.get_enemy_count()
-        if self.level.player_hit_gateway:
-            pygame.time.wait(1000)
-            _endgame_screen(font, time_remaining, enemies_alive)
+            enemies_alive = self.level.get_enemy_count()
+            if self.level.player_hit_gateway:
+                pygame.time.wait(1000)
+                _endgame_screen(font, time_remaining, enemies_alive)
+                pygame.display.update()
+            if self.level.player_hit_enemy or \
+                    self.level.player_hit_explosion:  # or time_remaining == 0:
+                pygame.time.wait(1000)
+                _endgame_screen(font, time_remaining, enemies_alive)
+                pygame.display.update()
+                # pygame.quit()
+            timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
+            _SCREEN.fill((128, 128, 128))  # fill bg with grey color
+            _SCREEN.blit(timer_text, (10, 10))
+            self.level.run()
+            # if self.policy_parameters is not None and not self.thread_start:
+            #     # weights = [layer for layer in self.policy_parameters]
+            #
+            #     self.thread_start = True
+            _CLOCK.tick(60)
+            # self.run_matplotlib_gui()
             pygame.display.update()
-        if self.level.player_hit_enemy or \
-                self.level.player_hit_explosion:  # or time_remaining == 0:
-            pygame.time.wait(1000)
-            _endgame_screen(font, time_remaining, enemies_alive)
-            pygame.display.update()
-            # pygame.quit()
-        timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
-        _SCREEN.fill((128, 128, 128))  # fill bg with grey color
-        _SCREEN.blit(timer_text, (10, 10))
-        self.level.run()
-        # if self.policy_parameters is not None and not self.thread_start:
-        #     # weights = [layer for layer in self.policy_parameters]
-        #
-        #     self.thread_start = True
-        _CLOCK.tick(60)
-        # self.run_matplotlib_gui()
-        pygame.display.update()
 
     def update_policy_parameters(self, policy_parameters):
         """Store the updated the weights of the neural network."""

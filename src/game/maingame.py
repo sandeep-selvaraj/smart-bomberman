@@ -27,6 +27,20 @@ def start_game(level_number: int, ai_training: bool = False):
         pygame.display.set_caption("Smart-Bomberman-Training")
         time_remaining, _ = _render_the_game(extra_time, level_map, font)
         time_remaining = 300
+    while True:
+        time_remaining = max(0, _TIMER_DURATION + extra_time - pygame.time.get_ticks() // 1000)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        if level_map.player_hit_enemy or level_map.player_hit_explosion or time_remaining == 0:
+            pygame.time.wait(1000)
+            _endgame_screen(font, time_remaining)
+            pygame.display.update()
+            continue
+        if level_map.player_hit_item:
+            extra_time += 50
+            level_map.player_hit_item = False
         timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
         _SCREEN.fill((128, 128, 128))  # fill bg with grey color
         _SCREEN.blit(timer_text, (10, 10))
