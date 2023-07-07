@@ -1,5 +1,5 @@
 """Setting up the players,obstacles and enemies in different maps."""
-from typing import List
+from typing import List, Optional
 import random
 import math
 from collections import deque
@@ -27,7 +27,8 @@ class Level:
     player_hit_skate = False
     level_bombs: pygame.sprite.Group = pygame.sprite.Group()
 
-    def __init__(self, level_data: List, surface: pygame.Surface, level_number: int):
+    def __init__(self, level_data: List, surface: pygame.Surface, level_number: int,
+                 number_of_players: Optional[int] = 1):
         """
         Parameters
         ----------
@@ -416,17 +417,17 @@ class Level:
         for row in self.map_data:
             for column in row:
                 if column == "X":
-                    encoded_state_loc.append(1)
+                    encoded_state_loc.append(0)
                 elif column == "B_1" or column == "B_2":
                     encoded_state_loc.append(2)
                 elif column == "E":
-                    encoded_state_loc.append(3)
-                elif column == "W":
                     encoded_state_loc.append(4)
+                elif column == "W":
+                    encoded_state_loc.append(1)
                 elif column == "#":
-                    encoded_state_loc.append(5)
+                    encoded_state_loc.append(1)
                 else:
-                    encoded_state_loc.append(0)
+                    encoded_state_loc.append(5)
 
         while len(encoded_state_loc) < 416:
             encoded_state_loc.append(0)
@@ -555,6 +556,14 @@ class Level:
                 elif (column_index, row_index) == player_location:
                     refreshed_row.append("P")
                 elif (column_index, row_index) == bomb_location:
+                    refreshed_row.append("X")
+                elif (column_index, row_index - 1) == bomb_location:
+                    refreshed_row.append("X")
+                elif (column_index, row_index + 1)  == bomb_location:
+                    refreshed_row.append("X")
+                elif (column_index - 1, row_index) == bomb_location:
+                    refreshed_row.append("X")
+                elif (column_index + 1, row_index) == bomb_location:
                     refreshed_row.append("X")
                 else:
                     refreshed_row.append(column)
@@ -716,11 +725,11 @@ class Level:
 
         if self.bombing_possibility > 0.5 and self.agent_action == 4:
             # reward += 0.01
-            reward += 2
+            reward += 10
         elif self.bombing_possibility > 0.5 and self.agent_action != 4:
-            reward -= 0.01
+            reward += 0.5
         elif self.bombing_possibility < 0.5 and self.agent_action != 4:
-            reward -= 0.005
+            reward -= 0.5
         else:
             pass
         # If player is in the same spot for 10 seconds, penalize
@@ -806,7 +815,7 @@ class Level:
         self.cheat_key()
         # print(self.map_data)
         self.update_map_data()
-        # self.write_map_data()
+        self.write_map_data()
         self.track_player_location()
         # self.get_reward()
         # self.update_player_data()

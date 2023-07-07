@@ -35,7 +35,7 @@ def start_game(level_number: int, ai_training: bool = False):
                 sys.exit()
         if level_map.player_hit_enemy or level_map.player_hit_explosion or time_remaining == 0:
             pygame.time.wait(1000)
-            _endgame_screen(font, time_remaining)
+            _endgame_screen(font, time_remaining, 2)
             pygame.display.update()
             continue
         if level_map.player_hit_item:

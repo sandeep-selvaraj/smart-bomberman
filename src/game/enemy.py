@@ -171,6 +171,6 @@ class Enemy(pygame.sprite.Sprite):
         if self.pause == 0:
             # pass
             # TODO: Making enemy movement none, remove later
-            self.enemy_movement(next_path, horizontal_avail, [])
+            self.enemy_movement(next_path, horizontal_avail, vertical_avail)
         if (self.timer == 0):
             self.timer = 150

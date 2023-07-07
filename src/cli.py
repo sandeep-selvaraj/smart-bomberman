@@ -15,6 +15,7 @@ from stable_baselines3.common.results_plotter import load_results, ts2xy
 from game.agent_enviornment.gym_environment import BombermanGameEnv
 from game.agent_enviornment import inference
 from game.menu import main_menu
+from game.multiplayer import multiplayer_game
 
 
 def run_the_game(level: int = 1):
@@ -91,15 +92,16 @@ def train_the_agent(existing_model_name: Optional[str] = None):
         model_path = os.path.join("Training", existing_model_name)
         model = PPO.load(model_path, device='cuda',
                          env=env, tensorboard_log=log_path,
-                         learning_rate=0.0002, ent_coef=0.1, clip_range=0.7)
+                         learning_rate=0.0002, ent_coef=0.2, clip_range=0.7)
     # new_logger = configure(log_path, ["stdout", "csv", "tensorboard"])
     else:
-        model = PPO("MultiInputPolicy", env, verbose=1, tensorboard_log=log_path, ent_coef=0.1)
+        model = PPO("MultiInputPolicy", env, verbose=1, tensorboard_log=log_path, ent_coef=0.15, n_steps=5)
+        # model = DQN("MultiInputPolicy", env, learning_rate=1e-3, tensorboard_log=log_path)
         # model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=log_path, ent_coef=0.1)
     callback = CustomCallback(env=env, check_freq=1000, log_dir=log_path)
     model.learn(total_timesteps=200000, callback=callback)
     # now = datetime.datetime.now()
-    model_path = os.path.join("Training", "Saved Models_Stone_Cold_rectfied_13_ent_0_1_still_enemy")
+    model_path = os.path.join("Training", "Saved Models_Stone_Cold_16_new_obs_ent_0_2")
     model.save(model_path)
 
 
@@ -122,5 +124,10 @@ def main(args=None) -> None:
     )
 
 
-if __name__ == "__main__":
-    fire.Fire(run_the_game)
+# if __name__ == "__main__":
+#     # fire.Fire(run_the_game)
+#     # train_the_agent()
+#     os.chdir(Path(__file__).resolve().parent)
+#     multiplayer_game.start_game_multiplayer(1,
+#                                             "Saved Models_Stone_Cold_7_no_render_8obs_ent0_2",
+#                                             "Saved Models_Stone_Cold_16_new_obs_ent_0_2")
