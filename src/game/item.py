@@ -16,18 +16,12 @@ class Item(pygame.sprite.Sprite):
     """
     def __init__(self, position: Tuple, item_type):
         pygame.sprite.Sprite.__init__(self)
-        if item_type == ItemType.SKATE.value:
-            self.image = import_sprite("graphics/skate.png")
-            self.item_num = ItemType.SKATE.value
-        elif item_type == ItemType.BOMB.value:
-            self.image = import_sprite("graphics/bomb_length.png")
-            self.item_num = ItemType.BOMB.value
-        elif item_type == ItemType.INVINCIBLE.value:
-            self.image = import_sprite("graphics/invincible.png")
-            self.item_num = ItemType.INVINCIBLE.value
-        elif item_type == ItemType.EXTRA_TIME.value:
+        if item_type == ItemType.EXTRA_TIME.value:
             self.image = import_sprite("graphics/extra_time.png")
             self.item_num = ItemType.EXTRA_TIME.value
+        elif item_type == ItemType.SKATE.value:
+            self.image = import_sprite("graphics/skate.png")
+            self.item_num = ItemType.SKATE.value
         self.rect = self.image.get_rect(topleft=position)
 
     def update(self, level_shift: Tuple):

@@ -14,5 +14,7 @@ class GameWindow(Enum):
     """
 
     #screen dimensions
-    SCREEN_WIDTH = 24*Game.TILE_SIZE.value
-    SCREEN_HEIGHT = 14*Game.TILE_SIZE.value
+    SCREEN_WIDTH = 18*Game.TILE_SIZE.value
+    SCREEN_HEIGHT = 19*Game.TILE_SIZE.value
+    # SCREEN_WIDTH = 24*Game.TILE_SIZE.value
+    # SCREEN_HEIGHT = 14*Game.TILE_SIZE.value

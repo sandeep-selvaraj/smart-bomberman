@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations[PlayerStatus.IDLE][self.frame_index]
 
         #reduce the size of the bounding box of player for easier player manueverability
-        self.rect = self.image.get_rect(topleft = position).inflate(-2,-2)
+        self.rect = self.image.get_rect(topleft = position).inflate(-3,-3)
         self.direction = pygame.math.Vector2(0,0)
         self.speed = PlayerBomberman.SPEED.value
         self.status = PlayerStatus.IDLE
@@ -74,32 +74,31 @@ class Player(pygame.sprite.Sprite):
         self.image = animation[int(self.frame_index)]
 
 
-    def player_input(self):
+    def player_input(self, agent_action):
         """
         handles player input for interaction
         """
         # pylint: disable=no-member
         # pylint: disable=c-extension-no-member
         keys = pygame.key.get_pressed()
-
         if level.Level.player_hit_skate:
             player_vel = 2
         else:
             player_vel = 1
 
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or agent_action == 3:
             self.direction = pygame.math.Vector2(player_vel,0)
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] or agent_action == 2:
             self.direction = pygame.math.Vector2(-player_vel,0)
-        elif keys[pygame.K_UP]:
+        elif keys[pygame.K_UP] or agent_action == 0:
             self.direction = pygame.math.Vector2(0,-player_vel)
-        elif keys[pygame.K_DOWN]:
+        elif keys[pygame.K_DOWN] or agent_action == 1:
             self.direction = pygame.math.Vector2(0,player_vel)
         elif ( not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]
-               and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]):
+               and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]) or agent_action:
             # nested if here to ensure player stops to place the bomb, cant place bomb when moving
             self.direction = pygame.math.Vector2(0,0)
-            if ( keys[pygame.K_x] and len(self.bombs) < self.bomb_limit
+            if ( (keys[pygame.K_x] or agent_action == 4) and len(self.bombs) < self.bomb_limit
                                   and not self.bomb_deploy_key_pressed ):
                 self.bomb_deploy_key_pressed = True
                 temp_bomb = pygame.sprite.GroupSingle()
@@ -118,11 +117,7 @@ class Player(pygame.sprite.Sprite):
     def deploy_bomb(self) -> pygame.sprite.Sprite:
         """places the bomb on level"""
         bomb_deploy_pos = self._get_grid_aligned_bomb_position([self.rect.x, self.rect.y])
-        if level.Level.player_hit_bomb_length:
-            bomb_length = self.bomb_range + 1
-        else:
-            bomb_length = self.bomb_range
-        return bomb.Bomb(bomb_deploy_pos, bomb_length, self.walls, self.display_surface)
+        return bomb.Bomb(bomb_deploy_pos, self.bomb_range, self.walls, self.display_surface)
 
     def _clean_up_bombs_after_explosion(self):
         """remove bombs which have been exploded from players internal list"""
@@ -173,11 +168,11 @@ class Player(pygame.sprite.Sprite):
             grid_aligned_pos[1] -= level_offset[1]
         return grid_aligned_pos
 
-    def update(self):
+    def update(self, agent_action):
         """
         updates player state like position based on input
         """
-        self.player_input()
+        self.player_input(agent_action)
         self.player_status()
         self.animate()
         self._clean_up_bombs_after_explosion()
