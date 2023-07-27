@@ -22,6 +22,7 @@ class Enemy(pygame.sprite.Sprite):
         self.build_enemy_animation()
         self.image = self.animations[EnemyStatus.IDLE][0]
         self.rect = self.image.get_rect(topleft=position)
+        self.abstract_rect = self.rect.copy() #rel: RL
         self.direction = -1
         self.current_location = (None, None)
         self.hit_by_bomb = False
@@ -54,7 +55,8 @@ class Enemy(pygame.sprite.Sprite):
         #     else:
         #         self.rect.x += (x_direction - x_current)
         # else:
-        self.rect.x += self.direction
+        #self.rect.x += self.direction
+        #self.abstract_rect.x += self.direction
 
     def enemy_collision(self):
         """Reverse the enemy once it collides with a wall"""
@@ -70,6 +72,10 @@ class Enemy(pygame.sprite.Sprite):
         """Get player location on the map."""
         return round(self.rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
             round(self.rect.y / EnemyBomberman.SPRITE_WIDTH.value)
+    
+    def get_abstract_location_on_map(self) -> tuple:
+        return round(self.abstract_rect.x / EnemyBomberman.SPRITE_HEIGHT.value), \
+            round(self.abstract_rect.y / EnemyBomberman.SPRITE_WIDTH.value)
 
     def set_pause(self, time_frame):
         """Pause the enemy sprite once it hits the bomb."""
@@ -86,7 +92,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def set_life(self, level_number: int):
         """Set enemy lives based on difficulty of level."""
-        if level_number > 0:
+        if level_number > 1:
             self.life = 1
         else:
             self.life = 0

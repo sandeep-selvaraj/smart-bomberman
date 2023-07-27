@@ -21,6 +21,7 @@ class Explosion(pygame.sprite.Sprite):
 
         self.image = import_sprite("graphics/explosion.png")
         self.rect = self.image.get_rect(topleft = position)
+        self.abstract_rect = self.rect.copy() #rel: RL : copy self.rect here just so that we can have a rect value
 
     def update(self, level_shift):
         """

@@ -32,15 +32,19 @@ class Bomb(pygame.sprite.Sprite):
         self.frame_index = 0
         self.image = self.animations[self.frame_index]
         self.rect = self.image.get_rect(topleft = position)
+        self.abstract_rect = None
         self.start_time = pygame.time.get_ticks()
         self.range = bomb_range
         self.explosion_tiles_pos: List = []
+        self.explosion_tiles_abstract_pos: List = [] #rel: RL
         self.explosions: List = []
         self.elapsed_time = 0
         self.has_bomb_exploded = False
         self.has_explosion_ended = False
         self.walls = walls
         self.display_surface = display_surface
+        self.number_of_breakable_walls_in_expl_range = 0 #rel: RL
+        self.set_number_of_breakable_walls_in_expl_range() #rel: RL
 
     def build_bomb_animations(self):
         """
@@ -64,7 +68,9 @@ class Bomb(pygame.sprite.Sprite):
         # pylint: disable=line-too-long
         """get the position of tiles where a bomb explosion is valid"""
         bomb_pos = [self.rect.x, self.rect.y]
+        bomb_abstract_pos = [self.abstract_rect.x, self.abstract_rect.y]
         self.explosion_tiles_pos.append(bomb_pos) #center explosion tile
+        self.explosion_tiles_abstract_pos.append(bomb_abstract_pos)
         top_tile_check = True
         bottom_tile_check = True
         left_tile_check = True
@@ -74,26 +80,56 @@ class Bomb(pygame.sprite.Sprite):
             if ( top_tile_check and
                 self._can_explosion_happen_on_tile([bomb_pos[0]-i*Game.TILE_SIZE.value,bomb_pos[1]])):
                 self.explosion_tiles_pos.append([bomb_pos[0]-i*Game.TILE_SIZE.value,bomb_pos[1]])
+                self.explosion_tiles_abstract_pos.append([bomb_abstract_pos[0]-i*Game.TILE_SIZE.value,bomb_abstract_pos[1]])
             else:
                 top_tile_check = False
             # bottom explosion tile
             if ( bottom_tile_check and
                 self._can_explosion_happen_on_tile([bomb_pos[0]+i*Game.TILE_SIZE.value,bomb_pos[1]])):
                 self.explosion_tiles_pos.append([bomb_pos[0]+i*Game.TILE_SIZE.value,bomb_pos[1]])
+                self.explosion_tiles_abstract_pos.append([bomb_abstract_pos[0]+i*Game.TILE_SIZE.value,bomb_abstract_pos[1]])
             else:
                 bottom_tile_check = False
             # right explosion tile
             if ( right_tile_check and
                 self._can_explosion_happen_on_tile([bomb_pos[0],bomb_pos[1]+i*Game.TILE_SIZE.value])):
                 self.explosion_tiles_pos.append([bomb_pos[0],bomb_pos[1]+i*Game.TILE_SIZE.value])
+                self.explosion_tiles_abstract_pos.append([bomb_abstract_pos[0],bomb_abstract_pos[1]+i*Game.TILE_SIZE.value])
             else:
                 right_tile_check = False
             # left explosion tile
             if ( left_tile_check and
                 self._can_explosion_happen_on_tile([bomb_pos[0],bomb_pos[1]-i*Game.TILE_SIZE.value])):
                 self.explosion_tiles_pos.append([bomb_pos[0],bomb_pos[1]-i*Game.TILE_SIZE.value])
+                self.explosion_tiles_abstract_pos.append([bomb_abstract_pos[0],bomb_abstract_pos[1]-i*Game.TILE_SIZE.value])
             else:
                 left_tile_check = False
+
+    def set_number_of_breakable_walls_in_expl_range(self):
+        bomb_pos = [self.rect.x, self.rect.y]
+        top_tile_check = True
+        bottom_tile_check = True
+        left_tile_check = True
+        right_tile_check = True
+        for i in range(1, self.range+1):
+            if ( top_tile_check ):
+                top_tile_check = self._count_breakable_walls([bomb_pos[0]-i*Game.TILE_SIZE.value,bomb_pos[1]])
+            if ( bottom_tile_check ):
+                top_tile_check = self._count_breakable_walls([bomb_pos[0]+i*Game.TILE_SIZE.value,bomb_pos[1]])
+            if ( right_tile_check ):
+                top_tile_check = self._count_breakable_walls([bomb_pos[0],bomb_pos[1]+i*Game.TILE_SIZE.value])
+            if ( left_tile_check ):
+                top_tile_check =  self._count_breakable_walls([bomb_pos[0],bomb_pos[1]-i*Game.TILE_SIZE.value])
+
+    def _count_breakable_walls(self, explosion_pos):
+        for wall in self.walls:
+            if wall.rect.x == explosion_pos[0] and wall.rect.y == explosion_pos[1]:
+                if wall.destroyable: 
+                    #rel: RL : used for RL specifically
+                    self.number_of_breakable_walls_in_expl_range += 1
+                    return True
+        return False
+
 
     def _can_explosion_happen_on_tile(self, explosion_pos: List):
         """
@@ -158,9 +194,12 @@ class Bomb(pygame.sprite.Sprite):
             # bomb explodes here
             self.has_bomb_exploded = True
             self._get_bomb_explosion_tiles()
-            for _, exp_tile_pos in enumerate(self.explosion_tiles_pos):
+            for i, exp_tile_pos in enumerate(self.explosion_tiles_pos):
                 a_explosion: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
-                a_explosion.add(explosion.Explosion(exp_tile_pos))
+                e = explosion.Explosion(exp_tile_pos)
+                e.abstract_rect.x = self.explosion_tiles_abstract_pos[i][0]
+                e.abstract_rect.y = self.explosion_tiles_abstract_pos[i][1]
+                a_explosion.add(e)
                 self.explosions.append(a_explosion)
         if ( self.elapsed_time >= BombItem.EXPLOSION_END_TIME_DURATION.value and
              not self.has_explosion_ended ):

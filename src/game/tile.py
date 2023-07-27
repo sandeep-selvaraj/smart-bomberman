@@ -36,6 +36,7 @@ class Tile(pygame.sprite.Sprite):
         else:
             self.image = import_sprite("graphics/wall.png")
         self.rect = self.image.get_rect(topleft=position)
+        self.abstract_rect = self.rect.copy() #rel: RL
         self.destroyable = destroyable
         self.tile_type = tile_type
         self._init_hidden_bomb()
@@ -44,7 +45,7 @@ class Tile(pygame.sprite.Sprite):
         """sets the internal field about whether the wall hides a bomb or not"""
         if self.tile_type == TileType.ONE_EXPLOSION_BOMB:
             prob = random.random()
-            if prob < 0.5:
+            if prob < 0.0: #change to 0.5 for 50% wall bomb placement probability
                 self.does_wall_contain_bomb = True
             else:
                 self.does_wall_contain_bomb = False
@@ -66,6 +67,10 @@ class Tile(pygame.sprite.Sprite):
         self.tile_type = to_tile_type
         self.image = import_sprite("graphics/destrWall_1.png")
         self._init_hidden_bomb()
+    
+    def get_abstract_location_on_map(self) -> tuple:
+        return round(self.abstract_rect.x / 32), \
+            round(self.abstract_rect.y / 32)
 
     def update(self, level_shift: Tuple):
         """

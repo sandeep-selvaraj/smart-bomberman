@@ -2,7 +2,7 @@
 
 import pygame
 # from .settings import GameWindow
-from .maingame import start_game
+from .maingame import MainGame
 from .utils.fileutils import import_sprite
 # from pathlib import Path
 from .button import Button
@@ -44,7 +44,7 @@ def main_menu(level_number: int):
         SCREEN.blit(BG, (0,0))
 
         if play_but.draw(SCREEN):
-            start_game(level_number)
+            MainGame(level_number).start_game()
         if score_but.draw(SCREEN):
             pass
         if exit_but.draw(SCREEN):
