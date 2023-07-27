@@ -44,7 +44,7 @@ class Tile(pygame.sprite.Sprite):
         """sets the internal field about whether the wall hides a bomb or not"""
         if self.tile_type == TileType.ONE_EXPLOSION_BOMB:
             prob = random.random()
-            if prob < 0.5:
+            if prob < 0: #0 for initial training
                 self.does_wall_contain_bomb = True
             else:
                 self.does_wall_contain_bomb = False

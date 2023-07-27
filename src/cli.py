@@ -5,12 +5,20 @@ import fire  # type: ignore
 
 # from game.maingame import start_game
 from game.menu import main_menu
+from game.BBM_env import BBMEnv
+from game.train import run_train
+from stable_baselines3.common.env_checker import check_env
 
 
-def run_the_game(level: int = 1):
+def run_the_game(level: int = 1, mode: str = "play"):
     """Main function to run the game"""
     os.chdir(Path(__file__).resolve().parent)
-    main_menu(level)
+    if mode == "play":
+        main_menu(level)
+    elif (mode == "train"):
+        run_train(level)
+    else:
+        print("Invalid Mode")
     # start_game(level)
 
 
