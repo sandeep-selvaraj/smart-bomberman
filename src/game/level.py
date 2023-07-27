@@ -37,10 +37,18 @@ class Level:
         self.player_hit_invincible = False
         self.player_hit_explosion = False
         self.player_hit_gateway = False
+        self.player_hit_hor = False
+        self.player_hit_ver = False
         self.gateway_flag = False
+        self.enemy_damage = False
+        self.same_place = False
         self.level_shift = (0,0)
+        self.previous_pos = (0,0)
+        self.current_pos = (0,0)
         self.shift_accumulated = [0,0]
         self.item_class = 0
+        self.train = 4
+        self.same_place_times = 0
 
     def setup_level(self, layout: List):
         # pylint: disable=too-many-branches
@@ -60,6 +68,7 @@ class Level:
         self.gateway: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
         locations_for_enemy = self.get_locations_for_enemy(layout)
         locations_for_gateway = self.get_locations_for_gateway(layout)
+        locations_for_player = self.get_locations_for_player(layout)
         self.unavailable_locations = self.unavailable_locations_for_enemy(layout)
         self.gateway_index = []
         for row_index, row in enumerate(layout):
@@ -100,10 +109,22 @@ class Level:
                                                                 self.walls,
                                                                 self.display_surface
                                                             ))
-                if (row_index, column_index) in locations_for_enemy:
+                # if (row_index, column_index) in locations_for_player:
+                #     self.bomberman_player.add(player.Player(
+                #                                                 (x_position, y_position),
+                #                                                 self.walls,
+                #                                                 self.display_surface
+                #                                             ))
+                # if (row_index, column_index) in locations_for_enemy:
+                #     self.bomberman_enemy.add(enemy.Enemy((x_position, y_position),
+                #                                          self.level_number))
+                if column == 'E':
                     self.bomberman_enemy.add(enemy.Enemy((x_position, y_position),
                                                          self.level_number))
-                if (row_index, column_index) in locations_for_gateway:
+                # if (row_index, column_index) in locations_for_gateway:
+                #     self.gateway_index.append(x_position)
+                #     self.gateway_index.append(y_position)
+                if column == 'D':
                     self.gateway_index.append(x_position)
                     self.gateway_index.append(y_position)
 
@@ -159,6 +180,7 @@ class Level:
         #detect collision with all game tiles in horizontal direction
         for sprite in self.walls.sprites():
             if sprite.rect.colliderect(bomberman_player.rect):
+                self.player_hit_hor = True
                 if bomberman_player.direction.x < 0:
                     #if player collides with a tile and was moving left,
                     #set the player to right of collider
@@ -180,6 +202,7 @@ class Level:
         #detect collision with all game tiles in vertical direction
         for sprite in self.walls.sprites():
             if sprite.rect.colliderect(bomberman_player.rect):
+                self.player_hit_ver = True
                 if bomberman_player.direction.y < 0:
                     #if player collides with a tile and was moving top,
                     #set the player to bottom of collider
@@ -210,6 +233,7 @@ class Level:
                     if explosion.sprite.rect.colliderect(enemy_sprite) and \
                             not enemy_sprite.is_paused():
                         enemy_sprite.enemy_hit_by_bomb()
+                        self.enemy_damage = True
                         enemy_sprite.set_pause(30)
 
     def enemy_collision_reverse(self):
@@ -250,9 +274,27 @@ class Level:
         number_of_iterations = 50
         while number_of_iterations:
             enemy_start_locations = [
-                (random.randint(median_row, len(mapdata) - 1),
-                 random.randint(median_col, len(mapdata[0]) - 1))
+                (random.randint(2, len(mapdata) - 1),
+                 random.randint(1, len(mapdata[0]) - 1))
                 for i in range(0, 3)]
+            locations_conflicted = [True for location in enemy_start_locations
+                                    if location in unavailable_locations]
+            if not locations_conflicted:
+                break
+            number_of_iterations = - 1
+        return enemy_start_locations
+    
+    def get_locations_for_player(self, mapdata):
+        """Get all possible random spots where enemy can be placed."""
+        median_row = int(len(mapdata)/2)
+        median_col = int(len(mapdata[0])/2)
+        unavailable_locations = self.unavailable_locations_for_enemy(mapdata)
+        number_of_iterations = 50
+        while number_of_iterations:
+            enemy_start_locations = [
+                (random.randint(2, len(mapdata) - 1),
+                 random.randint(1, median_col))
+                for i in range(0, 1)]
             locations_conflicted = [True for location in enemy_start_locations
                                     if location in unavailable_locations]
             if not locations_conflicted:
@@ -316,6 +358,12 @@ class Level:
         """Get the player's current location."""
         return round(self.bomberman_player.sprite.rect.x/32),\
                round(self.bomberman_player.sprite.rect.y/32)
+    
+    def get_enemies_location(self) -> list:
+        enemy_list = []
+        for enemy_sprite in self.bomberman_enemy.sprites():
+            enemy_list.append((round(enemy_sprite.rect.x/32),round(enemy_sprite.rect.y/32)))
+        return enemy_list
 
 
     def get_enemy_count(self) -> int:
@@ -327,6 +375,9 @@ class Level:
         self.gateway_index[0] += self.shift_accumulated[0]
         self.gateway_index[1] += self.shift_accumulated[1]
         self.gateway.add(gateway.Gateway(self.gateway_index))
+
+    def get_gateway_index(self):
+        return self.gateway_index
 
     def gateway_collides_with_player(self):
         """Check for gateway collision with player."""
@@ -342,9 +393,47 @@ class Level:
             for enemy_sprite in self.bomberman_enemy.sprites():
                 enemy_sprite.kill()
 
+    def set_train_in(self, action):
+        self.train = action.item()
+
+    def get_enemy_location(self):
+        temp = []
+        for enemy_sprite in self.bomberman_enemy.sprites():
+            temp.append(enemy_sprite.get_location_on_map())
+        
+        return temp[0]
+    
+    def check_bomb_in_map(self):
+        if self.bomberman_player.sprite.bomb_deployed == True:
+            return 1
+        else:
+            return 0
+        
+    def set_idle(self, curr, prev):
+        if prev == curr:
+            self.same_place_times += 1
+        else:
+            self.same_place_times = 0
+            self.same_place = False
+        
+        if self.same_place_times > 200:
+            self.same_place = True
+
+    def check_idle(self):
+        if self.same_place == True:
+            return 1
+        else:
+            return 0
+        
+    def get_bomb_loc(self):
+        # return [x//Game.TILE_SIZE.value for x in self.bomberman_player.sprite.get_bomb_pos()]
+        return self.bomberman_player.sprite.get_bomb_pos()
+
+
     def run(self):
         """Graphically display all components of the level"""
-        self.scroll()
+        # self.scroll()
+        self.enemy_damage = False
 
         enemies_alive = self.get_enemy_count()
         if enemies_alive == 0 and not self.gateway_flag:
@@ -366,11 +455,13 @@ class Level:
         self.walls.draw(self.display_surface)
 
         #handle player
-        self.bomberman_player.update()
+        self.previous_pos = self.get_player_location_on_map()
+        self.bomberman_player.update(self.train)
         self.horizontal_collision()
         self.vertical_collision()
         self.bomberman_player.draw(self.display_surface)
-        # print(self.get_player_location_on_map())
+        self.current_pos = self.get_player_location_on_map()
+        self.set_idle(self.current_pos, self.previous_pos)
 
         #handle bombs
         self.render_and_update_bombs()

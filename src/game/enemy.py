@@ -89,6 +89,7 @@ class Enemy(pygame.sprite.Sprite):
             else:
                 self.rect.x += self.direction
                 self.prev_move = 0
+        
 
     def enemy_collision(self):
         """Reverse the enemy once it collides with a wall"""
@@ -121,7 +122,7 @@ class Enemy(pygame.sprite.Sprite):
     def set_life(self, level_number: int):
         """Set enemy lives based on difficulty of level."""
         if level_number > 0:
-            self.life = 1
+            self.life = 0 #1
         else:
             self.life = 0
 

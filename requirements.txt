@@ -34,3 +34,5 @@ tomlkit==0.11.8
 typing_extensions==4.5.0
 virtualenv==20.23.0
 wrapt==1.15.0
+gymnasium==0.28.1
+stable_baselines3[extra]==2.0.0a9

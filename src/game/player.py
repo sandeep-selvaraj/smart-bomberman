@@ -47,6 +47,8 @@ class Player(pygame.sprite.Sprite):
         self.bomb_limit = PlayerBomberman.BOMB_LIMIT.value
         self.walls = walls
         self.display_surface = display_surface
+        self.bomb_deployed = False
+        self.bomb_pos = [0,0]
 
         # to ensure that holding down bomb deploy button doesnt spam bombs
         self.bomb_deploy_key_pressed = False
@@ -72,6 +74,39 @@ class Player(pygame.sprite.Sprite):
             self.frame_index = 0
 
         self.image = animation[int(self.frame_index)]
+
+    def train_input(self, action):
+        """
+        handles training input for interaction
+        """
+        # pylint: disable=no-member
+        # pylint: disable=c-extension-no-member
+
+        if level.Level.player_hit_skate:
+            player_vel = 2
+        else:
+            player_vel = 1
+
+        if action == 0:
+            self.direction = pygame.math.Vector2(player_vel,0)
+        elif action == 1:
+            self.direction = pygame.math.Vector2(-player_vel,0)
+        elif action == 2:
+            self.direction = pygame.math.Vector2(0,-player_vel)
+        elif action == 3:
+            self.direction = pygame.math.Vector2(0,player_vel)
+        elif ( not action == 0 and not action == 1
+               and not action == 2 and not action == 3):
+            # nested if here to ensure player stops to place the bomb, cant place bomb when moving
+            self.direction = pygame.math.Vector2(0,0)
+            if ( action == 5 and len(self.bombs) < self.bomb_limit
+                                  and not self.bomb_deploy_key_pressed ):
+                self.bomb_deploy_key_pressed = True
+                temp_bomb = pygame.sprite.GroupSingle()
+                temp_bomb.add(self.deploy_bomb())
+                self.bombs.append(temp_bomb)
+            elif not action == 5:
+                self.bomb_deploy_key_pressed = False
 
 
     def player_input(self):
@@ -118,16 +153,27 @@ class Player(pygame.sprite.Sprite):
     def deploy_bomb(self) -> pygame.sprite.Sprite:
         """places the bomb on level"""
         bomb_deploy_pos = self._get_grid_aligned_bomb_position([self.rect.x, self.rect.y])
+        self.bomb_pos = [x//Game.TILE_SIZE.value for x in bomb_deploy_pos]
+        self.bomb_deployed = True
         if level.Level.player_hit_bomb_length:
             bomb_length = self.bomb_range + 1
         else:
             bomb_length = self.bomb_range
         return bomb.Bomb(bomb_deploy_pos, bomb_length, self.walls, self.display_surface)
+    
+    def get_bomb_pos(self):
+        # if self.bomb_deployed == True:
+        #     return self._get_grid_aligned_bomb_position([self.rect.x, self.rect.y])
+        # else:
+        #     return [0,0]
+        return self.bomb_pos
 
     def _clean_up_bombs_after_explosion(self):
         """remove bombs which have been exploded from players internal list"""
         for temp_bomb in self.bombs.copy():
             if temp_bomb.sprite.has_explosion_ended:
+                self.bomb_deployed = False
+                self.bomb_pos = [0,0]
                 self.bombs.remove(temp_bomb)
 
     def _get_grid_aligned_bomb_position(self, position):
@@ -173,11 +219,15 @@ class Player(pygame.sprite.Sprite):
             grid_aligned_pos[1] -= level_offset[1]
         return grid_aligned_pos
 
-    def update(self):
+    def update(self, action):
+    # def update(self):
         """
         updates player state like position based on input
         """
-        self.player_input()
+        if action != 4:
+            self.train_input(action)
+        else:
+            self.player_input()
         self.player_status()
         self.animate()
         self._clean_up_bombs_after_explosion()
