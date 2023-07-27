@@ -1,7 +1,7 @@
 """Setting up the player character, interaction"""
 # pylint: disable=cyclic-import
 
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 import pygame
 from .constants import PlayerBomberman, PlayerStatus
 from .utils.fileutils import import_from_spritesheet
@@ -18,7 +18,8 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, position: Tuple,
                  walls: pygame.sprite.Group,
-                 display_surface: pygame.Surface):
+                 display_surface: pygame.Surface,
+                 player_number: Optional[int] = 1):
         """ 
         Parameters
         ----------
@@ -32,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
 
         #animation inits
+        self.player_number = player_number
         self.build_player_animation_spritesheet()
         self.frame_index = 0
         self.animation_speed = PlayerBomberman.ANIMATION_SPEED.value
@@ -56,11 +58,16 @@ class Player(pygame.sprite.Sprite):
     def build_player_animation_spritesheet(self):
         """creates an internal dictionary of player state animations"""
         self.animations = {PlayerStatus.IDLE: [], PlayerStatus.RUN: []}
-        player_sprites = import_from_spritesheet('graphics/player.png',
-                                                    PlayerBomberman.SPRITE_WIDTH.value,
-                                                    PlayerBomberman.SPRITE_HEIGHT.value
-                                                 )
-
+        if self.player_number == 1:
+            player_sprites = import_from_spritesheet('graphics/player.png',
+                                                        PlayerBomberman.SPRITE_WIDTH.value,
+                                                        PlayerBomberman.SPRITE_HEIGHT.value
+                                                     )
+        else:
+            player_sprites = import_from_spritesheet('graphics/player_2.png',
+                                                     PlayerBomberman.SPRITE_WIDTH.value,
+                                                     PlayerBomberman.SPRITE_HEIGHT.value
+                                                     )
         self.animations[PlayerStatus.IDLE].append(player_sprites[1])
         self.animations[PlayerStatus.RUN] = player_sprites
 

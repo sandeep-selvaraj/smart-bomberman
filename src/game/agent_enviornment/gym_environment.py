@@ -1,5 +1,4 @@
 """Package to create the environment for AI Agent training."""
-import time
 from pathlib import Path
 import dash
 from dash import dcc
@@ -10,9 +9,6 @@ import threading
 import numpy as np
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib import style
-from IPython import display
 import csv
 from typing import List, Optional
 import gymnasium
@@ -60,8 +56,8 @@ class BombermanGameEnv(gymnasium.Env):
         self.policy_parameters = None
         self.current_step = 0
         self.max_episode_length = 7000
-        # self.dash_thread = threading.Thread(target=self.run_dash_app)
-        # self.dash_thread.start()
+        self.dash_thread = threading.Thread(target=self.run_dash_app)
+        self.dash_thread.start()
         self.recent_action = 0
         self.map_data = []
 
@@ -86,7 +82,8 @@ class BombermanGameEnv(gymnasium.Env):
         reward = self.level.get_reward()  # Get the reward
         done = self.level.is_done()  # Check if the episode is done
         observation = self.level.get_observation()  # Get the new observation
-        self.render(None)
+        # self.render(None)
+        self.render("human")
         self.map_data = self.level.map_data
         truncated = False
         self.current_step += 1
@@ -177,7 +174,7 @@ class BombermanGameEnv(gymnasium.Env):
                       Input('interval-component', 'n_intervals'))
         def update_neuron_weights(n_intervals):
             # Update the figure
-            fig = self.visualize_neuron_weights_4(self.policy_parameters)
+            fig = self.visualize_neuron_weights(self.policy_parameters)
             fig2 = self.visualize_agent_space()
             return fig, fig2, True, {'displayModeBar': False}, {'width': '100%', 'height': '100vh'}
         # @app.callback(
@@ -223,43 +220,40 @@ class BombermanGameEnv(gymnasium.Env):
         fig = px.imshow(encoded_state, aspect="auto", color_continuous_scale="Viridis")
         return fig
 
-    def run_matplotlib_gui(self):
-        plt.ion()
-
-        # while True:
-        # Get the latest weights
-        #     with self.weights_lock:
-        if self.policy_parameters is not None:
-            # latest_weights = self.policy_parameters.copy()
-            fig, ax = plt.subplots()
-            # Update the figure
-            self.visualize_neuron_weights_2()
+    # Redundant Matplotlib attempt for Visualization
+    # def run_matplotlib_gui(self):
+    #     plt.ion()
+    #
+    #     # while True:
+    #     #     with self.weights_lock:
+    #     if self.policy_parameters is not None:
+    #         latest_weights = self.policy_parameters.copy()
+    #         fig, ax = plt.subplots()
+    #         self.visualize_neuron_weights_2()
 
     # def run_matplotlib_gui(self):
-    #     # Create a figure and animation
-    #
     #     # fig, ax = plt.subplots(figsize=(10, 6))
     #     # anim = animation.FuncAnimation(fig, self.update_neuron_weights_lib, interval=100)  # Update every 100ms
 
-    def draw_nn_visual(self):
-        """To draw the neural network visual."""
+    # def draw_nn_visual(self):
+    #     """To draw the neural network visual."""
+    #
+    #     # plt.ion()
+    #     # if self.policy_parameters:
+    #     #     display.clear_output()
+    #     #     display.display(plt.gcf())
+    #     #     ax.axis('off')
+    #     #     neural_net_data = get_restructured_neural_net(self.policy_parameters)
+    #     #     neural_net_shape = [len(val) for val in neural_net_data]
+    #     #     # draw_neural_net(ax, .1, .9, .1, .9, neural_net_shape, neural_net_data)
+    #     #     test_data = []
+    #     #     test_data.append(np.array([0, 0.4, 0.5, 0.7]))
+    #     #     test_data.append(np.array([0, 0.4, 0.7]))
+    #     #     test_data.append(np.array([0.8]))
+    #     #     draw_neural_net(ax, .1, .9, .1, .9, [4, 3, 1], test_data)
+    #     #     plt.show(block=False)
 
-        # plt.ion()
-        # if self.policy_parameters:
-        #     display.clear_output()
-        #     display.display(plt.gcf())
-        #     ax.axis('off')
-        #     neural_net_data = get_restructured_neural_net(self.policy_parameters)
-        #     neural_net_shape = [len(val) for val in neural_net_data]
-        #     # draw_neural_net(ax, .1, .9, .1, .9, neural_net_shape, neural_net_data)
-        #     test_data = []
-        #     test_data.append(np.array([0, 0.4, 0.5, 0.7]))
-        #     test_data.append(np.array([0, 0.4, 0.7]))
-        #     test_data.append(np.array([0.8]))
-        #     draw_neural_net(ax, .1, .9, .1, .9, [4, 3, 1], test_data)
-        #     plt.show(block=False)
-
-    def visualize_neuron_weights_4(self, weights):
+    def visualize_neuron_weights(self, weights):
         action_dict = {0: "Up", 1: "Down", 2: "left", 3: "right", 5: "bomb", 4: "wait"}
         if weights is None:
             layout = go.Layout(
@@ -328,15 +322,6 @@ class BombermanGameEnv(gymnasium.Env):
         final_num_neurons = num_neurons[-1]
         final_x = x_start + final_layer_idx * width + final_layer_idx * layer_gap
         final_y = y_start + (max(num_neurons) - final_num_neurons) * height_unit / 2
-        # shape = go.layout.Shape(
-        #     type="rect",
-        #     x0=final_x,
-        #     y0=final_y,
-        #     x1=final_x + width,
-        #     y1=final_y + final_num_neurons * height_unit,
-        #     fillcolor=final_color,
-        #     line=dict(width=0)
-        # )
 
         shapes.append(shape)
         text_color = get_color_action(self.recent_action)
@@ -344,6 +329,13 @@ class BombermanGameEnv(gymnasium.Env):
             shapes=shapes,
             xaxis=dict(range=[0, 1.3], showticklabels=False),
             yaxis=dict(range=[0, 1], title='Neurons', showticklabels=False),
+            legend=dict(
+                traceorder="normal",
+                font=dict(family="sans-serif", size=12, color="black"),
+                bgcolor="LightSteelBlue",
+                bordercolor="Black",
+                borderwidth=2
+            ),
             annotations=[
                 go.layout.Annotation(
                     x=final_x + width,  # Adjust the x-coordinate for the text
@@ -357,6 +349,8 @@ class BombermanGameEnv(gymnasium.Env):
         fig = go.Figure(data=[], layout=layout)
         return fig
 
+
+    # Variant of Visualizing neural network - Redundant or can be improved
     def visualize_neuron_weights_2(self):
         # weights: List of arrays containing the weights for each layer
         # display.clear_output(wait=True)
@@ -366,11 +360,8 @@ class BombermanGameEnv(gymnasium.Env):
         num_layers = len(weights)
 
         fig, ax = plt.subplots(figsize=(10, 6))
-
-        # Set up colors for different weights
         cmap = plt.cm.get_cmap('coolwarm')
 
-        # Calculate the number of neurons in each layer
         num_neurons = [w.shape[0] for w in weights]
 
         # Set up the positions and sizes of the rectangles
@@ -382,7 +373,7 @@ class BombermanGameEnv(gymnasium.Env):
         # Iterate over each layer
         for layer_idx, w in enumerate(weights):
             num_neuron = num_neurons[layer_idx]
-            layer_weights = w.T  # Transpose the weights to get the neuron weights
+            layer_weights = w.T
 
             # Calculate the color based on the weights
             color = cmap(layer_weights.mean())
@@ -392,7 +383,6 @@ class BombermanGameEnv(gymnasium.Env):
             y = y_start + (max(num_neurons) - num_neuron) * height_unit / 2  # Align the layer in the middle
             rect = plt.Rectangle((x, y), width, num_neuron * height_unit, facecolor=color)
 
-            # Add the rectangle to the plot
             ax.add_patch(rect)
 
             # Iterate over each neuron in the layer
@@ -454,6 +444,7 @@ def _endgame_screen(font, time_remaining, enemies_alive):
 
 
 def get_color(value):
+    """Color for the corresponding neuron value."""
     if value == 0:
         return "yellow"
     elif 0 < value <= 0.05:
@@ -501,6 +492,7 @@ def get_color(value):
 
 
 def get_color_action(value):
+    """Color for the corresponding action"""
     if value == 0:
         return "green"
     if value == 1:

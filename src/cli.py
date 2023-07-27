@@ -111,6 +111,12 @@ def information_on_game():
     print("Built as a project at Technical University of Dresden")
 
 
+def run_multiplayer():
+    os.chdir(Path(__file__).resolve().parent)
+    multiplayer_game.start_game_multiplayer(1,
+                                            "Saved Models_Stone_Cold_7_no_render_8obs_ent0_2",
+                                            "Saved Models_Stone_Cold_16_new_obs_ent_0_2")
+
 def main(args=None) -> None:
     """Run smart-bomberman CLI."""
     fire.Fire(
@@ -118,16 +124,17 @@ def main(args=None) -> None:
             "info": information_on_game,
             "play": run_the_game,
             "train": train_the_agent,
-            "inference": inference.run_inference
+            "inference": inference.run_inference,
+            "multiplayer": run_multiplayer
         },
         command=args,
     )
 
 
-# if __name__ == "__main__":
-#     # fire.Fire(run_the_game)
-#     # train_the_agent()
-#     os.chdir(Path(__file__).resolve().parent)
-#     multiplayer_game.start_game_multiplayer(1,
-#                                             "Saved Models_Stone_Cold_7_no_render_8obs_ent0_2",
-#                                             "Saved Models_Stone_Cold_16_new_obs_ent_0_2")
+if __name__ == "__main__":
+    fire.Fire(run_the_game)
+    # train_the_agent()
+    # os.chdir(Path(__file__).resolve().parent)
+    # multiplayer_game.start_game_multiplayer(1,
+    #                                         "Saved Models_Stone_Cold_7_no_render_8obs_ent0_2",
+    #                                         "Saved Models_Stone_Cold_16_new_obs_ent_0_2")

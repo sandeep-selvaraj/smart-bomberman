@@ -6,17 +6,16 @@ from collections import deque
 
 import numpy as np
 import pygame
-from . import tile
-from . import player
-from . import enemy
-from . import item
-from . import gateway
-from .settings import Game
-from .constants import Camera, PlayerBomberman, ItemType, TileType
-from .constants import Camera, PlayerBomberman, ItemType
+from .. import tile
+from .. import player
+from .. import enemy
+from .. import item
+from .. import gateway
+from ..settings import Game
+from ..constants import Camera, PlayerBomberman, ItemType, TileType
 import math
 
-class Level:
+class MultiplayerLevel:
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=too-many-public-methods
     """
@@ -40,8 +39,12 @@ class Level:
         self.level_number = level_number
         self.setup_level(level_data)
         self.player_hit_enemy = False
+        self.player2_hit_enemy = False
         self.player_hit_item = False
         self.player_hit_explosion = False
+        self.player2_hit_explosion = False
+        self.player_alive = True
+        self.player2_alive = True
         self.player_hit_gateway = False
         self.gateway_flag = False
         self.level_shift = (0,0)
@@ -58,6 +61,7 @@ class Level:
         self.agent_collided_vertical = False
         self.player_location_track = deque()
         self.bombing_possibility = 0.0
+        self.no_players = number_of_players
         self.all_positions_of_player = {}
         for i in range(32):
             for j in range(14):
@@ -75,6 +79,7 @@ class Level:
         """
         self.walls: pygame.sprite.Group = pygame.sprite.Group()
         self.bomberman_player: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
+        self.bomberman_player2: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
         self.bomberman_enemy: pygame.sprite.Group = pygame.sprite.Group()
         self.items: pygame.sprite.Group = pygame.sprite.Group()
         self.gateway: pygame.sprite.GroupSingle = pygame.sprite.GroupSingle()
@@ -115,12 +120,19 @@ class Level:
                     self.walls.add(wall)
                 # TODO: Remove for random spawning
                 # if column == 'P':
-                if (row_index, column_index) == location_for_player:
+                if column == 'P1':
                     self.bomberman_player.add(player.Player(
                                                                 (x_position, y_position),
                                                                 self.walls,
                                                                 self.display_surface
                                                             ))
+                if column == 'P2':
+                    self.bomberman_player2.add(player.Player(
+                        (x_position, y_position),
+                        self.walls,
+                        self.display_surface,
+                        2
+                    ))
                 if (row_index, column_index) in locations_for_enemy and ctr_flg < 3:
                     self.bomberman_enemy.add(enemy.Enemy((x_position, y_position),
                                                          self.level_number))
@@ -169,11 +181,11 @@ class Level:
             bomberman_player.level_shifted[0] += self.level_shift[0]
             bomberman_player.level_shifted[1] += self.level_shift[1]
 
-    def horizontal_collision(self):
+    def horizontal_collision(self, bomberman_player):
         """
         Handles player collision in horizontal direction
         """
-        bomberman_player = self.bomberman_player.sprite
+        # bomberman_player = self.bomberman_player.sprite
 
         #move the player horizontally
         bomberman_player.rect.x += bomberman_player.direction.x * bomberman_player.speed
@@ -192,11 +204,11 @@ class Level:
                     bomberman_player.rect.right = sprite.rect.left
                     self.agent_collided_horizontal = True
 
-    def vertical_collision(self):
+    def vertical_collision(self, bomberman_player):
         """
         Handles player collision in vertical direction
         """
-        bomberman_player = self.bomberman_player.sprite
+        # bomberman_player = self.bomberman_player.sprite
 
         #move the player vertically
         bomberman_player.rect.y += bomberman_player.direction.y * bomberman_player.speed
@@ -217,25 +229,52 @@ class Level:
 
     def player_collides_with_explosion(self):
         """Check for player collision with explosion"""
-        for bomb in self.bomberman_player.sprite.bombs:
-            for explosion in bomb.sprite.explosions:
-                if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
-                    self.player_hit_explosion = True
-        for bomb in Level.level_bombs:
-            for explosion in bomb.explosions:
-                if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
-                    self.player_hit_explosion = True
+        if self.player_alive:
+            for bomb in self.bomberman_player.sprite.bombs:
+                for explosion in bomb.sprite.explosions:
+                    if self.player_alive:
+                        if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                            self.player_alive = False
+                            pygame.time.delay(3000)
+                            self.bomberman_player.sprite.kill()
+                    if self.player2_alive:
+                        if explosion.sprite.rect.colliderect(self.bomberman_player2.sprite.rect):
+                            self.player2_alive = False
+                            pygame.time.delay(3000)
+                            self.bomberman_player2.sprite.kill()
+        if self.player2_alive:
+            for bomb in self.bomberman_player2.sprite.bombs:
+                for explosion in bomb.sprite.explosions:
+                    if self.player_alive:
+                        if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                            self.player_alive = False
+                            pygame.time.delay(3000)
+                            self.bomberman_player.sprite.kill()
+                    if self.player2_alive:
+                        if explosion.sprite.rect.colliderect(self.bomberman_player2.sprite.rect):
+                            self.player2_alive = False
+                            pygame.time.delay(3000)
+                            self.bomberman_player2.sprite.kill()
 
 
     def enemy_collides_with_explosion(self):
         """Check if any enemy is hit by the explosion"""
-        for bomb in self.bomberman_player.sprite.bombs:
-            for explosion in bomb.sprite.explosions:
-                for enemy_sprite in self.bomberman_enemy.sprites():
-                    if explosion.sprite.rect.colliderect(enemy_sprite) and \
-                            not enemy_sprite.is_paused():
-                        enemy_sprite.enemy_hit_by_bomb()
-                        enemy_sprite.set_pause(30)
+        if self.player_alive:
+            for bomb in self.bomberman_player.sprite.bombs:
+                for explosion in bomb.sprite.explosions:
+                    for enemy_sprite in self.bomberman_enemy.sprites():
+                        if explosion.sprite.rect.colliderect(enemy_sprite) and \
+                                not enemy_sprite.is_paused():
+                            enemy_sprite.enemy_hit_by_bomb()
+                            enemy_sprite.set_pause(30)
+        if self.player2_alive:
+            for bomb in self.bomberman_player2.sprite.bombs:
+                for explosion in bomb.sprite.explosions:
+                    for enemy_sprite in self.bomberman_enemy.sprites():
+                        if explosion.sprite.rect.colliderect(enemy_sprite) and \
+                                not enemy_sprite.is_paused():
+                            enemy_sprite.enemy_hit_by_bomb()
+                            enemy_sprite.set_pause(30)
 
     def enemy_collision_reverse(self):
         """Redirect enemy after collision with wall."""
@@ -248,8 +287,21 @@ class Level:
     def enemy_collides_with_player(self):
         """Check for enemy collision with player."""
         for enemy_sprite in self.bomberman_enemy.sprites():
-            if enemy_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
-                self.player_hit_enemy = True
+            if self.player_alive:
+                if enemy_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
+                    self.player_alive = False
+                    pygame.time.delay(3000)
+                    self.bomberman_player.sprite.kill()
+            if self.player2_alive:
+                if enemy_sprite.rect.colliderect(self.bomberman_player2.sprite.rect):
+                    self.bomberman_player2.sprite.kill()
+                    pygame.time.delay(3000)
+                    self.player2_alive = False
+
+    def both_players_died(self):
+        if self.player_alive or self.player2_alive:
+            return False
+        return True
 
     def unavailable_locations_for_enemy(self, mapdata):
         """Extract spots on the map where enemy cannot be placed."""
@@ -325,14 +377,19 @@ class Level:
                 self.player_hit_item = True
                 self.item_class = item_sprite.item_num
                 if self.item_class == ItemType.SKATE.value:
-                    Level.player_hit_skate = True
+                    MultiplayerLevel.player_hit_skate = True
                 self.items.remove(item_sprite)
 
     def render_and_update_bombs(self):
         """render and update bombs placed by player in the level"""
-        for bomb in self.bomberman_player.sprite.bombs:
-            bomb.draw(self.display_surface)
-            bomb.update(self.level_shift)
+        if self.player_alive:
+            for bomb in self.bomberman_player.sprite.bombs:
+                bomb.draw(self.display_surface)
+                bomb.update(self.level_shift)
+        if self.player2_alive:
+            for bomb in self.bomberman_player2.sprite.bombs:
+                bomb.draw(self.display_surface)
+                bomb.update(self.level_shift)
 
     #moved below code to bomb.py for better encapsulation, keep this commented here
     #in case we wanna undo anything
@@ -346,15 +403,18 @@ class Level:
     @staticmethod
     def _clean_up_level_bombs_after_explosion():
         """remove bombs which have been exploded from levels internal list"""
-        for temp_bomb in Level.level_bombs.copy():
+        for temp_bomb in MultiplayerLevel.level_bombs.copy():
             if temp_bomb.has_explosion_ended:
-                Level.level_bombs.remove(temp_bomb)
+                MultiplayerLevel.level_bombs.remove(temp_bomb)
 
-    def get_player_location_on_map(self) -> tuple:
+    def get_player_location_on_map(self, player_no) -> tuple:
         """Get the player's current location."""
-        return round(self.bomberman_player.sprite.rect.x/32),\
+        if player_no == 1 and self.player_alive:
+            return round(self.bomberman_player.sprite.rect.x/32),\
                round(self.bomberman_player.sprite.rect.y/32)
-
+        if player_no == 2 and self.player2_alive:
+            return round(self.bomberman_player2.sprite.rect.x / 32), \
+                   round(self.bomberman_player2.sprite.rect.y / 32)
 
     def get_enemy_count(self) -> int:
         """Get the number of enemies alive."""
@@ -403,7 +463,7 @@ class Level:
             return True
         return False
 
-    def get_observation(self):
+    def get_observation(self, player_no):
         """Get the current observation state space for AI."""
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
@@ -417,17 +477,17 @@ class Level:
         for row in self.map_data:
             for column in row:
                 if column == "X":
-                    encoded_state_loc.append(0)
+                    encoded_state_loc.append(1)
                 elif column == "B_1" or column == "B_2":
                     encoded_state_loc.append(2)
                 elif column == "E":
-                    encoded_state_loc.append(4)
+                    encoded_state_loc.append(3)
                 elif column == "W":
-                    encoded_state_loc.append(1)
+                    encoded_state_loc.append(4)
                 elif column == "#":
-                    encoded_state_loc.append(1)
-                else:
                     encoded_state_loc.append(5)
+                else:
+                    encoded_state_loc.append(0)
 
         while len(encoded_state_loc) < 416:
             encoded_state_loc.append(0)
@@ -435,13 +495,18 @@ class Level:
 
 
         # Check for bomb nearby (Size 1 or 2)
-        player_location = self.get_player_location_on_map()
+        if player_no == 1:
+            player_location = self.get_player_location_on_map(1)
+            bomberman_player = self.bomberman_player
+        else:
+            player_location = self.get_player_location_on_map(2)
+            bomberman_player = self.bomberman_player2
         try:
             self.all_positions_of_player[player_location] += 1
         except:
             print(player_location)
         bomb_position = []
-        for bomb in self.bomberman_player.sprite.bombs:
+        for bomb in bomberman_player.sprite.bombs:
             bomb_present = 1
             bomb_location = tuple((round(bomb.sprite.rect.x / 32), round(bomb.sprite.rect.y / 32)))
             bomb_position.append(bomb_location)
@@ -500,7 +565,7 @@ class Level:
         if len(enemy_loc) < 3:
             enemy_loc.append([0,0])
         bomb_explosion_location = []
-        for bomb in self.bomberman_player.sprite.bombs:
+        for bomb in bomberman_player.sprite.bombs:
             for explosion in bomb.sprite.explosions:
                 bomb_explosion = 1
                 bomb_explosion_location.append(tuple((
@@ -540,10 +605,12 @@ class Level:
         enemy_locations = []
         for enemy_loc in self.bomberman_enemy.sprites():
             enemy_locations.append(enemy_loc.get_location_on_map())
-        player_location = self.get_player_location_on_map()
+        player_location = self.get_player_location_on_map(1)
+        if self.no_players == 2:
+            player_location2 = self.get_player_location_on_map(2)
         updated_map = []
         for row in self.map_data:
-            updated_row = [" " if row_value in ('E', 'P') else row_value for row_value in row]
+            updated_row = [" " if row_value in ('E', 'P1', 'P2') else row_value for row_value in row]
             updated_map.append(updated_row)
         bomb_location = self.get_bomb_location()
         # print(updated_map)
@@ -554,16 +621,10 @@ class Level:
                 if [column_index, row_index] in enemy_locations:
                     refreshed_row.append("E")
                 elif (column_index, row_index) == player_location:
-                    refreshed_row.append("P")
+                    refreshed_row.append("P1")
+                elif (column_index, row_index) == player_location2:
+                    refreshed_row.append("P2")
                 elif (column_index, row_index) == bomb_location:
-                    refreshed_row.append("X")
-                elif (column_index, row_index - 1) == bomb_location:
-                    refreshed_row.append("X")
-                elif (column_index, row_index + 1)  == bomb_location:
-                    refreshed_row.append("X")
-                elif (column_index - 1, row_index) == bomb_location:
-                    refreshed_row.append("X")
-                elif (column_index + 1, row_index) == bomb_location:
                     refreshed_row.append("X")
                 else:
                     refreshed_row.append(column)
@@ -583,8 +644,12 @@ class Level:
     def get_bomb_location(self) -> tuple:
         """Get current bomb location."""
         bomb_location: tuple = ()
-        for bomb in self.bomberman_player.sprite.bombs:
-            bomb_location = tuple((round(bomb.sprite.rect.x/32), round(bomb.sprite.rect.y/32)))
+        if self.player_alive:
+            for bomb in self.bomberman_player.sprite.bombs:
+                bomb_location = tuple((round(bomb.sprite.rect.x/32), round(bomb.sprite.rect.y/32)))
+        elif self.player2_alive:
+            for bomb in self.bomberman_player2.sprite.bombs:
+                bomb_location = tuple((round(bomb.sprite.rect.x/32), round(bomb.sprite.rect.y/32)))
         return bomb_location
 
     def get_reward(self):
@@ -600,7 +665,7 @@ class Level:
             # reward -= 10.0
         else:
             reward += 1  # Prevented player from bombing when 1.0 and changed back from 0.5
-        player_location = self.get_player_location_on_map()
+        player_location = self.get_player_location_on_map(1)
         try:
             if self.all_positions_of_player[player_location] < 5:
                 reward += 10.0
@@ -725,11 +790,11 @@ class Level:
 
         if self.bombing_possibility > 0.5 and self.agent_action == 4:
             # reward += 0.01
-            reward += 10
+            reward += 2
         elif self.bombing_possibility > 0.5 and self.agent_action != 4:
-            reward += 0.5
+            reward -= 0.01
         elif self.bombing_possibility < 0.5 and self.agent_action != 4:
-            reward -= 0.5
+            reward -= 0.005
         else:
             pass
         # If player is in the same spot for 10 seconds, penalize
@@ -749,9 +814,9 @@ class Level:
         """Get the current location of the player."""
         if len(list(self.player_location_track)) == 400:
             self.player_location_track.pop()
-        self.player_location_track.appendleft(self.get_player_location_on_map())
+        self.player_location_track.appendleft(self.get_player_location_on_map(1))
 
-    def run(self):
+    def run(self, player1_action: Optional[int] = 0, player2_action: Optional[int] = 0):
         """Graphically display all components of the level"""
         # self.scroll()
 
@@ -761,33 +826,41 @@ class Level:
             self.gateway_flag = True
 
         #handle level bombs spawned after breaking a wall
-        Level.level_bombs.draw(self.display_surface)
-        Level.level_bombs.update(self.level_shift)
-        Level._clean_up_level_bombs_after_explosion()
+        MultiplayerLevel.level_bombs.draw(self.display_surface)
+        MultiplayerLevel.level_bombs.update(self.level_shift)
+        MultiplayerLevel._clean_up_level_bombs_after_explosion()
 
         #handle items
-        self.items.update(self.level_shift)
-        self.items.draw(self.display_surface)
-        self.item_collides_with_player()
+        # self.items.update(self.level_shift)
+        # self.items.draw(self.display_surface)
+        # self.item_collides_with_player()
 
         #handle level tiles like walls
         self.walls.update(self.level_shift)
         self.walls.draw(self.display_surface)
 
         #handle player
-        self.bomberman_player.update(self.agent_action)
-        self.horizontal_collision()
-        self.vertical_collision()
-        self.bomberman_player.draw(self.display_surface)
+        if self.player_alive:
+            self.bomberman_player.update(player1_action)
+            self.horizontal_collision(self.bomberman_player.sprite)
+            self.vertical_collision(self.bomberman_player.sprite)
+            self.bomberman_player.draw(self.display_surface)
+        if self.no_players == 2 and self.player2_alive:
+            self.bomberman_player2.update(player2_action)
+            self.horizontal_collision(self.bomberman_player2.sprite)
+            self.vertical_collision(self.bomberman_player2.sprite)
+            self.bomberman_player2.draw(self.display_surface)
         # print(self.get_player_location_on_map())
 
-        #handle bombs
+        #  handle bombs
         self.render_and_update_bombs()
 
-        #handle explosions
-        #self.render_and_update_explosions()
+        # handle explosions
+        # self.render_and_update_explosions()
+
         self.player_collides_with_explosion()
         self.enemy_collides_with_explosion()
+
 
         if self.level_shift != (0, 0):
             self.shift_accumulated[0] += self.level_shift[0]
@@ -802,9 +875,9 @@ class Level:
         self.bomberman_enemy.draw(self.display_surface)
 
         #handle gateway
-        self.gateway.update(self.level_shift)
-        self.gateway.draw(self.display_surface)
-        self.gateway_collides_with_player()
+        # self.gateway.update(self.level_shift)
+        # self.gateway.draw(self.display_surface)
+        # self.gateway_collides_with_player()
 
         #track camera movement
         if self.level_shift != (0,0):
