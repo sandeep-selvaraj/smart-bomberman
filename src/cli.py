@@ -129,12 +129,3 @@ def main(args=None) -> None:
         },
         command=args,
     )
-
-
-if __name__ == "__main__":
-    fire.Fire(run_the_game)
-    # train_the_agent()
-    # os.chdir(Path(__file__).resolve().parent)
-    # multiplayer_game.start_game_multiplayer(1,
-    #                                         "Saved Models_Stone_Cold_7_no_render_8obs_ent0_2",
-    #                                         "Saved Models_Stone_Cold_16_new_obs_ent_0_2")

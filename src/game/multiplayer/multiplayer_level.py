@@ -61,6 +61,7 @@ class MultiplayerLevel:
         self.agent_collided_vertical = False
         self.player_location_track = deque()
         self.bombing_possibility = 0.0
+        self.delay_explosion = False
         self.no_players = number_of_players
         self.all_positions_of_player = {}
         for i in range(32):
@@ -235,12 +236,12 @@ class MultiplayerLevel:
                     if self.player_alive:
                         if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
                             self.player_alive = False
-                            pygame.time.delay(3000)
+                            self.delay_explosion = True
                             self.bomberman_player.sprite.kill()
                     if self.player2_alive:
                         if explosion.sprite.rect.colliderect(self.bomberman_player2.sprite.rect):
                             self.player2_alive = False
-                            pygame.time.delay(3000)
+                            self.delay_explosion = True
                             self.bomberman_player2.sprite.kill()
         if self.player2_alive:
             for bomb in self.bomberman_player2.sprite.bombs:
@@ -248,12 +249,12 @@ class MultiplayerLevel:
                     if self.player_alive:
                         if explosion.sprite.rect.colliderect(self.bomberman_player.sprite.rect):
                             self.player_alive = False
-                            pygame.time.delay(3000)
+                            self.delay_explosion = True
                             self.bomberman_player.sprite.kill()
                     if self.player2_alive:
                         if explosion.sprite.rect.colliderect(self.bomberman_player2.sprite.rect):
                             self.player2_alive = False
-                            pygame.time.delay(3000)
+                            self.delay_explosion = True
                             self.bomberman_player2.sprite.kill()
 
 
@@ -290,12 +291,14 @@ class MultiplayerLevel:
             if self.player_alive:
                 if enemy_sprite.rect.colliderect(self.bomberman_player.sprite.rect):
                     self.player_alive = False
-                    pygame.time.delay(3000)
+                    # pygame.time.delay(3000)
+                    self.delay_explosion = True
                     self.bomberman_player.sprite.kill()
             if self.player2_alive:
                 if enemy_sprite.rect.colliderect(self.bomberman_player2.sprite.rect):
                     self.bomberman_player2.sprite.kill()
-                    pygame.time.delay(3000)
+                    self.delay_explosion = True
+                    # pygame.time.delay(3000)
                     self.player2_alive = False
 
     def both_players_died(self):
@@ -828,6 +831,9 @@ class MultiplayerLevel:
         #handle level bombs spawned after breaking a wall
         MultiplayerLevel.level_bombs.draw(self.display_surface)
         MultiplayerLevel.level_bombs.update(self.level_shift)
+        if self.delay_explosion:
+            pygame.time.delay(3000)
+            self.delay_explosion = False
         MultiplayerLevel._clean_up_level_bombs_after_explosion()
 
         #handle items
