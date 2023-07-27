@@ -166,6 +166,3 @@ bomberman_env
 .github/.DS_Store
 .DS_Store
 
-#Ignore Training Logs
-src/Training
-src/map_loc.txt
