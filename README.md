@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="src/graphics/bomberman_title.png" width="350" title="hover text">
+</p>
+
 # smart-bomberman ![GitHub release](https://img.shields.io/github/release/sandeep-selvaraj/smart-bomberman?include_prereleases=&sort=semver&color=blue)[![Pylint](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/pylint.yml/badge.svg)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/pylint.yml) [![mypy](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/mypy.yml/badge.svg?branch=master)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/mypy.yml)
 <a href="https://github.com/sandeep-selvaraj/smart-bomberman/blob/master/LICENSE">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-yellow">
