@@ -92,6 +92,15 @@ def duel(a: str, b: str = "heuristic", maps: str = "arena_1,map_2,map_3", games:
     print(json.dumps(record, indent=2))
 
 
+def export_web(fixtures: bool = True, rate: bool = False, games: int = 200):
+    """Export maps, Two-Fuse's weights and training curves to web/ (and optionally re-rate the agents)."""
+    from game.ai.web_export import export_all, rate_agents
+
+    export_all(fixtures=fixtures)
+    if rate:
+        print(rate_agents(games=games))
+
+
 def main():
     """Entry point."""
     fire.Fire(
@@ -103,6 +112,7 @@ def main():
             "versus": versus,
             "train-versus": train_versus,
             "duel": duel,
+            "export-web": export_web,
         }
     )
 
