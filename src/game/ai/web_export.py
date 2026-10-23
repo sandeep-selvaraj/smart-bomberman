@@ -319,6 +319,9 @@ def export_all(fixtures: bool = True) -> None:
     """Maps, weights, training curves and (optionally) the parity fixtures."""
     print(export_maps())
     print(export_weights())
+    v1 = ROOT / "runs" / "two_fuse_v1_backup.zip"  # the first champion, replayed on the Learn page
+    if v1.exists():
+        print(export_weights(v1, name="two_fuse_v1"))
     print(export_training())
     if fixtures:
         print(export_fixtures())

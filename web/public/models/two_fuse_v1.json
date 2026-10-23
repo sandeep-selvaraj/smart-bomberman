@@ -1,0 +1,26 @@
+{
+ "layers": [
+  {
+   "in": 753,
+   "out": 256,
+   "offset": 0
+  },
+  {
+   "in": 256,
+   "out": 256,
+   "offset": 193024
+  },
+  {
+   "in": 256,
+   "out": 6,
+   "offset": 258816
+  }
+ ],
+ "activation": "tanh",
+ "inputs": [
+  "local (9, 9, 9) flattened",
+  "state (24)"
+ ],
+ "sha256": "b1183bfa83eac0d0e63f5ec707f4188c9e4ec5a8d5a6c0f2a57e4e6b9ccb8fc8",
+ "source": "two_fuse_v1_backup.zip"
+}
