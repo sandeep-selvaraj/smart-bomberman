@@ -1,0 +1,187 @@
+/* The tournament hall: felt owns the page, paper carries the content, colour only ever means state. */
+@import "@fontsource-variable/archivo/wdth.css";
+
+:root {
+  /* felt: the table every sheet is pinned to */
+  --felt: #1d4a37;
+  --felt-deep: #163a2b;
+  --felt-seam: #24553f;
+  --bezel: #0f2a1f;
+  --chalk: #eef3ee; /* text on felt */
+  --chalk-dim: #b9cdbf;
+
+  /* paper */
+  --sheet: #f4f5f0;
+  --sheet-alt: #e9ebe3;
+  --rule: #c9ccc2;
+  --rule-strong: #8d928a;
+  --ink: #141618;
+  --ink-soft: #4a5054;
+  --ink-faint: #5b6166;
+
+  /* state */
+  --you: #141618;
+  --agent: #2340a0; /* carbon-copy blue: Two-Fuse and every agent */
+  --agent-wash: #dfe4f3;
+  --flag: #d93a2b; /* danger, sudden death, losses (fills) */
+  --flag-ink: #b52a1e; /* the same red where it sets text on paper */
+  --win: #141618;
+
+  --font: "Archivo Variable", "Archivo", system-ui, sans-serif;
+  --narrow: 72; /* font-stretch for display and numerals */
+  --gutter: clamp(16px, 3.4vw, 48px);
+  --measure: 68ch;
+  --shadow-sheet: 0 1px 0 var(--felt-deep), 0 10px 24px -14px rgb(5 20 13 / 0.55);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--felt);
+  color: var(--chalk);
+  font-family: var(--font);
+  font-size: 100%;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--felt-seam) var(--felt-deep);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--felt);
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--agent);
+  color: var(--sheet);
+}
+
+:focus-visible {
+  outline: 3px solid var(--chalk);
+  outline-offset: 3px;
+}
+
+.sheet :focus-visible,
+.on-sheet :focus-visible {
+  outline-color: var(--agent);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+h1,
+h2,
+h3 {
+  font-stretch: 78%;
+  font-weight: 760;
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* A sheet of paper pinned to the felt. */
+.sheet {
+  background: var(--sheet);
+  color: var(--ink);
+  box-shadow: var(--shadow-sheet);
+}
+
+.sheet ::selection {
+  background: var(--agent);
+  color: var(--sheet);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  font-stretch: 72%;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The one black button on a slip. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  border: 0;
+  border-radius: 2px;
+  padding: 0.95em 1.4em;
+  background: var(--ink);
+  color: var(--sheet);
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+.btn:hover {
+  background: #2a2e31;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  background: var(--rule-strong);
+  cursor: not-allowed;
+}
+
+.btn-quiet {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+.btn-quiet:hover {
+  background: var(--sheet-alt);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

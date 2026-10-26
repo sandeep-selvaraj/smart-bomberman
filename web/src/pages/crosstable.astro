@@ -1,0 +1,55 @@
+---
+import Crosstable from "../components/Crosstable.svelte";
+import Base from "../layouts/Base.astro";
+import { AGENTS, RATING_GAMES } from "../lib/agents";
+import { kFactor, PROVISIONAL_GAMES, START_RATING } from "../lib/elo";
+---
+
+<Base
+  title="Crosstable · smart-bomberman"
+  description="Every player and every agent on one Elo scale, with each verified result against each agent."
+  current="crosstable"
+>
+  <div class="page">
+    <header class="intro">
+      <h1>Crosstable</h1>
+      <p>
+        The agents are fixed anchors: their ratings come from a round robin of {RATING_GAMES} games per pair on three
+        maps. Players start at {START_RATING} and move after every match the server has replayed and verified. New
+        players move faster ({kFactor(0)} points per full result for their first {PROVISIONAL_GAMES} games, then {
+          kFactor(PROVISIONAL_GAMES)
+        }).
+      </p>
+    </header>
+    <Crosstable client:load />
+    <p class="anchors">
+      Anchors: {AGENTS.map((a) => `${a.name} ${a.elo}`).join(" · ")}
+    </p>
+  </div>
+</Base>
+
+<style>
+  .page {
+    max-width: 1344px;
+    margin: 0 auto;
+    padding: 40px var(--gutter) 0;
+  }
+  .intro {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: clamp(2.6rem, 6vw, 4.5rem);
+  }
+  .intro p {
+    max-width: var(--measure);
+    color: var(--chalk-dim);
+    font-size: 1.05rem;
+  }
+  .anchors {
+    margin-top: 14px;
+    color: var(--chalk-dim);
+    font-size: 0.9rem;
+  }
+</style>

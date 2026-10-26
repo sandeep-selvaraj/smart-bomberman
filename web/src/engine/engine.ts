@@ -100,7 +100,7 @@ export function mirrorSpawn(layout: Layout): Cell {
   for (let r = 0; r < height; r++) {
     for (let c = 0; c < width; c++) {
       const i = r * width + c;
-      if (layout.solid[i] || layout.wallHp[i] > 0) continue;
+      if (layout.solid[i] || layout.wallHp[i]! > 0) continue;
       if (r === layout.player[0] && c === layout.player[1]) continue;
       if (layout.enemies.some(([er, ec]) => er === r && ec === c)) continue;
       const d = Math.abs(r - tr) + Math.abs(c - tc);
@@ -447,7 +447,7 @@ export class VersusEngine {
       if (f.alive && delta) {
         const r = f.r + delta[0];
         const c = f.c + delta[1];
-        if (this.isBlocked(r, c)) events.players[p].invalidAction = true;
+        if (this.isBlocked(r, c)) events.players[p as 0 | 1].invalidAction = true;
         else {
           f.r = r;
           f.c = c;

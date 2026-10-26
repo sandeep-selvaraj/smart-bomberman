@@ -1,0 +1,41 @@
+---
+import Crosstable from "../components/Crosstable.svelte";
+import Play from "../components/Play.svelte";
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="smart-bomberman: play the trained agents"
+  description="Play Bomberman-style Battle mode against reinforcement-learning agents, rated on the same Elo scale as they are."
+  current="play"
+>
+  <Play client:load />
+  <section class="standings" aria-labelledby="standings-title">
+    <div class="head">
+      <h2 id="standings-title">Crosstable</h2>
+      <p>Players and agents on one Elo scale. Everyone starts at 1000, the middle of the agents' range.</p>
+    </div>
+    <Crosstable client:visible compact />
+  </section>
+</Base>
+
+<style>
+  .standings {
+    max-width: 1344px;
+    margin: 0 auto;
+    padding: 56px var(--gutter) 0;
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 24px;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+  }
+  .head p {
+    color: var(--chalk-dim);
+  }
+</style>
