@@ -1,0 +1,525 @@
+{
+ "two_fuse_v1": {
+  "history": [
+   {
+    "timesteps": 250000,
+    "minutes": 1.69,
+    "train_win_rate": 0.53,
+    "league_win_rate": 0.697,
+    "vs_heuristic": 0.3333333333333333,
+    "vs_heuristic_draws": 0.1,
+    "deaths_by": {
+     "own_bomb": 11,
+     "opponent_bomb": 6,
+     "enemy": 2,
+     "crushed": 1
+    }
+   },
+   {
+    "timesteps": 500000,
+    "minutes": 3.4,
+    "train_win_rate": 0.6,
+    "league_win_rate": 0.647,
+    "vs_heuristic": 0.43333333333333335,
+    "vs_heuristic_draws": 0.03333333333333333,
+    "deaths_by": {
+     "opponent_bomb": 8,
+     "crushed": 2,
+     "enemy": 6,
+     "own_bomb": 1
+    }
+   },
+   {
+    "timesteps": 750000,
+    "minutes": 5.14,
+    "train_win_rate": 0.503,
+    "league_win_rate": 0.519,
+    "vs_heuristic": 0.36666666666666664,
+    "vs_heuristic_draws": 0.06666666666666667,
+    "deaths_by": {
+     "crushed": 2,
+     "own_bomb": 7,
+     "opponent_bomb": 7,
+     "enemy": 3
+    }
+   },
+   {
+    "timesteps": 1000000,
+    "minutes": 6.86,
+    "train_win_rate": 0.59,
+    "league_win_rate": 0.631,
+    "vs_heuristic": 0.26666666666666666,
+    "vs_heuristic_draws": 0.0,
+    "deaths_by": {
+     "opponent_bomb": 9,
+     "own_bomb": 6,
+     "crushed": 4,
+     "enemy": 3
+    }
+   },
+   {
+    "timesteps": 1250000,
+    "minutes": 8.61,
+    "train_win_rate": 0.533,
+    "league_win_rate": 0.568,
+    "vs_heuristic": 0.5333333333333333,
+    "vs_heuristic_draws": 0.03333333333333333,
+    "deaths_by": {
+     "own_bomb": 2,
+     "opponent_bomb": 7,
+     "enemy": 2,
+     "crushed": 3
+    }
+   },
+   {
+    "timesteps": 1500000,
+    "minutes": 10.33,
+    "train_win_rate": 0.457,
+    "league_win_rate": 0.453,
+    "vs_heuristic": 0.3333333333333333,
+    "vs_heuristic_draws": 0.06666666666666667,
+    "deaths_by": {
+     "opponent_bomb": 9,
+     "crushed": 3,
+     "enemy": 3,
+     "own_bomb": 5
+    }
+   },
+   {
+    "timesteps": 1750000,
+    "minutes": 12.1,
+    "train_win_rate": 0.43,
+    "league_win_rate": 0.452,
+    "vs_heuristic": 0.16666666666666666,
+    "vs_heuristic_draws": 0.03333333333333333,
+    "deaths_by": {
+     "opponent_bomb": 4,
+     "crushed": 6,
+     "enemy": 5,
+     "own_bomb": 10
+    }
+   },
+   {
+    "timesteps": 2000000,
+    "minutes": 13.88,
+    "train_win_rate": 0.507,
+    "league_win_rate": 0.531,
+    "vs_heuristic": 0.5,
+    "vs_heuristic_draws": 0.06666666666666667,
+    "deaths_by": {
+     "enemy": 5,
+     "own_bomb": 3,
+     "crushed": 2,
+     "opponent_bomb": 5
+    }
+   },
+   {
+    "timesteps": 2250000,
+    "minutes": 15.7,
+    "train_win_rate": 0.443,
+    "league_win_rate": 0.467,
+    "vs_heuristic": 0.4666666666666667,
+    "vs_heuristic_draws": 0.1,
+    "deaths_by": {
+     "own_bomb": 6,
+     "enemy": 1,
+     "opponent_bomb": 6,
+     "crushed": 3
+    }
+   },
+   {
+    "timesteps": 2500000,
+    "minutes": 17.54,
+    "train_win_rate": 0.497,
+    "league_win_rate": 0.516,
+    "vs_heuristic": 0.4666666666666667,
+    "vs_heuristic_draws": 0.03333333333333333,
+    "deaths_by": {
+     "opponent_bomb": 7,
+     "enemy": 4,
+     "own_bomb": 4,
+     "crushed": 1
+    }
+   },
+   {
+    "timesteps": 2750000,
+    "minutes": 35.72,
+    "train_win_rate": 0.487,
+    "league_win_rate": 0.49,
+    "vs_heuristic": 0.3333333333333333,
+    "vs_heuristic_draws": 0.13333333333333333,
+    "deaths_by": {
+     "opponent_bomb": 9,
+     "crushed": 3,
+     "enemy": 3,
+     "own_bomb": 5
+    }
+   },
+   {
+    "timesteps": 3000000,
+    "minutes": 38.95,
+    "train_win_rate": 0.527,
+    "league_win_rate": 0.554,
+    "vs_heuristic": 0.5666666666666667,
+    "vs_heuristic_draws": 0.0,
+    "deaths_by": {
+     "own_bomb": 4,
+     "opponent_bomb": 4,
+     "enemy": 4,
+     "crushed": 1
+    }
+   },
+   {
+    "timesteps": 3250000,
+    "minutes": 54.33,
+    "train_win_rate": 0.503,
+    "league_win_rate": 0.519,
+    "vs_heuristic": 0.4666666666666667,
+    "vs_heuristic_draws": 0.0,
+    "deaths_by": {
+     "opponent_bomb": 8,
+     "own_bomb": 6,
+     "enemy": 2
+    }
+   },
+   {
+    "timesteps": 3500000,
+    "minutes": 56.16,
+    "train_win_rate": 0.487,
+    "league_win_rate": 0.504,
+    "vs_heuristic": 0.4,
+    "vs_heuristic_draws": 0.0,
+    "deaths_by": {
+     "crushed": 2,
+     "own_bomb": 7,
+     "enemy": 4,
+     "opponent_bomb": 5
+    }
+   },
+   {
+    "timesteps": 3750000,
+    "minutes": 58.06,
+    "train_win_rate": 0.517,
+    "league_win_rate": 0.522,
+    "vs_heuristic": 0.5666666666666667,
+    "vs_heuristic_draws": 0.03333333333333333,
+    "deaths_by": {
+     "opponent_bomb": 2,
+     "enemy": 5,
+     "own_bomb": 5,
+     "crushed": 1
+    }
+   },
+   {
+    "timesteps": 4000000,
+    "minutes": 65.22,
+    "train_win_rate": 0.613,
+    "league_win_rate": 0.635,
+    "vs_heuristic": 0.5666666666666667,
+    "vs_heuristic_draws": 0.03333333333333333,
+    "deaths_by": {
+     "enemy": 4,
+     "own_bomb": 5,
+     "opponent_bomb": 3,
+     "crushed": 1
+    }
+   },
+   {
+    "timesteps": 4250000,
+    "minutes": 67.03,
+    "train_win_rate": 0.523,
+    "league_win_rate": 0.526,
+    "vs_heuristic": 0.7333333333333333,
+    "vs_heuristic_draws": 0.0,
+    "deaths_by": {
+     "opponent_bomb": 1,
+     "enemy": 4,
+     "crushed": 1,
+     "own_bomb": 2
+    }
+   },
+   {
+    "timesteps": 4500000,
+    "minutes": 68.84,
+    "train_win_rate": 0.51,
+    "league_win_rate": 0.514,
+    "vs_heuristic": 0.8333333333333334,
+    "vs_heuristic_draws": 0.0,
+    "deaths_by": {
+     "own_bomb": 3,
+     "enemy": 2
+    }
+   },
+   {
+    "timesteps": 4750000,
+    "minutes": 70.6,
+    "train_win_rate": 0.6,
+    "league_win_rate": 0.58,
+    "vs_heuristic": 0.6333333333333333,
+    "vs_heuristic_draws": 0.03333333333333333,
+    "deaths_by": {
+     "crushed": 1,
+     "opponent_bomb": 6,
+     "enemy": 3,
+     "own_bomb": 1
+    }
+   },
+   {
+    "timesteps": 5000000,
+    "minutes": 73.04,
+    "train_win_rate": 0.513,
+    "league_win_rate": 0.49,
+    "vs_heuristic": 0.43333333333333335,
+    "vs_heuristic_draws": 0.13333333333333333,
+    "deaths_by": {
+     "crushed": 5,
+     "enemy": 4,
+     "opponent_bomb": 6,
+     "own_bomb": 2
+    }
+   }
+  ],
+  "ranking": [
+   {
+    "name": "snap_005002240",
+    "elo": 1148.9
+   },
+   {
+    "name": "snap_005000000",
+    "elo": 1132.6
+   },
+   {
+    "name": "snap_004500000",
+    "elo": 1129.3
+   },
+   {
+    "name": "snap_004750000",
+    "elo": 1129.3
+   },
+   {
+    "name": "snap_003750000",
+    "elo": 1103.4
+   },
+   {
+    "name": "snap_004000000",
+    "elo": 1093.7
+   },
+   {
+    "name": "snap_004250000",
+    "elo": 1090.4
+   },
+   {
+    "name": "heuristic",
+    "elo": 1083.9
+   },
+   {
+    "name": "snap_003500000",
+    "elo": 1047.8
+   },
+   {
+    "name": "random",
+    "elo": 40.5
+   }
+  ],
+  "champion": "snap_005002240"
+ },
+ "two_fuse_v2": {
+  "history": [
+   {
+    "timesteps": 500000,
+    "minutes": 3.35,
+    "train_win_rate": 0.52,
+    "league_win_rate": 0.521,
+    "vs_heuristic": 0.4,
+    "vs_camper": 0.36666666666666664,
+    "vs_wanderer": 0.36666666666666664,
+    "steps_vs_heuristic": 222,
+    "steps_vs_camper": 323,
+    "steps_vs_wanderer": 323
+   },
+   {
+    "timesteps": 1000000,
+    "minutes": 6.77,
+    "train_win_rate": 0.53,
+    "league_win_rate": 0.472,
+    "vs_heuristic": 0.7,
+    "vs_camper": 0.5333333333333333,
+    "vs_wanderer": 0.6333333333333333,
+    "steps_vs_heuristic": 220,
+    "steps_vs_camper": 335,
+    "steps_vs_wanderer": 325
+   },
+   {
+    "timesteps": 1500000,
+    "minutes": 10.24,
+    "train_win_rate": 0.533,
+    "league_win_rate": 0.533,
+    "vs_heuristic": 0.6333333333333333,
+    "vs_camper": 0.5666666666666667,
+    "vs_wanderer": 0.6333333333333333,
+    "steps_vs_heuristic": 267,
+    "steps_vs_camper": 323,
+    "steps_vs_wanderer": 291
+   },
+   {
+    "timesteps": 2000000,
+    "minutes": 56.75,
+    "train_win_rate": 0.537,
+    "league_win_rate": 0.473,
+    "vs_heuristic": 0.6666666666666666,
+    "vs_camper": 0.6666666666666666,
+    "vs_wanderer": 0.7666666666666667,
+    "steps_vs_heuristic": 248,
+    "steps_vs_camper": 302,
+    "steps_vs_wanderer": 284
+   },
+   {
+    "timesteps": 2500000,
+    "minutes": 60.99,
+    "train_win_rate": 0.56,
+    "league_win_rate": 0.489,
+    "vs_heuristic": 0.7333333333333333,
+    "vs_camper": 0.7,
+    "vs_wanderer": 0.9,
+    "steps_vs_heuristic": 230,
+    "steps_vs_camper": 306,
+    "steps_vs_wanderer": 314
+   },
+   {
+    "timesteps": 3000000,
+    "minutes": 64.86,
+    "train_win_rate": 0.543,
+    "league_win_rate": 0.477,
+    "vs_heuristic": 0.8666666666666667,
+    "vs_camper": 0.7,
+    "vs_wanderer": 0.7333333333333333,
+    "steps_vs_heuristic": 232,
+    "steps_vs_camper": 312,
+    "steps_vs_wanderer": 290
+   },
+   {
+    "timesteps": 3500000,
+    "minutes": 68.32,
+    "train_win_rate": 0.55,
+    "league_win_rate": 0.432,
+    "vs_heuristic": 0.8666666666666667,
+    "vs_camper": 0.7333333333333333,
+    "vs_wanderer": 0.6666666666666666,
+    "steps_vs_heuristic": 196,
+    "steps_vs_camper": 269,
+    "steps_vs_wanderer": 280
+   },
+   {
+    "timesteps": 4000000,
+    "minutes": 71.86,
+    "train_win_rate": 0.58,
+    "league_win_rate": 0.5,
+    "vs_heuristic": 0.6666666666666666,
+    "vs_camper": 0.7333333333333333,
+    "vs_wanderer": 0.6333333333333333,
+    "steps_vs_heuristic": 217,
+    "steps_vs_camper": 313,
+    "steps_vs_wanderer": 332
+   },
+   {
+    "timesteps": 4500000,
+    "minutes": 75.34,
+    "train_win_rate": 0.597,
+    "league_win_rate": 0.495,
+    "vs_heuristic": 0.8333333333333334,
+    "vs_camper": 0.8333333333333334,
+    "vs_wanderer": 0.7333333333333333,
+    "steps_vs_heuristic": 223,
+    "steps_vs_camper": 255,
+    "steps_vs_wanderer": 256
+   },
+   {
+    "timesteps": 5000000,
+    "minutes": 78.82,
+    "train_win_rate": 0.59,
+    "league_win_rate": 0.487,
+    "vs_heuristic": 0.6,
+    "vs_camper": 0.6666666666666666,
+    "vs_wanderer": 0.5333333333333333,
+    "steps_vs_heuristic": 230,
+    "steps_vs_camper": 264,
+    "steps_vs_wanderer": 268
+   },
+   {
+    "timesteps": 5500000,
+    "minutes": 82.27,
+    "train_win_rate": 0.523,
+    "league_win_rate": 0.411,
+    "vs_heuristic": 0.7,
+    "vs_camper": 0.5666666666666667,
+    "vs_wanderer": 0.4666666666666667,
+    "steps_vs_heuristic": 163,
+    "steps_vs_camper": 254,
+    "steps_vs_wanderer": 286
+   },
+   {
+    "timesteps": 6000000,
+    "minutes": 178.74,
+    "train_win_rate": 0.58,
+    "league_win_rate": 0.476,
+    "vs_heuristic": 0.7,
+    "vs_camper": 0.6666666666666666,
+    "vs_wanderer": 0.7666666666666667,
+    "steps_vs_heuristic": 185,
+    "steps_vs_camper": 267,
+    "steps_vs_wanderer": 296
+   }
+  ],
+  "ranking": [
+   {
+    "name": "snap_004750000",
+    "elo": 1191.5
+   },
+   {
+    "name": "snap_004500000",
+    "elo": 1159.8
+   },
+   {
+    "name": "snap_006000000",
+    "elo": 1156.9
+   },
+   {
+    "name": "snap_005250000",
+    "elo": 1151.3
+   },
+   {
+    "name": "snap_005500000",
+    "elo": 1137.3
+   },
+   {
+    "name": "snap_005750000",
+    "elo": 1101.4
+   },
+   {
+    "name": "snap_006000640",
+    "elo": 1098.6
+   },
+   {
+    "name": "snap_005000000",
+    "elo": 1071.1
+   },
+   {
+    "name": "heuristic",
+    "elo": 994.6
+   },
+   {
+    "name": "wanderer",
+    "elo": 979.7
+   },
+   {
+    "name": "camper",
+    "elo": 976.6
+   },
+   {
+    "name": "random",
+    "elo": -18.8
+   }
+  ],
+  "champion": "snap_004750000"
+ }
+}

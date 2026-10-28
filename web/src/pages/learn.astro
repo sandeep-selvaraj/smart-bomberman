@@ -1,0 +1,399 @@
+---
+import AgentView from "../components/AgentView.svelte";
+import LineChart from "../components/LineChart.svelte";
+import ReplayCompare from "../components/ReplayCompare.svelte";
+import training from "../data/training.json";
+import Base from "../layouts/Base.astro";
+import { AGENTS, RATING_GAMES } from "../lib/agents";
+
+const v2 = training.two_fuse_v2.history;
+const curves = [
+  { id: "heuristic", label: "heuristic", color: "#2340a0", dash: "" },
+  { id: "camper", label: "camper", color: "#2340a0", dash: "7 5" },
+  { id: "wanderer", label: "wanderer", color: "#2340a0", dash: "2 4" },
+].map((s) => ({
+  ...s,
+  points: v2.map((row) => ({
+    x: row.timesteps,
+    y: (row as Record<string, number>)[`vs_${s.id}`]!,
+    note: `${(row as Record<string, number>)[`steps_vs_${s.id}`]} steps a game`,
+  })),
+}));
+const v1 = training.two_fuse_v1.history.map((row) => ({ x: row.timesteps, y: row.vs_heuristic }));
+
+// 200 games per bot over arena_1, map_2 and map_3, greedy play (docs/EXPERIMENTS.md)
+const results = [
+  { bot: "Heuristic", v1: 0.52, v2: 0.76 },
+  { bot: "Camper", v1: 0.42, v2: 0.77 },
+  { bot: "Wanderer", v1: 0.43, v2: 0.69 },
+];
+const DW = 640;
+const DX = (v: number) => 120 + v * (DW - 170);
+const maxElo = Math.max(...AGENTS.map((a) => a.elo));
+const minElo = Math.min(...AGENTS.map((a) => a.elo));
+---
+
+<Base
+  title="How they learned · smart-bomberman"
+  description="How Two-Fuse was trained: a warm start from a map-clearing agent, league self-play, a failure that only showed up in human play, and the fix."
+  current="learn"
+>
+  <article class="story">
+    <header class="opening">
+      <h1>How they learned</h1>
+      <p class="lede">
+        Every opponent on this site is either a short script or a neural network trained by playing. This is how the
+        trained one, Two-Fuse, got good: where it started, what it sees, how it trained against copies of itself, and
+        the failure that only showed up when a person played it.
+      </p>
+    </header>
+
+    <section class="prose sheet" aria-labelledby="start">
+      <h2 id="start">It started by clearing maps, not fighting</h2>
+      <p>
+        The 2023 team project had a Bomberman game in pygame and several attempts at an agent. None could learn: the
+        game only advanced while drawing frames, bomb fuses ran on wall-clock seconds, and one tile of movement took 16
+        to 32 actions. The 2026 revival rebuilt the rules on a tile grid where one action moves one tile and every
+        timer counts steps.
+      </p>
+      <p>
+        On that grid a PPO agent (Stable-Baselines3, a 256×256 network) learned to clear levels: kill every wandering
+        enemy, then reach the door. Over 200 episodes it cleared the maze map 91% of the time and the open map 79.5%.
+        A random policy cleared neither.
+      </p>
+      <p>
+        Battle mode needed a fighter, not a level clearer. Rather than start from nothing, its weights were copied
+        into the larger Battle-mode network with the opponent standing in as "the enemy to hunt". The copy plays
+        exactly like the original until training changes it. Out of the box it beat the attacking bot about 13% of
+        the time.
+      </p>
+    </section>
+
+    <section class="wide" aria-labelledby="sees">
+      <div class="prose sheet">
+        <h2 id="sees">What it sees</h2>
+        <p>
+          Two-Fuse never sees the whole board. Each step it reads a 9×9 window centred on itself, as nine planes: walls,
+          breakable walls, bombs, flames, danger, hostiles, an empty door plane left over from map clearing, the
+          opponent, and cells about to close. Then 24 numbers: where the opponent is and how far, whether its bomb is
+          ready, whether it could drop one and still escape, which neighbouring step leads to safety, how long until
+          sudden death. A network of two 256-unit layers turns those 753 inputs into six probabilities.
+        </p>
+      </div>
+      <AgentView client:visible />
+    </section>
+
+    <section class="prose sheet" aria-labelledby="league">
+      <h2 id="league">It trained against copies of itself</h2>
+      <p>
+        Two-Fuse trained by league self-play. Every 250,000 steps a snapshot of it joins the league. Each training match
+        then faces the latest snapshot (40%), an older one (25%), or a scripted bot (35%), and starting corners are a
+        coin flip. Older snapshots keep it from forgetting how to beat earlier versions of itself; bots keep it honest
+        against styles no snapshot plays.
+      </p>
+      <p>
+        Rewards are mostly about the result: +5 for a win, −5 for a loss, −2 for dying together, and a cost of 0.01
+        for every step. Small extras pay for opening walls (+0.05), killing wandering enemies (+0.3), closing in to
+        three tiles of the opponent, and dropping a bomb near it with a way out (+0.2). At the end, a round robin
+        between the last eight snapshots and the bots, fitted to Elo, picks the champion.
+      </p>
+    </section>
+
+    <section class="wide" aria-labelledby="curve">
+      <LineChart
+        client:visible
+        series={curves}
+        title="Two-Fuse v2's win rate against each bot during training, 30 games per bot at each check"
+      />
+      <p class="aside">
+        Each point is only 30 games, so single points swing by ±15%. Hover a point for how long those games took. v1 was
+        only ever checked against the heuristic bot; it ended at {Math.round(v1[v1.length - 1]!.y * 100)}% after 5M steps.
+      </p>
+    </section>
+
+    <section class="wide" aria-labelledby="failure">
+      <div class="prose sheet">
+        <h2 id="failure">The failure only a person found</h2>
+        <p>
+          The first champion, v1, beat the heuristic bot 66% of the time over 200 games on the original, denser arena. Then a person played it on hard
+          and reported that it never bombed. It walked left, right, left, right.
+        </p>
+        <p>
+          The scoreboard had hidden it. Every opponent v1 ever met walked towards it: the heuristic bot attacks, and so
+          do its own snapshots. It had learned to wait for the opponent to arrive, and a person who held back left it
+          waiting forever, until sudden death closed the arena. The replay below is the real v1 and v2 networks against
+          an opponent that never moves.
+        </p>
+      </div>
+      <ReplayCompare client:visible />
+    </section>
+
+    <section class="prose sheet" aria-labelledby="fix">
+      <h2 id="fix">What changed in v2</h2>
+      <ul>
+        <li>
+          <strong>Opponents that do not come to you.</strong> A camper that only dodges and a wanderer that walks at random.
+          Neither ever bombs; together they are 40% of the bot matches.
+        </li>
+        <li>
+          <strong>Waiting stopped paying.</strong> The step cost doubled to 0.01, and a win before sudden death earns an
+          extra +2.
+        </li>
+        <li>
+          <strong>A thinner arena.</strong> arena_1 went from 70 breakable walls to 28, so fighters meet before the walls
+          close.
+        </li>
+        <li>
+          <strong>Fair sudden death.</strong> Each closing cell's mirror closes right after it, so neither corner is
+          squeezed first.
+        </li>
+        <li>
+          <strong>Checks against all three bots</strong> during training, with match length logged, so passive play
+          shows up as long matches.
+        </li>
+      </ul>
+      <p>v2 continued from v1 for another 6M steps. The 4.5M-step snapshot is the one you play.</p>
+    </section>
+
+    <section class="wide" id="results" aria-labelledby="results-title">
+      <div class="prose sheet">
+        <h2 id="results-title">Results</h2>
+        <p>
+          200 games per bot, spread over arena_1, map_2 and map_3 with both starting corners, Two-Fuse playing its best
+          move each step.
+        </p>
+      </div>
+      <figure class="dumbbell sheet">
+        <figcaption>Win rate, v1 → v2</figcaption>
+        <svg viewBox={`0 0 ${DW} 170`} role="img" aria-label="Win rate of v1 and v2 against each bot">
+          {
+            [0, 0.25, 0.5, 0.75, 1].map((t) => (
+              <g>
+                <line x1={DX(t)} x2={DX(t)} y1="18" y2="140" class="grid" />
+                <text x={DX(t)} y="160" class="tick" text-anchor="middle">{`${t * 100}%`}</text>
+              </g>
+            ))
+          }
+          {
+            results.map((r, i) => (
+              <g>
+                <text x="0" y={40 + i * 40} class="label" dominant-baseline="middle">{r.bot}</text>
+                <line x1={DX(r.v1)} x2={DX(r.v2)} y1={40 + i * 40} y2={40 + i * 40} class="link" />
+                <circle cx={DX(r.v1)} cy={40 + i * 40} r="6" class="v1">
+                  <title>{`v1 vs ${r.bot.toLowerCase()}: ${Math.round(r.v1 * 100)}%`}</title>
+                </circle>
+                <circle cx={DX(r.v2)} cy={40 + i * 40} r="6" class="v2">
+                  <title>{`v2 vs ${r.bot.toLowerCase()}: ${Math.round(r.v2 * 100)}%`}</title>
+                </circle>
+                <text x={DX(r.v2) + 12} y={40 + i * 40} class="value" dominant-baseline="middle">{`${Math.round(r.v2 * 100)}%`}</text>
+              </g>
+            ))
+          }
+        </svg>
+        <p class="key"><span><i class="k1"></i>v1</span><span><i class="k2"></i>v2</span></p>
+      </figure>
+      <div class="tables">
+        <table class="sheet">
+          <caption>Against an opponent that never moves, 30 games</caption>
+          <thead><tr><th scope="col"></th><th scope="col">v1</th><th scope="col">v2</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Bombed it</th><td>4</td><td>19</td></tr>
+            <tr><th scope="row">Won before sudden death</th><td>20%</td><td>50%</td></tr>
+            <tr><th scope="row">Bombs per game</th><td>5.5</td><td>11.6</td></tr>
+          </tbody>
+        </table>
+        <table class="sheet">
+          <caption>Elo from a round robin, {RATING_GAMES} games per pair</caption>
+          <thead><tr><th scope="col">Agent</th><th scope="col">Elo</th></tr></thead>
+          <tbody>
+            {
+              AGENTS.slice()
+                .reverse()
+                .map((a) => (
+                  <tr>
+                    <th scope="row">{a.name}</th>
+                    <td>{a.elo}</td>
+                  </tr>
+                ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="prose sheet caveats">
+        <h3>What is still weak</h3>
+        <ul>
+          <li>
+            Against a passive opponent, about half the games still reach sudden death. On arena_1 in particular, against
+            an opponent that never moves, Two-Fuse usually still waits for the walls.
+          </li>
+          <li>It sometimes walks into wandering enemies.</li>
+          <li>
+            The champion tournament plays only 12 games per pair and picked a slightly weaker snapshot (4.75M) than the
+            one installed (4.5M); 200-game duels made the final call.
+          </li>
+          <li>
+            Agent ratings span {minElo} to {maxElo}. Ratings only mean something relative to each other: players start at
+            1000, the middle of that range.
+          </li>
+        </ul>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .story {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px var(--gutter) 0;
+    display: grid;
+    gap: 40px;
+  }
+  .opening {
+    display: grid;
+    gap: 18px;
+    max-width: 52rem;
+  }
+  h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+  }
+  .lede {
+    font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+    color: var(--chalk);
+    max-width: var(--measure);
+  }
+  .prose {
+    padding: clamp(22px, 3vw, 40px);
+    max-width: calc(var(--measure) + 80px);
+    display: grid;
+    gap: 14px;
+    font-size: 1.06rem;
+    line-height: 1.6;
+  }
+  .prose h2 {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    margin-bottom: 4px;
+  }
+  .prose h3 {
+    font-size: 1.4rem;
+  }
+  .prose ul {
+    margin: 0;
+    padding-left: 1.1em;
+    display: grid;
+    gap: 10px;
+  }
+  .wide {
+    display: grid;
+    gap: 18px;
+  }
+  .aside {
+    color: var(--chalk-dim);
+    font-size: 0.92rem;
+    max-width: var(--measure);
+  }
+  .dumbbell {
+    margin: 0;
+    padding: 20px 22px;
+  }
+  .dumbbell figcaption {
+    font-weight: 700;
+  }
+  .dumbbell svg {
+    width: 100%;
+    max-width: 760px;
+    height: auto;
+    display: block;
+    margin-top: 6px;
+  }
+  .grid {
+    stroke: #dfe1d9;
+  }
+  .tick {
+    font-size: 12px;
+    fill: var(--ink-faint);
+  }
+  .label {
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--ink);
+  }
+  .value {
+    font-size: 13px;
+    font-weight: 700;
+    fill: var(--ink);
+  }
+  .link {
+    stroke: var(--rule-strong);
+    stroke-width: 2;
+  }
+  .v1 {
+    fill: #8d928a;
+    stroke: var(--sheet);
+    stroke-width: 2;
+  }
+  .v2 {
+    fill: var(--agent);
+    stroke: var(--sheet);
+    stroke-width: 2;
+  }
+  .key {
+    display: flex;
+    gap: 8px 16px;
+    align-items: center;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+  }
+  .key i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: -1px;
+  }
+  .k1 {
+    background: #8d928a;
+  }
+  .k2 {
+    background: var(--agent);
+  }
+  .tables {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  caption {
+    text-align: left;
+    font-weight: 700;
+    padding: 16px 18px 8px;
+    background: var(--sheet);
+    color: var(--ink);
+  }
+  th,
+  td {
+    padding: 8px 18px;
+    border-bottom: 1px solid var(--rule);
+    text-align: right;
+  }
+  th[scope="row"] {
+    text-align: left;
+    font-weight: 600;
+  }
+  thead th {
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-bottom: 2px solid var(--ink);
+  }
+  .caveats {
+    max-width: none;
+  }
+</style>
