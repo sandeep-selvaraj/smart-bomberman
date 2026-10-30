@@ -134,7 +134,8 @@
     background: #fff;
   }
   .error {
-    color: #ffd2cc;
+    color: var(--chalk);
+    font-weight: 700;
   }
   @media (max-width: 760px) {
     .lanes {
