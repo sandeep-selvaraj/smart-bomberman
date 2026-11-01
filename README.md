@@ -24,6 +24,7 @@ Released under [MIT](/LICENSE).
 - [Run the game](#run-the-game)
 - [Game controls](#game-controls)
 - [Battle mode: you vs Two-Fuse](#battle-mode-you-vs-two-fuse)
+- [Play in the browser](#play-in-the-browser)
 - [AI agent](#ai-agent)
 - [AI agents from the 2023 project](#ai-agents-from-the-2023-project)
 - [Notes](#notes)
@@ -91,6 +92,13 @@ uv run smart-bomberman train-versus --init_from models/two_fuse.zip --timesteps 
 uv run smart-bomberman duel models/two_fuse.zip camper             # head-to-head record
 uv run smart-bomberman versus --player heuristic --save-gif match.gif   # record a bot vs Two-Fuse match
 ```
+
+## Play in the browser
+
+`web/` is an Astro + Svelte site for Vercel: play the agents up a ladder, get rated on their Elo scale, and read how
+Two-Fuse was trained with the real networks running live. The engine and agents are ported to TypeScript and checked
+against the Python reference move for move; ranked results are verified by replaying the match on the server. See
+[web/README.md](web/README.md).
 
 ## AI agent
 
