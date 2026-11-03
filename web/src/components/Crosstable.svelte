@@ -7,7 +7,8 @@
    */
   import { onMount } from "svelte";
   import type { AgentId } from "../engine/match";
-  import { AGENTS, RATING_GAMES, RATING_RECORDS } from "../lib/agents";
+  import { SIGNATURE } from "../art/sprites";
+  import { AGENTS, characterOf, RATING_GAMES, RATING_RECORDS } from "../lib/agents";
   import { fetchLeaderboard, type Leaderboard, type PublicPlayer } from "../lib/api";
   import { loadProfile } from "../lib/profile";
 
@@ -110,8 +111,8 @@
   });
 </script>
 
-<div class="crosstable sheet">
-  <p class="swipe">Scroll sideways for each agent →</p>
+<div class="crosstable panel">
+  <p class="swipe">Scroll sideways for each agent</p>
   <div class="scroll" role="region" aria-label="Crosstable" tabindex="0">
     <table>
       <caption class="visually-hidden">Players and agents ranked by Elo rating</caption>
@@ -134,7 +135,7 @@
         {#each rows as row (row.kind === "agent" ? row.id : row.player.handle)}
           {#if row.kind === "agent"}
             <tr class="agent">
-              <th scope="row" class="who">{row.name}<span class="tag">agent</span></th>
+              <th scope="row" class="who" style:color={SIGNATURE[characterOf(row.id)]}>{row.name}<span class="tag">agent</span></th>
               <td class="n strong">{row.elo}</td>
               <td class="n">{RATING_GAMES * (AGENTS.length - 1)}</td>
               <td class="n wdl">{agentRecord(row.id)}</td>
@@ -180,7 +181,7 @@
     {:else if status === "offline"}
       <p>The player list could not be fetched. The agents' ratings above are measured offline and always shown.</p>
     {:else if board && board.total === 0}
-      <p>No players yet. Your first recorded match puts you on this sheet.</p>
+      <p>No players yet. Your first recorded match puts you on this table.</p>
     {:else if board}
       <p>
         {board.total}
@@ -204,7 +205,7 @@
   }
   .scroll {
     overflow-x: auto;
-    scrollbar-color: var(--rule-strong) var(--sheet);
+    scrollbar-color: var(--line) var(--panel);
   }
   table {
     width: 100%;
@@ -214,7 +215,7 @@
   th,
   td {
     padding: 9px 12px;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--line);
     text-align: left;
     white-space: nowrap;
   }
@@ -223,8 +224,8 @@
     font-weight: 650;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--ink-soft);
-    border-bottom: 2px solid var(--ink);
+    color: var(--text-dim);
+    border-bottom: 3px solid var(--edge);
   }
   .n {
     text-align: right;
@@ -237,13 +238,13 @@
   }
   .against {
     text-align: center;
-    border-left: 1px solid var(--rule);
+    border-left: 1px solid var(--line);
   }
   .swipe {
     display: none;
     padding: 4px 16px 8px;
     font-size: 0.85rem;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   @media (max-width: 760px) {
     .swipe {
@@ -256,7 +257,7 @@
   .who {
     position: sticky;
     left: 0;
-    background: var(--sheet);
+    background: var(--panel);
     font-weight: 650;
     min-width: 12ch;
   }
@@ -264,25 +265,25 @@
     font-weight: 780;
   }
   .vs {
-    border-left: 1px solid var(--rule);
+    border-left: 1px solid var(--line);
     min-width: 6.5ch;
   }
   .self {
-    background: repeating-linear-gradient(135deg, var(--rule) 0 1px, transparent 1px 6px);
+    background: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 6px);
   }
   .agent {
-    color: var(--agent);
-  }
-  .agent .who {
-    color: var(--agent);
+    color: var(--text-dim);
   }
   .me,
   .me .who {
-    background: var(--sheet-alt);
+    background: var(--panel-2);
   }
   .pinned td,
   .pinned th {
-    border-top: 2px solid var(--ink);
+    border-top: 3px solid var(--edge);
+  }
+  .me .who {
+    color: var(--you);
   }
   .tag {
     margin-left: 8px;
@@ -290,15 +291,13 @@
     font-weight: 650;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
-  .agent .tag {
-    color: var(--agent);
-  }
+
   .legend-note {
     padding: 12px 16px 0;
     max-width: 90ch;
-    color: var(--ink-soft);
+    color: var(--text-dim);
     font-size: 0.88rem;
   }
   .foot {
@@ -308,7 +307,7 @@
     justify-content: space-between;
     gap: 12px 24px;
     padding: 14px 16px 16px;
-    color: var(--ink-soft);
+    color: var(--text-dim);
     font-size: 0.92rem;
   }
   .foot p {
@@ -316,6 +315,6 @@
   }
   .all {
     font-weight: 700;
-    color: var(--ink);
+    color: var(--text);
   }
 </style>

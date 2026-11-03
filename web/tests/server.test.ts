@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { BOMB, NOOP } from "../src/engine/engine";
-import { newEngine, opponentFor, replay } from "../src/engine/match";
+import { newEngine, opponentFor, PLAY_MAPS, replay } from "../src/engine/match";
 import { PolicyNet, type Manifest } from "../src/engine/mlp";
 import { delta, expected, kFactor, stakes } from "../src/lib/elo";
 import { handleProblem } from "../src/lib/handle";
@@ -67,7 +67,7 @@ describe("replay verification", () => {
   it("reproduces a live match from its seed and input log", () => {
     for (const agent of ["heuristic", "two_fuse_hard", "two_fuse_normal"] as const) {
       const seed = 4242;
-      const engine = newEngine(seed);
+      const engine = newEngine(seed, PLAY_MAPS);
       const opponent = opponentFor(agent, seed, net);
       const inputs: number[] = [];
       let k = 0;

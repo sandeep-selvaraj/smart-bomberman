@@ -8,9 +8,9 @@ import { AGENTS, RATING_GAMES } from "../lib/agents";
 
 const v2 = training.two_fuse_v2.history;
 const curves = [
-  { id: "heuristic", label: "heuristic", color: "#2340a0", dash: "" },
-  { id: "camper", label: "camper", color: "#2340a0", dash: "7 5" },
-  { id: "wanderer", label: "wanderer", color: "#2340a0", dash: "2 4" },
+  { id: "heuristic", label: "heuristic", color: "#ece6d6", dash: "" },
+  { id: "camper", label: "camper", color: "#ece6d6", dash: "7 5" },
+  { id: "wanderer", label: "wanderer", color: "#ece6d6", dash: "2 4" },
 ].map((s) => ({
   ...s,
   points: v2.map((row) => ({
@@ -48,7 +48,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
       </p>
     </header>
 
-    <section class="prose sheet" aria-labelledby="start">
+    <section class="prose panel" aria-labelledby="start">
       <h2 id="start">It started by clearing maps, not fighting</h2>
       <p>
         The 2023 team project had a Bomberman game in pygame and several attempts at an agent. None could learn: the
@@ -70,7 +70,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     </section>
 
     <section class="wide" aria-labelledby="sees">
-      <div class="prose sheet">
+      <div class="prose panel">
         <h2 id="sees">What it sees</h2>
         <p>
           Two-Fuse never sees the whole board. Each step it reads a 9×9 window centred on itself, as nine planes: walls,
@@ -83,7 +83,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
       <AgentView client:visible />
     </section>
 
-    <section class="prose sheet" aria-labelledby="league">
+    <section class="prose panel" aria-labelledby="league">
       <h2 id="league">It trained against copies of itself</h2>
       <p>
         Two-Fuse trained by league self-play. Every 250,000 steps a snapshot of it joins the league. Each training match
@@ -112,7 +112,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     </section>
 
     <section class="wide" aria-labelledby="failure">
-      <div class="prose sheet">
+      <div class="prose panel">
         <h2 id="failure">The failure only a person found</h2>
         <p>
           The first champion, v1, beat the heuristic bot 66% of the time over 200 games on the original, denser arena. Then a person played it on hard
@@ -128,7 +128,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
       <ReplayCompare client:visible />
     </section>
 
-    <section class="prose sheet" aria-labelledby="fix">
+    <section class="prose panel" aria-labelledby="fix">
       <h2 id="fix">What changed in v2</h2>
       <ul>
         <li>
@@ -156,14 +156,14 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     </section>
 
     <section class="wide" id="results" aria-labelledby="results-title">
-      <div class="prose sheet">
+      <div class="prose panel">
         <h2 id="results-title">Results</h2>
         <p>
           200 games per bot, spread over arena_1, map_2 and map_3 with both starting corners, Two-Fuse playing its best
           move each step.
         </p>
       </div>
-      <figure class="dumbbell sheet">
+      <figure class="dumbbell panel">
         <figcaption>Win rate, v1 → v2</figcaption>
         <svg viewBox={`0 0 ${DW} 170`} role="img" aria-label="Win rate of v1 and v2 against each bot">
           {
@@ -193,7 +193,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
         <p class="key"><span><i class="k1"></i>v1</span><span><i class="k2"></i>v2</span></p>
       </figure>
       <div class="tables">
-        <table class="sheet">
+        <table class="panel">
           <caption>Against an opponent that never moves, 30 games</caption>
           <thead><tr><th scope="col"></th><th scope="col">v1</th><th scope="col">v2</th></tr></thead>
           <tbody>
@@ -202,7 +202,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
             <tr><th scope="row">Bombs per game</th><td>5.5</td><td>11.6</td></tr>
           </tbody>
         </table>
-        <table class="sheet">
+        <table class="panel">
           <caption>Elo from a round robin, {RATING_GAMES} games per pair</caption>
           <thead><tr><th scope="col">Agent</th><th scope="col">Elo</th></tr></thead>
           <tbody>
@@ -219,7 +219,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
           </tbody>
         </table>
       </div>
-      <div class="prose sheet caveats">
+      <div class="prose panel caveats">
         <h3>What is still weak</h3>
         <ul>
           <li>
@@ -255,11 +255,11 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     max-width: 52rem;
   }
   h1 {
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(2rem, 5.6vw, 4.2rem);
   }
   .lede {
     font-size: clamp(1.15rem, 1.6vw, 1.35rem);
-    color: var(--chalk);
+    color: var(--text);
     max-width: var(--measure);
   }
   .prose {
@@ -271,11 +271,11 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     line-height: 1.6;
   }
   .prose h2 {
-    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
     margin-bottom: 4px;
   }
   .prose h3 {
-    font-size: 1.4rem;
+    font-size: 1.1rem;
   }
   .prose ul {
     margin: 0;
@@ -288,7 +288,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     gap: 18px;
   }
   .aside {
-    color: var(--chalk-dim);
+    color: var(--text-dim);
     font-size: 0.92rem;
     max-width: var(--measure);
   }
@@ -307,34 +307,34 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     margin-top: 6px;
   }
   .grid {
-    stroke: #dfe1d9;
+    stroke: #3d3d50;
   }
   .tick {
     font-size: 12px;
-    fill: var(--ink-faint);
+    fill: var(--text-faint);
   }
   .label {
     font-size: 14px;
     font-weight: 600;
-    fill: var(--ink);
+    fill: var(--text);
   }
   .value {
     font-size: 13px;
     font-weight: 700;
-    fill: var(--ink);
+    fill: var(--text);
   }
   .link {
-    stroke: var(--rule-strong);
+    stroke: var(--line);
     stroke-width: 2;
   }
   .v1 {
-    fill: #8d928a;
-    stroke: var(--sheet);
+    fill: #7c7c92;
+    stroke: var(--panel);
     stroke-width: 2;
   }
   .v2 {
-    fill: var(--agent);
-    stroke: var(--sheet);
+    fill: var(--two-fuse);
+    stroke: var(--panel);
     stroke-width: 2;
   }
   .key {
@@ -342,7 +342,7 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     gap: 8px 16px;
     align-items: center;
     font-size: 0.88rem;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   .key i {
     width: 10px;
@@ -353,10 +353,10 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     vertical-align: -1px;
   }
   .k1 {
-    background: #8d928a;
+    background: #7c7c92;
   }
   .k2 {
-    background: var(--agent);
+    background: var(--two-fuse);
   }
   .tables {
     display: grid;
@@ -373,13 +373,13 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     text-align: left;
     font-weight: 700;
     padding: 16px 18px 8px;
-    background: var(--sheet);
-    color: var(--ink);
+    background: var(--panel);
+    color: var(--text);
   }
   th,
   td {
     padding: 8px 18px;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--line);
     text-align: right;
   }
   th[scope="row"] {
@@ -390,8 +390,8 @@ const minElo = Math.min(...AGENTS.map((a) => a.elo));
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--ink-soft);
-    border-bottom: 2px solid var(--ink);
+    color: var(--text-dim);
+    border-bottom: 3px solid var(--edge);
   }
   .caveats {
     max-width: none;

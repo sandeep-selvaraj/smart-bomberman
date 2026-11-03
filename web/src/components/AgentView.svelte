@@ -1,6 +1,6 @@
 <script lang="ts">
   /**
-   * What Two-Fuse sees, live: a seeded match of Two-Fuse (black here) against
+   * What Two-Fuse sees, live: a seeded match of Two-Fuse against
    * the heuristic bot, the 9x9 window it reads outlined on the board, one of
    * its input planes drawn cell for cell beside it, and the move
    * probabilities its network gives.
@@ -87,10 +87,17 @@
 
 <figure class="view">
   <div class="panes">
-    <div class="pane board">
-      <Board {engine} {tick} tickMs={1000 / TPS} viewFor={0} maxCell={30} label="The match Two-Fuse is playing, with its 9 by 9 view outlined" />
+    <div class="pane board panel">
+      <Board skins={["two_fuse_hard", "heuristic"]} {engine} {tick} tickMs={1000 / TPS} viewFor={0} label="The match Two-Fuse is playing, with its 9 by 9 view outlined" />
+      <div class="controls">
+    <button class="btn" type="button" onclick={toggle} disabled={!ready}>{running ? "Pause" : tick ? "Resume" : "Play"}</button>
+    <button class="btn btn-step" type="button" onclick={step} disabled={!ready || running}>One step</button>
+    <span>
+      {failed ? "The network could not be loaded." : `Two-Fuse on hard (red and white) against the heuristic robot. Step ${reading.steps}.`}
+    </span>
+      </div>
     </div>
-    <div class="pane eye">
+    <div class="pane eye panel">
       <p class="head">{PLANES.find((p) => p.index === plane)?.label} plane</p>
       <div class="grid" role="img" aria-label="The 9 by 9 input plane, registered to the outlined window">
         {#each Array(VIEW * VIEW) as _, i (i)}
@@ -115,13 +122,6 @@
       </ol>
     </div>
   </div>
-  <figcaption>
-    <button class="btn" type="button" onclick={toggle} disabled={!ready}>{running ? "Pause" : tick ? "Resume" : "Play"}</button>
-    <button class="btn btn-step" type="button" onclick={step} disabled={!ready || running}>One step</button>
-    <span>
-      {failed ? "The network could not be loaded." : `Two-Fuse on hard is the black piece; the blue one is the heuristic bot. Step ${reading.steps}.`}
-    </span>
-  </figcaption>
 </figure>
 
 <style>
@@ -136,15 +136,16 @@
     gap: 14px;
   }
   .pane {
-    background: var(--sheet);
-    color: var(--ink);
+    background: var(--panel);
+    color: var(--text);
     padding: 14px;
-    box-shadow: var(--shadow-sheet);
+    
     min-width: 0;
   }
   .board {
     display: grid;
-    align-items: center;
+    align-content: space-between;
+    gap: 14px;
   }
   .head {
     font-weight: 700;
@@ -158,16 +159,16 @@
   }
   .grid i {
     aspect-ratio: 1;
-    background: var(--ink);
+    background: var(--text);
     border-radius: 1px;
   }
   .grid i.centre {
-    outline: 2px solid var(--agent);
+    outline: 2px solid var(--two-fuse);
     outline-offset: -1px;
   }
   .note {
     font-size: 0.86rem;
-    color: var(--ink-soft);
+    color: var(--text-dim);
     min-height: 2.6em;
   }
   .planes {
@@ -177,20 +178,23 @@
     margin: 10px 0 18px;
   }
   .planes button {
-    border: 1px solid var(--rule-strong);
-    background: transparent;
-    border-radius: 2px;
-    padding: 4px 9px;
-    font-size: 0.84rem;
+    border: 2px solid var(--edge);
+    border-radius: 3px;
+    background: var(--panel-2);
+    padding: 5px 9px 6px;
+    font-family: var(--pixel);
+    font-size: 0.72rem;
     cursor: pointer;
+    box-shadow:
+      inset 0 2px 0 var(--bevel-light),
+      inset 0 -3px 0 var(--bevel-dark);
   }
   .planes button[aria-checked="true"] {
-    background: var(--ink);
-    color: var(--sheet);
-    border-color: var(--ink);
+    background: var(--you);
+    color: var(--bg-deep);
   }
   .moves-head {
-    border-top: 1px solid var(--rule);
+    border-top: 1px solid var(--line);
     padding-top: 12px;
   }
   .moves {
@@ -209,14 +213,14 @@
   }
   .bar {
     height: 8px;
-    background: var(--sheet-alt);
+    background: var(--panel-2);
     border-radius: 2px;
     overflow: hidden;
   }
   .bar i {
     display: block;
     height: 100%;
-    background: var(--rule-strong);
+    background: var(--line);
     border-radius: 0 2px 2px 0;
     transition: width 200ms var(--ease-out);
   }
@@ -224,29 +228,29 @@
     font-weight: 700;
   }
   .best .bar i {
-    background: var(--ink);
+    background: var(--text);
   }
   .moves .num {
     text-align: right;
   }
-  figcaption {
+  .controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px 14px;
-    color: var(--chalk-dim);
+    color: var(--text-dim);
     font-size: 0.92rem;
   }
-  figcaption .btn {
-    background: var(--sheet);
-    color: var(--ink);
+  .controls .btn {
+    background: var(--panel);
+    color: var(--text);
     padding: 0.7em 1.2em;
     font-size: 1rem;
   }
-  figcaption .btn:hover:not(:disabled) {
+  .controls .btn:hover:not(:disabled) {
     background: #fff;
   }
-  figcaption .btn:disabled {
+  .controls .btn:disabled {
     opacity: 0.6;
   }
   @media (max-width: 860px) {

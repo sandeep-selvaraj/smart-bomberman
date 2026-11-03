@@ -4,7 +4,8 @@
    * ratings with your own row ruled in among them. When a result is recorded
    * your row is rewritten with the new rating.
    */
-  import { AGENTS } from "../lib/agents";
+  import { SIGNATURE } from "../art/sprites";
+  import { AGENTS, characterOf } from "../lib/agents";
 
   interface Props {
     rating: number;
@@ -16,14 +17,14 @@
 
   let rows = $derived(
     [
-      ...AGENTS.map((a) => ({ id: a.id as string, name: a.name, elo: a.elo, you: false })),
-      { id: "you", name: handle ?? "You", elo: rating, you: true },
+      ...AGENTS.map((a) => ({ id: a.id as string, name: a.name, elo: a.elo, you: false, color: SIGNATURE[characterOf(a.id)] })),
+      { id: "you", name: handle ?? "You", elo: rating, you: true, color: SIGNATURE.you },
     ].sort((a, b) => b.elo - a.elo),
   );
   const signed = (n: number): string => (n > 0 ? `+${n}` : `−${-n}`);
 </script>
 
-<section class="standings sheet" aria-labelledby="standings-mini">
+<section class="standings panel" aria-labelledby="standings-mini">
   <table>
     <caption id="standings-mini">Where you stand</caption>
     <thead>
@@ -31,7 +32,7 @@
     </thead>
     <tbody>
       {#each rows as row (row.id)}
-        <tr class:you={row.you}>
+        <tr class:you={row.you} style:color={row.color}>
           <th scope="row">{row.name}</th>
           <td class="n num">
             {#if row.you && change}<span class="change" class:down={change < 0}>{signed(change)}</span>{/if}
@@ -54,15 +55,15 @@
   }
   caption {
     text-align: left;
-    font-weight: 760;
-    font-stretch: 78%;
-    font-size: 1.35rem;
+    font-family: var(--pixel);
+    font-weight: 700;
+    font-size: 1.15rem;
     padding-bottom: 8px;
   }
   th,
   td {
     padding: 6px 4px;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--line);
     text-align: left;
     font-weight: 500;
   }
@@ -71,21 +72,20 @@
     font-weight: 650;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--ink-soft);
-    border-bottom: 2px solid var(--ink);
+    color: var(--text-dim);
+    border-bottom: 3px solid var(--edge);
   }
   tbody th,
   tbody td {
-    color: var(--agent);
+    color: inherit;
   }
   .n {
     text-align: right;
   }
   .you th,
   .you td {
-    color: var(--ink);
     font-weight: 780;
-    background: var(--sheet-alt);
+    background: var(--panel-2);
   }
   .change {
     margin-right: 10px;
@@ -93,7 +93,7 @@
     animation: written 600ms var(--ease-out);
   }
   .change.down {
-    color: var(--flag-ink);
+    color: var(--danger);
   }
   @keyframes written {
     from {

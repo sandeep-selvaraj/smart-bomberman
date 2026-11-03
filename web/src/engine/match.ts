@@ -12,6 +12,8 @@ import { SeedRng, STREAM } from "./rng";
 
 export const MAP_NAMES = ["arena_1", "map_2", "map_3"] as const;
 export type MapName = (typeof MAP_NAMES)[number];
+/** Live matches use the arena built for Battle mode; the agents were rated across all three maps. */
+export const PLAY_MAPS: readonly MapName[] = ["arena_1"];
 
 export const AGENT_IDS = ["wanderer", "camper", "heuristic", "two_fuse_normal", "two_fuse_hard"] as const;
 export type AgentId = (typeof AGENT_IDS)[number];
@@ -24,14 +26,14 @@ export function layoutFor(name: MapName): Layout {
 }
 
 /** The map and coin flip a seed decides (stream 3), like web_export.match_setup. */
-export function matchSetup(seed: number): { map: MapName; swap: boolean } {
+export function matchSetup(seed: number, maps: readonly MapName[] = MAP_NAMES): { map: MapName; swap: boolean } {
   const rng = new SeedRng(seed, STREAM.setup);
-  const map = MAP_NAMES[rng.integers(MAP_NAMES.length)]!;
+  const map = maps[rng.integers(maps.length)]!;
   return { map, swap: rng.random() < 0.5 };
 }
 
-export function newEngine(seed: number): VersusEngine {
-  const { map, swap } = matchSetup(seed);
+export function newEngine(seed: number, maps: readonly MapName[] = MAP_NAMES): VersusEngine {
+  const { map, swap } = matchSetup(seed, maps);
   return new VersusEngine(layoutFor(map), new SeedRng(seed, STREAM.engine), swap);
 }
 
@@ -62,8 +64,14 @@ export interface MatchResult {
 }
 
 /** Replay a human input log against an agent from the seed; the server's verification. */
-export function replay(agent: AgentId, seed: number, inputs: readonly number[], net: PolicyNet | null): MatchResult {
-  const engine = newEngine(seed);
+export function replay(
+  agent: AgentId,
+  seed: number,
+  inputs: readonly number[],
+  net: PolicyNet | null,
+  maps: readonly MapName[] = PLAY_MAPS,
+): MatchResult {
+  const engine = newEngine(seed, maps);
   const opponent = opponentFor(agent, seed, net);
   for (const input of inputs) {
     if (engine.finished) break;

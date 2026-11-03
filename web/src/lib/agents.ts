@@ -1,5 +1,6 @@
 /** The ladder's agents with their measured ratings (src/data/agents.json, written by web_export.rate_agents). */
 import data from "../data/agents.json";
+import type { CharacterKey } from "../art/sprites";
 import type { AgentId } from "../engine/match";
 
 export interface Agent {
@@ -20,3 +21,6 @@ export const isTwoFuse = (id: AgentId): boolean => id.startsWith("two_fuse");
 export const shortName = (id: AgentId): string => (isTwoFuse(id) ? "Two-Fuse" : AGENT_BY_ID[id].name);
 export const level = (id: AgentId): string | null =>
   id === "two_fuse_hard" ? "hard" : id === "two_fuse_normal" ? "normal" : null;
+
+/** Each agent's character on the board and in portraits (their ids double as character keys). */
+export const characterOf = (id: AgentId): CharacterKey => id;

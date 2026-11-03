@@ -21,7 +21,7 @@ const links = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#1d4a37" />
+    <meta name="theme-color" content="#1e1e28" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
   </head>
@@ -47,7 +47,7 @@ const links = [
       <slot />
     </main>
     <footer class="credits">
-      <div class="credits-sheet sheet">
+      <div class="credits-panel panel">
         <p class="origin">
           Started as the <strong>Visual Computing Team Project 2023</strong> at TU Dresden, Faculty IMLD, by Divyendu Dutta, Juhyun Jonathan Seo, Ken Nakahara and Sandeep Selvaraj.
         </p>
@@ -68,8 +68,8 @@ const links = [
     position: absolute;
     left: var(--gutter);
     top: -40px;
-    background: var(--sheet);
-    color: var(--ink);
+    background: var(--you);
+    color: var(--bg-deep);
     padding: 8px 12px;
     z-index: 10;
   }
@@ -83,16 +83,16 @@ const links = [
     gap: 24px;
     padding: 0 var(--gutter);
     min-height: 64px;
-    border-bottom: 1px solid var(--felt-deep);
-    box-shadow: 0 1px 0 var(--felt-seam);
+    background: var(--bg-deep);
+    border-bottom: 3px solid var(--edge);
   }
   .mark {
-    font-weight: 800;
-    font-stretch: 80%;
-    font-size: 1.35rem;
-    letter-spacing: 0.035em;
+    font-family: var(--pixel);
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0;
     text-decoration: none;
-    color: var(--chalk);
+    color: var(--you);
   }
   nav ul {
     display: flex;
@@ -102,27 +102,28 @@ const links = [
     padding: 0;
   }
   nav a {
-    color: var(--chalk-dim);
+    font-family: var(--pixel);
+    font-size: 0.9rem;
+    color: var(--text-dim);
     text-decoration: none;
-    font-size: 1rem;
-    padding: 20px 0 18px;
+    padding: 20px 0 17px;
     display: inline-block;
-    border-bottom: 2px solid transparent;
+    border-bottom: 3px solid transparent;
   }
   nav a:hover {
-    color: var(--chalk);
+    color: var(--text);
   }
   nav a[aria-current="page"] {
-    color: var(--chalk);
-    border-bottom-color: var(--chalk);
+    color: var(--text);
+    border-bottom-color: var(--you);
   }
   .credits {
     padding: 72px var(--gutter) 48px;
   }
-  .credits-sheet {
+  .credits-panel {
     max-width: 1344px;
     margin: 0 auto;
-    padding: 24px 28px;
+    padding: 22px 26px;
     display: grid;
     gap: 10px;
     font-size: 0.95rem;
@@ -134,7 +135,7 @@ const links = [
     display: flex;
     flex-wrap: wrap;
     gap: 8px 12px;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   @media (max-width: 640px) {
     .bar {

@@ -1,13 +1,17 @@
 <script lang="ts">
   /**
-   * The twin chess clock above the board. Each face belongs to one fighter and
-   * shows their bomb: ready, or the fuse still burning. The red panel counts
-   * down to sudden death; when it hits zero its flag falls and it counts the
-   * open cells the arena has left. Cells never reflow; only values change.
+   * The match HUD above the arena, like the original game's top bar: each
+   * fighter's portrait and bomb, and the countdown to sudden death in the
+   * middle. When it runs out the timer turns into the original red SUDDEN
+   * DEATH banner and counts the cells the arena has left. Cells never reflow.
    */
+  import type { CharacterKey } from "../art/sprites";
+  import { SIGNATURE } from "../art/sprites";
+  import Sprite from "./Sprite.svelte";
+
   interface Side {
     name: string;
-    agent: boolean;
+    character: CharacterKey;
     alive: boolean;
     fuse: number | null; // steps left on their live bomb, or null when the bomb is ready
   }
@@ -33,133 +37,169 @@
   let warning = $derived(!fallen && suddenDeathStart - steps <= 12);
   let left = $derived(clock(suddenDeathStart - steps));
   let hardEnd = $derived(clock(maxSteps));
+  const status = (side: Side): string => (!side.alive ? "Out" : side.fuse === null ? "Bomb ready" : `Fuse ${side.fuse}`);
 </script>
 
-<div class="clock" role="group" aria-label="Match clock">
+<div class="hud panel" role="group" aria-label="Match status">
   {#each [you, them] as side, i (i)}
-    <div class="face" class:agent={side.agent} class:out={!side.alive}>
-      <span class="who">{side.name}</span>
-      <span class="reading num" aria-live="off">
-        {#if !side.alive}
-          Out
-        {:else if side.fuse === null}
-          Bomb ready
-        {:else}
-          Fuse {side.fuse}
-        {/if}
-      </span>
+    <div class="side" class:right={i === 1} class:out={!side.alive}>
+      <Sprite character={side.character} size={44} dim={!side.alive} />
+      <div class="who">
+        <span class="name" style:color={SIGNATURE[side.character]}>{side.name}</span>
+        <span class="status" class:lit={side.fuse !== null && side.alive}>
+          <i class="bomb" class:spent={side.fuse !== null || !side.alive} aria-hidden="true"></i>{status(side)}
+        </span>
+      </div>
     </div>
   {/each}
-  <div class="flag-panel" class:fallen class:warning>
-    <span class="flag" aria-hidden="true"></span>
-    <span class="who">{fallen ? "Arena closing" : "Sudden death in"}</span>
-    <span class="reading num">{fallen ? `${openCells} cells left` : left}</span>
+  <div class="timer" class:fallen class:warning>
+    {#if fallen}
+      <span class="value banner">Sudden death</span>
+      <span class="cells num">{openCells} cells left</span>
+    {:else}
+      <span class="label">Sudden death in</span>
+      <span class="value num">{left}</span>
+    {/if}
     <span class="end">Hard end {hardEnd}</span>
   </div>
 </div>
 
 <style>
-  .clock {
+  .hud {
     display: grid;
-    grid-template-columns: 1fr 1fr minmax(150px, 0.8fr);
-    gap: 8px;
-    padding: 8px;
-    background: var(--bezel);
-    border-radius: 6px;
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.06),
-      0 10px 24px -16px rgb(0 0 0 / 0.7);
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "you timer them";
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg-deep);
   }
-  .face,
-  .flag-panel {
-    position: relative;
-    display: grid;
-    align-content: center;
-    gap: 2px;
-    min-height: 84px;
-    padding: 10px 16px 12px;
-    background: var(--sheet);
-    color: var(--ink);
-    border-radius: 2px;
+  .side {
+    grid-area: you;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .side.right {
+    grid-area: them;
+    flex-direction: row-reverse;
+    text-align: right;
   }
   .who {
-    font-size: 0.8rem;
-    font-weight: 650;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    display: grid;
+    min-width: 0;
+  }
+  .name {
+    font-family: var(--pixel);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .reading {
-    font-size: clamp(1.4rem, 2.6vw, 2.35rem);
-    font-weight: 780;
-    line-height: 1.05;
+  .status {
+    font-family: var(--pixel);
+    font-size: 0.82rem;
     white-space: nowrap;
+    color: var(--text-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
-  .agent .reading,
-  .agent .who {
-    color: var(--agent);
+  .right .status {
+    flex-direction: row-reverse;
   }
-  .out {
-    background: var(--sheet-alt);
+  .status.lit {
+    color: var(--fuse);
   }
-  .out .reading {
-    color: var(--ink-faint);
+  .bomb {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    background: var(--floor) url("/sprites/bomb.png") 0 0 / 32px 16px;
+    image-rendering: pixelated;
   }
-  /* paper until sudden death; the flag falls and the panel turns red only then */
-  .flag-panel {
-    overflow: hidden;
-    transition:
-      background 500ms var(--ease-out) 300ms,
-      color 500ms var(--ease-out) 300ms;
+  .bomb.spent {
+    opacity: 0.3;
   }
-  .warning .reading {
-    color: var(--flag-ink);
+  .out .name {
+    opacity: 0.5;
   }
-  .fallen {
-    background: var(--flag);
-    color: #fff;
+  .timer {
+    grid-area: timer;
+    display: grid;
+    justify-items: center;
+    min-width: 170px;
+    padding: 6px 14px;
+    border-radius: 3px;
+    font-family: var(--pixel);
+  }
+  .label,
+  .banner {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.1;
   }
   .end {
-    font-size: 0.78rem;
-    opacity: 0.92;
+    font-size: 0.72rem;
+    color: var(--text-faint);
   }
-  /* the clock's flag: a small pennant that falls when sudden death begins */
-  .flag {
-    position: absolute;
-    top: 6px;
-    right: 14px;
-    width: 2px;
-    height: 24px;
-    background: var(--ink);
-    transform-origin: 1px 24px;
-    transition: transform 650ms cubic-bezier(0.5, 0, 0.75, 0); /* a fall accelerates */
+  .warning .value {
+    color: var(--danger);
   }
-  .flag::after {
-    content: "";
-    position: absolute;
-    left: 2px;
-    top: 0;
-    width: 16px;
-    height: 11px;
-    background: var(--flag);
-    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  .fallen {
+    background: var(--danger);
+    color: var(--bg-deep);
+    animation: drop 500ms var(--ease-out);
   }
-  .fallen .flag {
-    transform: rotate(100deg);
-    background: #fff;
+  .fallen .banner {
+    color: var(--bg-deep);
+    font-size: 1.35rem;
+    letter-spacing: 0;
+    animation: blink 900ms steps(2, start) 3;
   }
-  .fallen .flag::after {
-    background: #fff;
+  .cells {
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .fallen .end {
+    color: var(--bg-deep);
+  }
+  @keyframes drop {
+    from {
+      transform: translateY(-10px) scale(1.12);
+    }
+  }
+  @keyframes blink {
+    to {
+      opacity: 0.6;
+    }
   }
   @media (max-width: 720px) {
-    .clock {
+    .hud {
       grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "you them"
+        "timer timer";
     }
-    .flag-panel {
-      grid-column: 1 / -1;
-      min-height: 64px;
+    .name {
+      font-size: 0.9rem;
+    }
+    .status {
+      font-size: 0.7rem;
+    }
+    .side :global(canvas) {
+      width: 32px !important;
+      height: 32px !important;
     }
   }
 </style>

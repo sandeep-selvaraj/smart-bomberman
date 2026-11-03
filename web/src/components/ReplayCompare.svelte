@@ -76,9 +76,9 @@
 <figure class="compare">
   <div class="lanes">
     {#each lanes as lane (lane.id)}
-      <div class="lane">
+      <div class="lane panel">
         <p class="name"><strong>{lane.label}</strong> against an opponent that never moves</p>
-        <div class="board"><Board engine={lane.engine} {tick} tickMs={1000 / TPS} maxCell={26} label={`${lane.label} replay board`} /></div>
+        <div class="board"><Board skins={["two_fuse_normal", "you"]} engine={lane.engine} {tick} tickMs={1000 / TPS} label={`${lane.label} replay board`} /></div>
         <p class="stat num" aria-live="polite">{verdict(lane)}</p>
       </div>
     {/each}
@@ -87,7 +87,7 @@
     <button class="btn" type="button" onclick={run} disabled={state === "loading" || state === "running"}>
       {state === "running" ? "Playing…" : state === "loading" ? "Loading both networks…" : state === "done" ? "Play again" : "Play both"}
     </button>
-    <span>Same seed, same map (map 3), both at twice the game's speed. The black piece is the agent; the blue one never moves.</span>
+    <span>Same seed, same map (map 3), both at twice the game's speed. Two-Fuse is the split bomb; the figure in the yellow jacket never moves.</span>
     {#if state === "error"}<span class="error">The networks could not be loaded.</span>{/if}
   </figcaption>
 </figure>
@@ -104,10 +104,10 @@
     gap: 14px;
   }
   .lane {
-    background: var(--sheet);
-    color: var(--ink);
+    background: var(--panel);
+    color: var(--text);
     padding: 14px;
-    box-shadow: var(--shadow-sheet);
+    
     min-width: 0;
   }
   .name {
@@ -123,18 +123,18 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 10px 18px;
-    color: var(--chalk-dim);
+    color: var(--text-dim);
     font-size: 0.92rem;
   }
   figcaption .btn {
-    background: var(--sheet);
-    color: var(--ink);
+    background: var(--panel);
+    color: var(--text);
   }
   figcaption .btn:hover:not(:disabled) {
     background: #fff;
   }
   .error {
-    color: var(--chalk);
+    color: var(--text);
     font-weight: 700;
   }
   @media (max-width: 760px) {

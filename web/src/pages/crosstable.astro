@@ -15,7 +15,7 @@ import { kFactor, PROVISIONAL_GAMES, START_RATING } from "../lib/elo";
       <h1>Crosstable</h1>
       <p>
         The agents are fixed anchors: their ratings come from a round robin of {RATING_GAMES} games per pair on three
-        maps. Players start at {START_RATING} and move after every match the server has replayed and verified. New
+        maps (arena_1, map_2, map_3); matches on this site are played on arena_1. Players start at {START_RATING} and move after every match the server has replayed and verified. New
         players move faster ({kFactor(0)} points per full result for their first {PROVISIONAL_GAMES} games, then {
           kFactor(PROVISIONAL_GAMES)
         }).
@@ -40,16 +40,16 @@ import { kFactor, PROVISIONAL_GAMES, START_RATING } from "../lib/elo";
     margin-bottom: 24px;
   }
   h1 {
-    font-size: clamp(2.6rem, 6vw, 4.5rem);
+    font-size: clamp(2rem, 5vw, 3.4rem);
   }
   .intro p {
     max-width: var(--measure);
-    color: var(--chalk-dim);
+    color: var(--text-dim);
     font-size: 1.05rem;
   }
   .anchors {
     margin-top: 14px;
-    color: var(--chalk-dim);
+    color: var(--text-dim);
     font-size: 0.9rem;
   }
 </style>

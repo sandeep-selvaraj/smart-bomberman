@@ -1,40 +1,46 @@
-/* The tournament hall: felt owns the page, paper carries the content, colour only ever means state. */
+/*
+ * The game, on the web: the pygame HUD's navy (30, 30, 40) is the page, the
+ * arena keeps its grey floor and original tiles, panels are bevelled like a
+ * game menu, and pixel lettering is for the game's own words. Reading text
+ * stays in a plain sans.
+ */
 @import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource/silkscreen/400.css";
+@import "@fontsource/silkscreen/700.css";
 
 :root {
-  /* felt: the table every sheet is pinned to */
-  --felt: #1d4a37;
-  --felt-deep: #163a2b;
-  --felt-seam: #24553f;
-  --bezel: #0f2a1f;
-  --chalk: #eef3ee; /* text on felt */
-  --chalk-dim: #b9cdbf;
-
-  /* paper */
-  --sheet: #f4f5f0;
-  --sheet-alt: #e9ebe3;
-  --rule: #c9ccc2;
-  --rule-strong: #8d928a;
-  --ink: #141618;
-  --ink-soft: #4a5054;
-  --ink-faint: #5b6166;
+  --bg: #1e1e28; /* the pygame HUD bar */
+  --bg-deep: #14141c;
+  --panel: #2a2a37;
+  --panel-2: #333345;
+  --edge: #0c0c12;
+  --bevel-light: rgb(255 255 255 / 0.09);
+  --bevel-dark: rgb(0 0 0 / 0.35);
+  --line: #46465c;
+  --text: #f4f4f6;
+  --text-dim: #b7b7c9;
+  --text-faint: #9a9ab0;
+  --floor: #808080; /* the arena floor of the original game */
 
   /* state */
-  --you: #141618;
-  --agent: #2340a0; /* carbon-copy blue: Two-Fuse and every agent */
-  --agent-wash: #dfe4f3;
-  --flag: #d93a2b; /* danger, sudden death, losses (fills) */
-  --flag-ink: #b52a1e; /* the same red where it sets text on paper */
-  --win: #141618;
+  --you: #f2b51d;
+  --danger: #ff5a5a; /* the original HUD's SUDDEN DEATH red */
+  --fuse: #ff8a1f;
 
+  /* characters (see src/art/sprites.ts SIGNATURE) */
+  --camper: #5fb36a;
+  --wanderer: #3fc9b8;
+  --heuristic: #c4ccd4;
+  --two-fuse: #ece6d6;
+  --two-fuse-hard: #ff6a5a;
+
+  --pixel: "Silkscreen", monospace;
   --font: "Archivo Variable", "Archivo", system-ui, sans-serif;
-  --narrow: 72; /* font-stretch for display and numerals */
   --gutter: clamp(16px, 3.4vw, 48px);
   --measure: 68ch;
-  --shadow-sheet: 0 1px 0 var(--felt-deep), 0 10px 24px -14px rgb(5 20 13 / 0.55);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 *,
@@ -44,40 +50,34 @@
 }
 
 html {
-  background: var(--felt);
-  color: var(--chalk);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font);
-  font-size: 100%;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
-  scrollbar-color: var(--felt-seam) var(--felt-deep);
+  scrollbar-color: var(--line) var(--bg-deep);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--felt);
+  background: var(--bg);
   font-variant-numeric: tabular-nums;
 }
 
 ::selection {
-  background: var(--agent);
-  color: var(--sheet);
+  background: var(--you);
+  color: var(--bg-deep);
 }
 
 :focus-visible {
-  outline: 3px solid var(--chalk);
+  outline: 3px solid var(--you);
   outline-offset: 3px;
-}
-
-.sheet :focus-visible,
-.on-sheet :focus-visible {
-  outline-color: var(--agent);
 }
 
 a {
   color: inherit;
-  text-underline-offset: 0.2em;
+  text-underline-offset: 0.22em;
   text-decoration-thickness: 1px;
 }
 
@@ -88,10 +88,10 @@ a:hover {
 h1,
 h2,
 h3 {
-  font-stretch: 78%;
-  font-weight: 760;
-  line-height: 1.02;
-  letter-spacing: -0.012em;
+  font-family: var(--pixel);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0;
   margin: 0;
   text-wrap: balance;
 }
@@ -106,21 +106,23 @@ button {
   color: inherit;
 }
 
-/* A sheet of paper pinned to the felt. */
-.sheet {
-  background: var(--sheet);
-  color: var(--ink);
-  box-shadow: var(--shadow-sheet);
+/* A game-menu panel: flat fill, a dark frame and a one-pixel bevel. */
+.panel {
+  background: var(--panel);
+  color: var(--text);
+  border: 3px solid var(--edge);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 2px 0 var(--bevel-light),
+    inset 0 -3px 0 var(--bevel-dark);
 }
 
-.sheet ::selection {
-  background: var(--agent);
-  color: var(--sheet);
+.pixel {
+  font-family: var(--pixel);
 }
 
 .num {
   font-variant-numeric: tabular-nums;
-  font-stretch: 72%;
 }
 
 .visually-hidden {
@@ -132,48 +134,53 @@ button {
   white-space: nowrap;
 }
 
-/* The one black button on a slip. */
+/* The game's button: yellow is your colour, so your actions wear it. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.6em;
-  border: 0;
-  border-radius: 2px;
-  padding: 0.95em 1.4em;
-  background: var(--ink);
-  color: var(--sheet);
-  font-size: 1.1rem;
+  border: 3px solid var(--edge);
+  border-radius: 4px;
+  padding: 0.75em 1.3em;
+  background: var(--you);
+  color: var(--bg-deep);
+  font-family: var(--pixel);
+  font-size: 1rem;
   font-weight: 700;
-  font-stretch: 85%;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   cursor: pointer;
+  box-shadow:
+    inset 0 3px 0 rgb(255 255 255 / 0.35),
+    inset 0 -4px 0 rgb(0 0 0 / 0.22);
   transition:
-    background 160ms var(--ease-out),
-    transform 160ms var(--ease-out);
+    filter 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
 }
 
 .btn:hover {
-  background: #2a2e31;
+  filter: brightness(1.08);
 }
 
 .btn:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.22);
 }
 
 .btn:disabled {
-  background: var(--rule-strong);
+  background: var(--line);
+  color: var(--text-dim);
   cursor: not-allowed;
+  filter: none;
+  transform: none;
 }
 
 .btn-quiet {
-  background: transparent;
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1.5px var(--ink);
-}
-
-.btn-quiet:hover {
-  background: var(--sheet-alt);
+  background: var(--panel-2);
+  color: var(--text);
+  box-shadow:
+    inset 0 2px 0 var(--bevel-light),
+    inset 0 -3px 0 var(--bevel-dark);
 }
 
 @media (prefers-reduced-motion: reduce) {

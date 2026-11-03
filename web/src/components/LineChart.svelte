@@ -1,6 +1,6 @@
 <script lang="ts">
   /**
-   * A small line chart on paper: hairline grid, 2px lines, end labels, and a
+   * A small line chart on a game panel: hairline grid, 2px lines, end labels, and a
    * crosshair tooltip. Series are told apart by dash pattern and direct labels,
    * not by colour, because on this site colour only ever means state. The
    * drawing is laid out at its real pixel width, so text never shrinks.
@@ -103,7 +103,7 @@
           stroke-linejoin="round"
           stroke-linecap="round"
         />
-        <circle cx={px(last.x)} cy={py(last.y)} r="4.5" fill={s.color} stroke="#f4f5f0" stroke-width="2" />
+        <circle cx={px(last.x)} cy={py(last.y)} r="4.5" fill={s.color} stroke="#2a2a37" stroke-width="2" />
       {/each}
       {#each ends as { s, y } (s.id)}
         <text x={W - M.right + 10} {y} class="end" dominant-baseline="middle">
@@ -115,7 +115,7 @@
         {#each series as s (s.id)}
           {@const p = s.points.find((q) => q.x === xs[hover!])}
           {#if p}
-            <circle cx={px(p.x)} cy={py(p.y)} r="5" fill={s.color} stroke="#f4f5f0" stroke-width="2" />
+            <circle cx={px(p.x)} cy={py(p.y)} r="5" fill={s.color} stroke="#2a2a37" stroke-width="2" />
           {/if}
         {/each}
       {/if}
@@ -157,9 +157,9 @@
   .chart {
     margin: 0;
     padding: 20px 22px 16px;
-    background: var(--sheet);
-    color: var(--ink);
-    box-shadow: var(--shadow-sheet);
+    background: var(--panel);
+    color: var(--text);
+    
   }
   figcaption {
     font-weight: 700;
@@ -173,7 +173,7 @@
     padding: 0;
     list-style: none;
     font-size: 0.88rem;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   .legend li {
     display: inline-flex;
@@ -190,21 +190,21 @@
     touch-action: pan-y;
   }
   .grid {
-    stroke: #dfe1d9;
+    stroke: #3d3d50;
     stroke-width: 1;
   }
   .tick {
     font-size: 12px;
-    fill: var(--ink-faint);
+    fill: var(--text-faint);
     font-variant-numeric: tabular-nums;
   }
   .end {
     font-size: 12.5px;
-    fill: var(--ink);
+    fill: var(--text);
     font-weight: 600;
   }
   .cross {
-    stroke: var(--rule-strong);
+    stroke: var(--line);
     stroke-width: 1;
   }
   .tip {
@@ -215,7 +215,7 @@
     gap: 2px;
     padding: 8px 10px;
     background: #fff;
-    border: 1px solid var(--rule);
+    border: 1px solid var(--line);
     border-radius: 3px;
     box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.4);
     font-size: 0.82rem;
@@ -228,7 +228,7 @@
   }
   summary {
     cursor: pointer;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   table {
     margin-top: 8px;
@@ -239,6 +239,6 @@
   td {
     padding: 4px 12px 4px 0;
     text-align: right;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid var(--line);
   }
 </style>

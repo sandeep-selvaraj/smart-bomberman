@@ -9,10 +9,11 @@
    */
   import { onMount } from "svelte";
   import { BOMB, DOWN, LEFT, NOOP, RIGHT, UP, type Action, type VersusEngine } from "../engine/engine";
-  import { needsNet, newEngine, opponentFor, matchSetup, type AgentId } from "../engine/match";
+  import { matchSetup, needsNet, newEngine, opponentFor, PLAY_MAPS, type AgentId } from "../engine/match";
   import { loadPolicyNet, type PolicyNet } from "../engine/mlp";
   import type { Policy } from "../engine/policies";
-  import { AGENTS, AGENT_BY_ID, isTwoFuse, level, shortName } from "../lib/agents";
+  import { SIGNATURE } from "../art/sprites";
+  import { AGENTS, AGENT_BY_ID, characterOf, level, shortName } from "../lib/agents";
   import { ApiError, startMatch, submitMatch } from "../lib/api";
   import { START_RATING, stakes, type Outcome } from "../lib/elo";
   import { handleProblem, HANDLE_MAX } from "../lib/handle";
@@ -20,6 +21,7 @@
   import Board from "./Board.svelte";
   import Clock from "./Clock.svelte";
   import Ladder from "./Ladder.svelte";
+  import Sprite from "./Sprite.svelte";
   import Standings from "./Standings.svelte";
 
   const TPS = 7;
@@ -62,7 +64,7 @@
   let round = $state(1);
   let seed = $state(1);
   let practiceReason = $state<string | null>(null);
-  let engine = $state<VersusEngine>(newEngine(1));
+  let engine = $state<VersusEngine>(newEngine(1, PLAY_MAPS));
   let tick = $state(0);
   let countdown = $state(0);
   let announcement = $state("");
@@ -87,7 +89,7 @@
   let rating = $derived(profile.rating ?? START_RATING);
   let opp = $derived(AGENT_BY_ID[opponent]);
   let worth = $derived(stakes(rating, opp.elo, profile.games));
-  let mapName = $derived(matchSetup(seed).map.replace("_", " "));
+  let mapName = $derived(matchSetup(seed, PLAY_MAPS).map.replace("_", " "));
   let ranked = $derived(ticket !== null);
   let busy = $derived(phase === "countdown" || phase === "playing" || phase === "loading");
   /** The engine mutates in place; this snapshot re-reads it on every tick. */
@@ -138,7 +140,7 @@
           ? error.message
           : "The ranking server is unreachable, so this one is practice.";
     }
-    engine = newEngine(seed);
+    engine = newEngine(seed, PLAY_MAPS);
     tick = 0;
     round = profile.games + 1;
     phase = "ready";
@@ -158,7 +160,7 @@
       }
     }
     agent = opponentFor(opponent, seed, net);
-    engine = newEngine(seed);
+    engine = newEngine(seed, PLAY_MAPS);
     inputs = [];
     queue = [];
     held = null;
@@ -305,34 +307,35 @@
 <svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} />
 
 <div class="hall">
-  <section class="table" aria-label="Board 1">
+  <section class="arena-col" aria-label="Board 1">
     <Clock
-      you={{ name: "You", agent: false, alive: view.alive[0]!, fuse: view.fuse[0]! }}
-      them={{ name: opp.name, agent: true, alive: view.alive[1]!, fuse: view.fuse[1]! }}
+      you={{ name: "You", character: "you", alive: view.alive[0]!, fuse: view.fuse[0]! }}
+      them={{ name: shortName(opponent), character: characterOf(opponent), alive: view.alive[1]!, fuse: view.fuse[1]! }}
       steps={view.steps}
       suddenDeathStart={engine.config.suddenDeathStart}
       maxSteps={engine.config.maxSteps}
       openCells={view.open}
       tps={TPS}
     />
-    <div class="board-sheet sheet">
+    <div class="arena">
       <Board
         {engine}
         {tick}
         tickMs={TICK_MS}
-        label={`Board 1 on ${mapName}: you are the black piece, ${opp.name} the blue one.`}
+        skins={["you", characterOf(opponent)]}
+        label={`Board 1 on ${mapName}: you in the yellow jacket against ${opp.name}.`}
       />
       {#if phase === "countdown"}
-        <div class="count num" aria-hidden="true">{countdown}</div>
+        <div class="count" aria-hidden="true">{countdown}</div>
       {/if}
     </div>
     <p class="legend">
-      <span><i class="dot you"></i>You</span>
-      <span><i class="dot agent"></i>{shortName(opponent)}</span>
-      <span><i class="diamond"></i>Wandering enemy, deadly to both</span>
-      <span><i class="hatch"></i>Breakable wall</span>
+      <span><Sprite character="spark" size={22} />Spark: wanders, deadly to both</span>
+      <span><i class="tile brick"></i>Brick: one blast</span>
+      <span><i class="tile stone"></i>Stone: two blasts</span>
+      <span><i class="tile wall"></i>Wall: never breaks</span>
     </p>
-    <div class="ladder-wrap">
+    <div class="roster-wrap">
       <Ladder
         beaten={profile.beaten}
         played={profile.played}
@@ -344,40 +347,47 @@
   </section>
 
   <div class="side">
-    <article class="slip sheet" class:flipped={phase === "over"} aria-labelledby="slip-title">
-      <header class="slip-head num">
+    <article class="card panel" class:flipped={phase === "over"} aria-labelledby="card-title">
+      <header class="card-head num">
         <span>Round {round}</span>
-        <span>Board 1</span>
         <span>{mapName}</span>
         <span class:practice={!ranked}>{ranked ? "Rated" : "Practice"}</span>
       </header>
 
       {#if phase !== "over"}
-        <h1 id="slip-title" class="pairing">
-          You vs <span class="opp">{shortName(opponent)}</span>
-        </h1>
-        <p class="ratings num">
-          {#if level(opponent)}<strong>{level(opponent)}</strong> · {/if}rated {opp.elo} · you {rating}
-        </p>
+        <div class="versus">
+          <div class="fighter">
+            <Sprite character="you" size={88} animate />
+            <span class="fname" style:color={SIGNATURE.you}>You</span>
+            <span class="frating num">{rating}</span>
+          </div>
+          <span class="vs" aria-hidden="true">VS</span>
+          <div class="fighter">
+            <Sprite character={characterOf(opponent)} size={88} animate />
+            <span class="fname" style:color={SIGNATURE[characterOf(opponent)]}>{shortName(opponent)}</span>
+            <span class="frating num">{opp.elo}{#if level(opponent)} · {level(opponent)}{/if}</span>
+          </div>
+        </div>
+        <h1 id="card-title" class="visually-hidden">You versus {opp.name}</h1>
         {#if ranked}
           <dl class="stakes num">
-            <div><dt>Win</dt><dd>{signed(worth.win)}</dd></div>
+            <div><dt>Win</dt><dd class="up">{signed(worth.win)}</dd></div>
             <div><dt>Draw</dt><dd>{signed(worth.draw)}</dd></div>
-            <div><dt>Loss</dt><dd>{signed(worth.loss)}</dd></div>
+            <div><dt>Loss</dt><dd class="down">{signed(worth.loss)}</dd></div>
           </dl>
         {:else if practiceReason}
-          <p class="practice-note">{practiceReason}</p>
+          <p class="note">{practiceReason}</p>
         {/if}
 
         {#if keyboardless}
-          <p class="device-note">
+          <p class="note">
             Matches need a keyboard. Open this page on a computer to play; the crosstable and the training story work
             here.
           </p>
         {:else}
           <button class="btn start" type="button" onclick={start} disabled={phase !== "ready"}>
             {#if phase === "preparing"}
-              Setting the board…
+              Setting up the arena…
             {:else if phase === "loading"}
               Loading {shortName(opponent)}'s network…
             {:else if phase === "countdown" || phase === "playing"}
@@ -392,11 +402,11 @@
           </p>
         {/if}
       {:else}
-        <h1 id="slip-title" class="result" class:loss={outcome === "loss"}>
-          {outcome === "win" ? "Won" : outcome === "loss" ? "Lost" : "Draw"}
+        <h1 id="card-title" class="result" class:loss={outcome === "loss"} class:draw={outcome === "draw"}>
+          {outcome === "win" ? "You win" : outcome === "loss" ? "You lose" : "Draw"}
         </h1>
         <p class="cause">{cause}</p>
-        <p class="ratings num">
+        <p class="meta num">
           Against {opp.name} · {view.steps} steps · {(view.steps / TPS).toFixed(0)} s{view.sudden
             ? " · reached sudden death"
             : ""}
@@ -462,8 +472,11 @@
       {/if}
     </article>
 
-    <div class="standings-wrap"><Standings {rating} handle={profile.handle} change={recording === "recorded" ? (ratingChange?.delta ?? null) : null} /></div>
+    <div class="standings-wrap">
+      <Standings {rating} handle={profile.handle} change={recording === "recorded" ? (ratingChange?.delta ?? null) : null} />
+    </div>
   </div>
+
 </div>
 <p class="visually-hidden" aria-live="assertive">{announcement}</p>
 
@@ -471,218 +484,231 @@
   .hall {
     max-width: 1344px;
     margin: 0 auto;
-    padding: 28px var(--gutter) 0;
+    padding: 24px var(--gutter) 0;
     display: grid;
-    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
-    gap: clamp(20px, 3vw, 40px);
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.72fr);
+    grid-template-areas: "arena side";
+    gap: clamp(18px, 2.4vw, 32px);
     align-items: start;
   }
-  .table {
+  .arena-col {
+    grid-area: arena;
     display: grid;
     gap: 12px;
     min-width: 0;
   }
-  .board-sheet {
+  .side {
+    grid-area: side;
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+  }
+  .roster-wrap {
+    min-width: 0;
+    margin-top: 6px;
+  }
+  .arena {
     position: relative;
-    padding: 10px;
+    border: 3px solid var(--edge);
+    border-radius: 4px;
+    background: var(--floor);
+    overflow: hidden;
   }
   .count {
     position: absolute;
     inset: 0;
     display: grid;
     place-items: center;
+    font-family: var(--pixel);
     font-size: clamp(5rem, 12vw, 9rem);
-    font-weight: 800;
-    color: var(--ink);
-    background: rgb(244 245 240 / 0.55);
+    font-weight: 700;
+    color: var(--you);
+    text-shadow: 0 6px 0 var(--edge);
+    background: rgb(20 20 28 / 0.35);
     animation: count-in 550ms var(--ease-out);
   }
   @keyframes count-in {
     from {
-      transform: scale(1.25);
-      opacity: 0.2;
+      transform: scale(1.3);
     }
   }
   .legend {
     display: flex;
     flex-wrap: wrap;
     gap: 6px 22px;
-    color: var(--chalk-dim);
-    font-size: 0.88rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
   }
   .legend span {
     display: inline-flex;
     align-items: center;
     gap: 8px;
   }
-  .legend i {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
+  .tile {
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    image-rendering: pixelated;
   }
-  .dot {
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 3px currentColor;
+  .tile.brick {
+    background-image: url("/sprites/destrWall.png");
   }
-  .dot.you {
-    background: var(--ink);
-    box-shadow: 0 0 0 1.5px var(--chalk);
+  .tile.stone {
+    background-image: url("/sprites/destrWall_1.png");
   }
-  .dot.agent {
-    background: var(--agent);
-    box-shadow: 0 0 0 1.5px var(--chalk);
+  .tile.wall {
+    background-image: url("/sprites/wall.png");
   }
-  .diamond {
-    background: var(--flag);
-    transform: rotate(45deg) scale(0.75);
+  .card {
+    padding: 16px 20px 22px;
   }
-  .hatch {
-    background: repeating-linear-gradient(135deg, var(--chalk-dim) 0 1.5px, transparent 1.5px 5px);
+  .card.flipped {
+    animation: pop 420ms var(--ease-out);
   }
-  .side {
-    display: grid;
-    gap: 22px;
-    min-width: 0;
-    position: sticky; /* the slip and your standing stay beside the ladder as it scrolls */
-    top: 16px;
-  }
-  .slip {
-    padding: 22px 26px 26px;
-    transform: rotate(-0.5deg);
-    transform-origin: 30% 0;
-  }
-  .slip.flipped {
-    animation: flip 520ms var(--ease-out);
-  }
-  @keyframes flip {
+  @keyframes pop {
     from {
-      transform: rotate(-0.5deg) rotateX(70deg);
-      opacity: 0.4;
+      transform: scale(0.96);
     }
   }
-  .slip-head {
+  .card-head {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    padding-bottom: 9px;
-    border-bottom: 2px solid var(--ink);
-    font-size: 0.82rem;
-    font-weight: 650;
-    letter-spacing: 0.1em;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--edge);
+    font-family: var(--pixel);
+    font-size: 0.8rem;
+    color: var(--text-dim);
     text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
-  .slip-head .practice {
-    color: var(--flag-ink);
+  .card-head .practice {
+    color: var(--danger);
   }
-  .pairing {
-    margin-top: 20px;
-    font-size: clamp(2.4rem, 4.2vw, 3.6rem);
+  .versus {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin: 18px 0 6px;
   }
-  .opp {
-    color: var(--agent);
+  .fighter {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    text-align: center;
+  }
+  .fname {
+    font-family: var(--pixel);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.1;
     white-space: nowrap;
   }
-  .ratings {
-    margin-top: 8px;
-    font-size: 1.05rem;
-    color: var(--ink-soft);
+  .frating {
+    font-family: var(--pixel);
+    font-size: 0.85rem;
+    color: var(--text-dim);
   }
-  .ratings strong {
-    color: var(--agent);
-    text-transform: capitalize;
+  .vs {
+    font-family: var(--pixel);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--danger);
+    text-shadow: 0 4px 0 var(--edge);
   }
   .stakes {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    margin: 18px 0 20px;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-  }
-  .stakes div {
-    padding: 10px 0 8px;
-    text-align: center;
-  }
-  .stakes div + div {
-    border-left: 1px solid var(--rule);
-  }
-  .stakes dt {
-    font-size: 0.85rem;
-    color: var(--ink-soft);
-    order: 2;
-  }
-  .stakes dd {
-    margin: 0;
-    font-size: 1.85rem;
-    font-weight: 780;
-    font-stretch: 72%;
+    margin: 16px 0 18px;
+    border: 3px solid var(--edge);
+    border-radius: 4px;
+    background: var(--bg-deep);
   }
   .stakes div {
     display: flex;
     flex-direction: column-reverse;
+    padding: 8px 0 6px;
+    text-align: center;
   }
-  .practice-note,
-  .device-note {
-    margin: 16px 0;
-    padding: 10px 0;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    color: var(--ink-soft);
+  .stakes div + div {
+    border-left: 2px solid var(--line);
+  }
+  .stakes dt {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .stakes dd {
+    margin: 0;
+    font-family: var(--pixel);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .stakes .up {
+    color: var(--you);
+  }
+  .stakes .down {
+    color: var(--danger);
+  }
+  .note {
+    margin: 14px 0;
+    color: var(--text-dim);
   }
   .start {
     width: 100%;
-    font-size: 1.25rem;
-    padding: 1em;
+    font-size: 1.2rem;
+    padding: 0.8em;
   }
   .keys {
     margin-top: 12px;
     font-size: 0.86rem;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   kbd {
     display: inline-block;
-    min-width: 1.6em;
+    min-width: 1.7em;
     padding: 0 0.35em;
     margin: 0 1px;
-    border: 1px solid var(--rule-strong);
-    border-bottom-width: 2px;
+    border: 2px solid var(--edge);
+    border-bottom-width: 4px;
     border-radius: 3px;
-    font: inherit;
-    font-size: 0.8rem;
+    font-family: var(--pixel);
+    font-size: 0.75rem;
     text-align: center;
-    background: #fff;
-    color: var(--ink);
+    background: var(--panel-2);
+    color: var(--text);
   }
   .result {
-    margin-top: 16px;
-    font-size: clamp(3.4rem, 6vw, 5rem);
-    font-stretch: 70%;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    display: inline-block;
-    padding: 0 12px;
-    border: 4px solid currentColor;
-    border-radius: 4px;
-    transform: rotate(-3deg);
-    animation: stamp 420ms var(--ease-out) 120ms both;
+    margin-top: 18px;
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    color: var(--you);
+    text-shadow: 0 5px 0 var(--edge);
+    animation: slam 380ms var(--ease-out);
   }
   .result.loss {
-    color: var(--flag-ink);
+    color: var(--danger);
   }
-  @keyframes stamp {
+  .result.draw {
+    color: var(--text);
+  }
+  @keyframes slam {
     from {
-      transform: rotate(-3deg) scale(1.35);
+      transform: scale(1.35);
     }
   }
   .cause {
-    margin-top: 14px;
+    margin-top: 12px;
     font-size: 1.15rem;
     font-weight: 600;
   }
+  .meta {
+    margin-top: 6px;
+    color: var(--text-dim);
+  }
   .record {
-    margin: 18px 0 18px;
+    margin: 16px 0;
     padding: 14px 0;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
+    border-top: 2px solid var(--line);
+    border-bottom: 2px solid var(--line);
     min-height: 4.5rem;
   }
   label {
@@ -700,48 +726,53 @@
     font: inherit;
     font-size: 1.05rem;
     padding: 0.6em 0.7em;
-    border: 1.5px solid var(--ink);
-    border-radius: 2px;
-    background: #fff;
-    color: var(--ink);
+    border: 3px solid var(--edge);
+    border-radius: 4px;
+    background: var(--bg-deep);
+    color: var(--text);
   }
   input[aria-invalid="true"] {
-    border-color: var(--flag-ink);
+    border-color: var(--danger);
+  }
+  .handle-row .btn {
+    font-size: 1.05rem;
   }
   #handle-help {
     margin-top: 6px;
     font-size: 0.86rem;
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   .error {
-    color: var(--flag-ink) !important;
+    color: var(--danger) !important;
   }
   .rating-move {
-    font-size: 1.6rem;
-    font-weight: 600;
+    font-family: var(--pixel);
+    font-size: 1.3rem;
   }
   .rating-move strong {
-    font-weight: 800;
+    font-weight: 700;
+    color: var(--you);
   }
   .rating-move span {
     margin-left: 8px;
-    font-weight: 800;
+    font-weight: 700;
+    color: var(--you);
   }
   .rating-move span.down {
-    color: var(--flag-ink);
+    color: var(--danger);
   }
   .rating-move.pending {
-    font-size: 1.25rem;
-    color: var(--ink-soft);
+    font-size: 1.05rem;
+    color: var(--text-dim);
     margin-bottom: 10px;
   }
   .rating-move small {
     margin-left: 8px;
+    font-family: var(--font);
     font-size: 0.85rem;
-    font-weight: 500;
   }
   .status {
-    color: var(--ink-soft);
+    color: var(--text-dim);
   }
   .after {
     display: flex;
@@ -752,22 +783,22 @@
     flex: 1;
   }
   @media (max-width: 1000px) {
-    /* one column: board, then the slip, then the ladder; the crosstable follows the page */
+    /* one column: arena, then the VS card, then the roster */
     .hall {
       grid-template-columns: 1fr;
+      grid-template-areas: none;
+      display: flex;
+      flex-direction: column;
     }
-    .table,
+    .arena-col,
     .side {
       display: contents;
     }
-    .ladder-wrap {
+    .roster-wrap {
       order: 2;
     }
     .standings-wrap {
       display: none;
-    }
-    .slip {
-      transform: none;
     }
   }
 </style>

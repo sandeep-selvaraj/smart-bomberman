@@ -1,42 +1,35 @@
 <script lang="ts">
   /**
-   * The match board, drawn on a canvas as a ruled sheet: ink walls, hatched
-   * breakable walls, bombs as clock dials whose filled sector is the fuse
-   * left, red where danger is. Fighters glide between tiles at the tick rate.
+   * The arena, drawn like the game: grey floor, the original wall, brick and
+   * stone tiles, the original bomb and explosion sprites, and pixel-art
+   * characters that walk between tiles at the tick rate. The canvas is drawn
+   * at 32 px per tile and scaled with crisp pixels to fit its column.
    */
   import { onMount } from "svelte";
   import type { VersusEngine } from "../engine/engine";
   import { VIEW_RADIUS } from "../engine/observation";
+  import { drawCharacter, loadTiles, type CharacterKey, type Tiles } from "../art/sprites";
 
   interface Props {
     engine: VersusEngine;
     tick: number;
     tickMs: number;
-    /** Outline the 9x9 window this player's agent sees. */
+    /** Characters for player 0 and player 1. */
+    skins: [CharacterKey, CharacterKey];
+    /** Outline the 9x9 window this player sees. */
     viewFor?: number | null;
-    maxCell?: number;
     label?: string;
   }
 
-  let { engine, tick, tickMs, viewFor = null, maxCell = 44, label = "Match board" }: Props = $props();
+  let { engine, tick, tickMs, skins, viewFor = null, label = "Match board" }: Props = $props();
 
-  const C = {
-    sheet: "#f4f5f0",
-    rule: "#d5d8cf",
-    wall: "#2b2f33",
-    hatch: "#8d928a",
-    you: "#141618",
-    agent: "#2340a0",
-    flag: "#d93a2b",
-    flagWash: "rgba(217, 58, 43, 0.16)",
-  };
-
+  const T = 32;
   let canvas: HTMLCanvasElement;
-  let wrap: HTMLDivElement;
-  let cell = $state(32);
+  let tiles: Tiles | null = null;
   let tickAt = performance.now();
   let previous: Array<[number, number]> = [];
   let current: Array<[number, number]> = [];
+  let facing: boolean[] = [];
 
   const actors = (): Array<[number, number]> => [
     ...engine.players.map((p): [number, number] => [p.r, p.c]),
@@ -46,105 +39,70 @@
   $effect(() => {
     void tick;
     void engine;
-    previous = current.length === engine.players.length + engine.enemies.length ? current : actors();
-    current = actors();
+    const next = actors();
+    previous = current.length === next.length ? current : next;
+    facing = next.map(([, c], k) => {
+      const before = previous[k];
+      if (!before || before[1] === c) return facing[k] ?? false;
+      return c < before[1];
+    });
+    current = next;
     tickAt = performance.now();
-  });
-
-  function resize() {
-    const width = wrap.clientWidth;
-    cell = Math.max(6, Math.min(maxCell, Math.floor(width / engine.width)));
-    const ratio = window.devicePixelRatio || 1;
-    canvas.width = engine.width * cell * ratio;
-    canvas.height = engine.height * cell * ratio;
-    canvas.style.width = `${engine.width * cell}px`;
-    canvas.style.height = `${engine.height * cell}px`;
-    canvas.getContext("2d")!.setTransform(ratio, 0, 0, ratio, 0, 0);
-  }
-
-  function hatch(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, color: string, gap: number, cross: boolean) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x, y, s, s);
-    ctx.clip();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    for (let k = -s; k < s; k += gap) {
-      ctx.moveTo(x + k, y + s);
-      ctx.lineTo(x + k + s, y);
-      if (cross) {
-        ctx.moveTo(x + k, y);
-        ctx.lineTo(x + k + s, y + s);
-      }
+    if (canvas && (canvas.width !== engine.width * T || canvas.height !== engine.height * T)) {
+      canvas.width = engine.width * T;
+      canvas.height = engine.height * T;
     }
-    ctx.stroke();
-    ctx.restore();
-  }
+  });
 
   function draw(now: number) {
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const s = cell;
+    if (!ctx || !tiles) return;
+    ctx.imageSmoothingEnabled = false;
     const { height, width } = engine;
     const t = Math.min(1, (now - tickAt) / Math.max(tickMs, 1));
-    const ease = 1 - (1 - t) ** 3;
-    ctx.fillStyle = C.sheet;
-    ctx.fillRect(0, 0, width * s, height * s);
-
+    const ease = 1 - (1 - t) ** 2;
     const closing = engine.closingMap();
     const danger = engine.dangerMap();
-    const closedFrom = new Set(engine.closingOrder.slice(0, engine.closed).map(([r, c]) => r * width + c));
+    const closed = new Set(engine.closingOrder.slice(0, engine.closed).map(([r, c]) => r * width + c));
 
     for (let r = 0; r < height; r++) {
       for (let c = 0; c < width; c++) {
         const i = r * width + c;
-        const x = c * s;
-        const y = r * s;
+        const x = c * T;
+        const y = r * T;
         if (engine.solid[i]) {
-          ctx.fillStyle = C.wall;
-          ctx.fillRect(x, y, s, s);
-          if (closedFrom.has(i)) hatch(ctx, x, y, s, "rgba(217,58,43,0.55)", 5, false);
+          ctx.drawImage(tiles.wall, x, y, T, T);
+          if (closed.has(i)) {
+            ctx.fillStyle = "rgba(255, 60, 60, 0.38)";
+            ctx.fillRect(x, y, T, T);
+          }
           continue;
         }
-        ctx.strokeStyle = C.rule;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1);
-        if (engine.wallHp[i]! > 0) hatch(ctx, x + 2, y + 2, s - 4, C.hatch, 5, engine.wallHp[i]! > 1);
+        ctx.fillStyle = (r + c) % 2 ? "#7b7b7b" : "#838383";
+        ctx.fillRect(x, y, T, T);
+        if (engine.wallHp[i]! > 1) ctx.drawImage(tiles.stone, x, y, T, T);
+        else if (engine.wallHp[i]! > 0) ctx.drawImage(tiles.brick, x, y, T, T);
         if (closing[i]! > 0) {
-          ctx.fillStyle = `rgba(217, 58, 43, ${0.12 + 0.5 * closing[i]!})`;
-          ctx.fillRect(x, y, s, s);
+          ctx.fillStyle = `rgba(255, 60, 60, ${0.15 + 0.5 * closing[i]!})`;
+          ctx.fillRect(x, y, T, T);
         } else if (danger[i]! > 0.6 && engine.flames[i] === 0) {
-          ctx.fillStyle = C.flagWash;
-          ctx.fillRect(x, y, s, s);
-        }
-        if (engine.flames[i]! > 0) {
-          ctx.fillStyle = C.flag;
-          ctx.fillRect(x + 2, y + 2, s - 4, s - 4);
+          ctx.fillStyle = "rgba(255, 60, 60, 0.2)";
+          ctx.fillRect(x, y, T, T);
         }
       }
     }
 
+    const blink = Math.floor(now / 160) % 2;
     for (const bomb of engine.bombs) {
-      const cx = bomb.c * s + s / 2;
-      const cy = bomb.r * s + s / 2;
-      const radius = s * 0.34;
-      const color = bomb.owner === 0 ? C.you : C.agent;
-      ctx.fillStyle = C.sheet;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * bomb.timer) / engine.config.bombFuse);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.stroke();
+      const swell = bomb.timer <= 3 ? 1 + 0.12 * blink : 1;
+      const size = T * swell;
+      const off = (T - size) / 2;
+      ctx.drawImage(tiles.bomb, blink * 32, 0, 32, 32, bomb.c * T + off, bomb.r * T + off, size, size);
+    }
+    for (let r = 0; r < height; r++) {
+      for (let c = 0; c < width; c++) {
+        if (engine.flames[r * width + c]! > 0) ctx.drawImage(tiles.explosion, c * T, r * T, T, T);
+      }
     }
 
     const at = (k: number): [number, number] => {
@@ -153,93 +111,69 @@
       const far = Math.abs(r1 - r0) + Math.abs(c1 - c0) > 1;
       return far ? [r1, c1] : [r0 + (r1 - r0) * ease, c0 + (c1 - c0) * ease];
     };
+    const moving = (k: number) => {
+      const a = current[k];
+      const b = previous[k];
+      return !!a && !!b && (a[0] !== b[0] || a[1] !== b[1]) && t < 1;
+    };
+    const step = Math.floor(now / 140) % 2;
 
     engine.enemies.forEach((enemy, k) => {
       if (!enemy.alive) return;
       const [r, c] = at(engine.players.length + k);
-      const cx = c * s + s / 2;
-      const cy = r * s + s / 2;
-      const d = s * 0.26;
-      ctx.fillStyle = C.flag;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - d);
-      ctx.lineTo(cx + d, cy);
-      ctx.lineTo(cx, cy + d);
-      ctx.lineTo(cx - d, cy);
-      ctx.closePath();
-      ctx.fill();
+      drawCharacter(ctx, "spark", step, c * T, r * T, T, facing[engine.players.length + k]);
     });
 
     engine.players.forEach((fighter, p) => {
       const [r, c] = at(p);
-      const cx = c * s + s / 2;
-      const cy = r * s + s / 2;
-      const color = p === 0 ? C.you : C.agent;
+      ctx.save();
+      if (!fighter.alive) ctx.globalAlpha = 0.35;
+      drawCharacter(ctx, skins[p], moving(p) ? step : 0, c * T, r * T, T, facing[p]);
+      ctx.restore();
       if (!fighter.alive) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 3;
-        const d = s * 0.26;
+        ctx.strokeStyle = "#ff3c3c";
+        ctx.lineWidth = 4;
         ctx.beginPath();
-        ctx.moveTo(cx - d, cy - d);
-        ctx.lineTo(cx + d, cy + d);
-        ctx.moveTo(cx + d, cy - d);
-        ctx.lineTo(cx - d, cy + d);
+        ctx.moveTo(c * T + 6, r * T + 6);
+        ctx.lineTo(c * T + T - 6, r * T + T - 6);
+        ctx.moveTo(c * T + T - 6, r * T + 6);
+        ctx.lineTo(c * T + 6, r * T + T - 6);
         ctx.stroke();
-        return;
       }
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(cx, cy, s * 0.36, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = C.sheet;
-      ctx.lineWidth = Math.max(1.5, s * 0.06);
-      ctx.beginPath();
-      ctx.arc(cx, cy, s * 0.21, 0, Math.PI * 2);
-      ctx.stroke();
     });
 
     if (viewFor !== null) {
-      const fighter = engine.players[viewFor]!;
       const [r, c] = at(viewFor);
-      const size = (2 * VIEW_RADIUS + 1) * s;
-      ctx.strokeStyle = viewFor === 0 ? C.you : C.agent;
-      ctx.lineWidth = 3;
-      ctx.setLineDash(fighter.alive ? [] : [6, 4]);
-      ctx.strokeRect((c - VIEW_RADIUS) * s + 1.5, (r - VIEW_RADIUS) * s + 1.5, size - 3, size - 3);
+      const size = (2 * VIEW_RADIUS + 1) * T;
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 4;
+      ctx.setLineDash([10, 6]);
+      ctx.strokeRect((c - VIEW_RADIUS) * T + 2, (r - VIEW_RADIUS) * T + 2, size - 4, size - 4);
       ctx.setLineDash([]);
     }
   }
 
   onMount(() => {
-    resize();
-    const observer = new ResizeObserver(resize);
-    observer.observe(wrap);
+    canvas.width = engine.width * T;
+    canvas.height = engine.height * T;
     let frame = 0;
+    loadTiles().then((loaded) => (tiles = loaded));
     const loop = (now: number) => {
       draw(now);
       frame = requestAnimationFrame(loop);
     };
     frame = requestAnimationFrame(loop);
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
+    return () => cancelAnimationFrame(frame);
   });
 </script>
 
-<div class="board" bind:this={wrap}>
-  <canvas bind:this={canvas} role="img" aria-label={label}></canvas>
-</div>
+<canvas bind:this={canvas} role="img" aria-label={label}></canvas>
 
 <style>
-  .board {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
   canvas {
     display: block;
-    max-width: 100%;
-    height: auto !important;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
   }
 </style>
