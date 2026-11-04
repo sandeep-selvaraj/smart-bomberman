@@ -9,26 +9,25 @@ related_targets: ["web/src/pages/crosstable.astro","web/src/pages/learn.astro"]
 
 Mode: Experience on Play (the match leads), Operate on Crosstable, Read on How they learned.
 
-Audience and job: players fight the real trained agents up a ladder (wanderer, camper, heuristic, Two-Fuse normal, Two-Fuse hard; free roster after the first match) and earn an Elo on the same scale as the agents; curious readers learn how the agents were trained. Desktop-first play; Crosstable and Learn fully usable on phones.
+Audience and job: players fight the real trained agents, choosing opponents from a character-select roster that climbs from the lowest-rated agent to Two-Fuse on hard (the whole roster opens after one match), and earn an Elo on the agents' own scale; curious readers learn how the agents were trained. Desktop-first play; Crosstable and Learn fully usable on phones.
 
-Proof: every number is measured in this repo and labelled (agent ratings from a 200-games-per-pair round robin, v1 vs v2 win rates, training curves from metrics.json). Leaderboard results are verified by replaying the submitted input log on the server with the same engine and agent.
+Proof: every number is measured in this repo and labelled. Leaderboard results are verified by replaying the submitted input log on the server with the same engine and agent.
 
-Constraints: Astro + Svelte on Vercel free tier; engine and policies in TypeScript with bit-exact seeded RNG (sfc32) matching the Python reference; policy MLP evaluated in plain TS (no ONNX) so browser and server agree exactly; Upstash Redis (REST) for the leaderboard, in-memory fallback in dev.
+Constraints: Astro + Svelte on Vercel free tier; TypeScript engine with bit-exact seeded RNG matching Python; policy MLP in plain TS; Upstash Redis for the leaderboard.
 
 ## Direction contract
 
-THESIS: The site is a rated tournament hall. You are paired against agents on one Elo scale and the crosstable records every result. It refuses the dark neon arcade portal and the hero-plus-card-row game landing.
+THESIS: The site looks and feels like the actual game (user-pinned, replacing the earlier tournament-table world): the arena is the original game's grey floor and tile sprites, the page is its HUD navy, and the opponents are characters you pick from a roster. It refuses the chess-table metaphor and refuses reusing any existing franchise's characters.
 
-OWN-WORLD: Baize-green felt (#1d4a37) owns every surface the paper does not. Cool white pairing slips and scoresheets (#f4f5f0), black ink (#141618) for you, carbon-copy blue (#2340a0) for Two-Fuse and agents, flag red (#d93a2b) for danger, sudden death and losses. Colour only ever means state. Ruled tables with tabular figures, slips pinned slightly askew, twin chess-clock faces in a dark bezel.
+OWN-WORLD: Page #1e1e28 (the pygame HUD bar), deep #14141c, bevelled menu panels #2a2a37 with a dark #0c0c12 frame. Arena: grey #808080 checker floor; the repo's own wall, brick, stone, bomb and explosion sprites, drawn pixel-crisp. Original 16x16 characters: you (generic adventurer, yellow jacket #f2b51d), Spark hazards, Camper (tent), Wanderer (sprout slime), Heuristic (robot), Two-Fuse normal/hard (split two-face bomb with two fuses). Yellow is yours (buttons, your name); red #ff5a5a is danger and sudden death (the original HUD red); each agent's name wears its character's colour. Silkscreen pixel lettering for the game's words; Archivo for reading.
 
-STORY: The visitor sees Board 1 already set, reads who they face and what a win is worth, plays, watches the flag drop at sudden death, sees the result stamped into the crosstable and their rating move, then climbs the next rung or reads why the agent played as it did.
+STORY: The visitor sees the arena set, both fighters squared off on a VS card with the stakes, starts, watches the HUD flip to SUDDEN DEATH, gets a big YOU WIN / YOU LOSE, records the result and sees their line move among the agents, then picks the next opponent from the roster or reads how the agent learned.
 
-FIRST VIEWPORT: Top bar (wordmark left; Play, Crosstable, How they learned right). Left: twin chess clock above the live 13x17 board on a white sheet. Right: the pairing slip with a ruled header row (round, board, map), "You vs <opponent>" set large without wrapping the agent name, ratings line, three stake cells (win, draw, loss), and Start match as the slip's one black button. Crosstable edge visible at the bottom.
+FIRST VIEWPORT: Top HUD bar (pixel wordmark left; Play, Crosstable, How they learned right). Left: match HUD (your portrait and bomb, sudden-death countdown, opponent portrait and bomb) above the arena. Right: VS card (round, map, rated; both portraits with names and ratings; win/draw/loss stakes; yellow Start match) and "Where you stand" below it. The roster sits under the arena in the left column; locked opponents show their own characters, dimmed.
 
-FORM: Tournament crosstable world, candidate 3 of 7 on the ordered list, assigned by the roll. Raised by: colour = state only (developer console), fixed cells that never reflow (split-flap), every match sheet prints its hard end (j-card), registered paired views in Learn (curved crease), one field colour at page scale (indoor sun). seed:394a7399d21b0640
+FORM: User-pinned direction ("like the actual game", keep generic tiles, original characters, unique agent makeovers); no roll was run for this world. It supersedes the earlier roll seed:394a7399d21b0640, which had assigned the tournament crosstable.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 
 ## Open decisions
-- K-factor and provisional period for player Elo (default K=32, start 1000).
-- Whether agent ratings are refreshed when a new model ships (recompute with rate_agents).
+- K-factor and provisional period for player Elo (K=40 for 10 games, then 24; start 1000).

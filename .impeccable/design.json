@@ -1,348 +1,410 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-07T17:47:18+00:00",
+  "generatedAt": "2026-11-07T18:37:44.303541+00:00",
   "title": "Design System: smart-bomberman",
   "extensions": {
     "colorMeta": {
-      "felt": {
-        "role": "neutral",
-        "displayName": "Baize Felt",
-        "canonical": "#1d4a37",
-        "tonalRamp": [
-          "#080c0a",
-          "#1a2922",
-          "#2c493c",
-          "#406c58",
-          "#618e78",
-          "#8eae9e",
-          "#bccec5",
-          "#e9f0ed"
-        ]
-      },
-      "felt-deep": {
-        "role": "neutral",
-        "displayName": "Deep Felt",
-        "canonical": "#163a2b",
-        "tonalRamp": [
-          "#080c0a",
-          "#1c2822",
-          "#31483d",
-          "#476a5a",
-          "#678c7a",
-          "#92ac9f",
-          "#becec5",
-          "#eaf0ed"
-        ]
-      },
-      "felt-seam": {
-        "role": "neutral",
-        "displayName": "Felt Seam",
-        "canonical": "#24553f",
-        "tonalRamp": [
-          "#080c0a",
-          "#192921",
-          "#2b4a3b",
-          "#3d6d56",
-          "#5e8f77",
-          "#8cae9c",
-          "#bbcfc4",
-          "#e9f1ec"
-        ]
-      },
-      "bezel": {
-        "role": "neutral",
-        "displayName": "Bezel",
-        "canonical": "#0f2a1f",
-        "tonalRamp": [
-          "#090c0a",
-          "#1e2823",
-          "#35473e",
-          "#4d685c",
-          "#6d8a7c",
-          "#96aba1",
-          "#c0cdc6",
-          "#ebf0ed"
-        ]
-      },
-      "chalk": {
-        "role": "neutral",
-        "displayName": "Chalk",
-        "canonical": "#eef3ee",
-        "tonalRamp": [
-          "#0b0b0b",
-          "#242524",
-          "#404340",
-          "#5e625e",
-          "#7f847f",
-          "#a3a6a3",
-          "#c8cac8",
-          "#eeefee"
-        ]
-      },
-      "chalk-dim": {
-        "role": "neutral",
-        "displayName": "Dim Chalk",
-        "canonical": "#b9cdbf",
-        "tonalRamp": [
-          "#0a0c0a",
-          "#212723",
-          "#3a453d",
-          "#55665a",
-          "#75887b",
-          "#9ca9a0",
-          "#c3ccc6",
-          "#ecefed"
-        ]
-      },
-      "sheet": {
-        "role": "neutral",
-        "displayName": "Scoresheet",
-        "canonical": "#f4f5f0",
-        "tonalRamp": [
-          "#0b0b0b",
-          "#252524",
-          "#42423f",
-          "#61625e",
-          "#82837e",
-          "#a5a5a2",
-          "#c9c9c7",
-          "#eeeeee"
-        ]
-      },
-      "sheet-alt": {
-        "role": "neutral",
-        "displayName": "Alt Row",
-        "canonical": "#e9ebe3",
-        "tonalRamp": [
-          "#0b0b0a",
-          "#252523",
-          "#41433e",
-          "#60625b",
-          "#81837c",
-          "#a4a6a0",
-          "#c9c9c6",
-          "#eeeeed"
-        ]
-      },
-      "rule": {
-        "role": "neutral",
-        "displayName": "Rule",
-        "canonical": "#c9ccc2",
-        "tonalRamp": [
-          "#0b0b0a",
-          "#252522",
-          "#41433d",
-          "#60625a",
-          "#81847b",
-          "#a4a69f",
-          "#c8cac6",
-          "#eeefed"
-        ]
-      },
-      "rule-strong": {
-        "role": "neutral",
-        "displayName": "Strong Rule",
-        "canonical": "#8d928a",
-        "tonalRamp": [
-          "#0b0b0a",
-          "#242623",
-          "#40433e",
-          "#5e635c",
-          "#7f847c",
-          "#a3a6a1",
-          "#c8cac6",
-          "#eeefed"
-        ]
-      },
-      "ink": {
-        "role": "neutral",
-        "displayName": "Ink",
-        "canonical": "#141618",
-        "tonalRamp": [
-          "#0b0b0b",
-          "#242526",
-          "#404244",
-          "#5f6164",
-          "#808385",
-          "#a3a5a7",
-          "#c8c9ca",
-          "#eeeeef"
-        ]
-      },
-      "ink-soft": {
-        "role": "neutral",
-        "displayName": "Soft Ink",
-        "canonical": "#4a5054",
-        "tonalRamp": [
-          "#0b0b0c",
-          "#232527",
-          "#3f4345",
-          "#5c6266",
-          "#7d8388",
-          "#a1a6a9",
-          "#c7c9cb",
-          "#edeeef"
-        ]
-      },
-      "ink-faint": {
-        "role": "neutral",
-        "displayName": "Faint Ink",
-        "canonical": "#5b6166",
-        "tonalRamp": [
-          "#0b0b0c",
-          "#232527",
-          "#3f4346",
-          "#5c6267",
-          "#7d8388",
-          "#a1a6a9",
-          "#c7c9cc",
-          "#edeeef"
-        ]
-      },
-      "agent": {
+      "you": {
         "role": "primary",
-        "displayName": "Carbon-Copy Blue",
-        "canonical": "#2340a0",
+        "displayName": "Your Jacket Yellow",
+        "canonical": "#f2b51d",
         "tonalRamp": [
-          "#070b15",
-          "#162345",
-          "#263d7c",
-          "#3859b9",
-          "#577cdf",
-          "#85a3eb",
-          "#b6c9f5",
-          "#e7efff"
+          "#3a2f12",
+          "#685118",
+          "#9a7518",
+          "#d39c13",
+          "#eab93e",
+          "#e6c97f",
+          "#eadcb8",
+          "#f7f4ed"
         ]
       },
-      "agent-wash": {
-        "role": "primary",
-        "displayName": "Carbon Wash",
-        "canonical": "#dfe4f3",
-        "tonalRamp": [
-          "#0b0b0c",
-          "#232529",
-          "#3f424a",
-          "#5d616d",
-          "#7e828f",
-          "#a1a5af",
-          "#c7c9cf",
-          "#eeeef1"
-        ]
-      },
-      "flag": {
+      "danger": {
         "role": "secondary",
-        "displayName": "Flag Red",
-        "canonical": "#d93a2b",
+        "displayName": "HUD Alarm Red",
+        "canonical": "#ff5a5a",
         "tonalRamp": [
-          "#160605",
-          "#45100b",
-          "#7b140c",
-          "#b61107",
-          "#df4334",
-          "#ef8171",
-          "#fab6aa",
-          "#ffe8e3"
+          "#3c1010",
+          "#6c1313",
+          "#a21010",
+          "#df0707",
+          "#f53333",
+          "#ed7878",
+          "#edb5b5",
+          "#f8ecec"
         ]
       },
-      "flag-ink": {
+      "fuse": {
         "role": "secondary",
-        "displayName": "Flag Ink",
-        "canonical": "#b52a1e",
+        "displayName": "Lit Fuse Orange",
+        "canonical": "#ff8a1f",
         "tonalRamp": [
-          "#150705",
-          "#42140e",
-          "#761e15",
-          "#ae261b",
-          "#d64e3f",
-          "#e88677",
-          "#f5b8ae",
-          "#ffe8e4"
+          "#3c2510",
+          "#6c3e13",
+          "#a25610",
+          "#df6e07",
+          "#f59033",
+          "#edb078",
+          "#edd0b5",
+          "#f8f2ec"
+        ]
+      },
+      "camper": {
+        "role": "tertiary",
+        "displayName": "Camper Green",
+        "canonical": "#5fb36a",
+        "tonalRamp": [
+          "#1e2e20",
+          "#305034",
+          "#3f7346",
+          "#4c9956",
+          "#71b67a",
+          "#9ec7a3",
+          "#c7dbca",
+          "#f0f4f1"
+        ]
+      },
+      "wanderer": {
+        "role": "tertiary",
+        "displayName": "Wanderer Teal",
+        "canonical": "#3fc9b8",
+        "tonalRamp": [
+          "#1a3330",
+          "#275953",
+          "#308278",
+          "#36afa0",
+          "#5ecabd",
+          "#92d3cb",
+          "#c1e1dd",
+          "#eff6f5"
+        ]
+      },
+      "heuristic": {
+        "role": "tertiary",
+        "displayName": "Heuristic Steel",
+        "canonical": "#c4ccd4",
+        "tonalRamp": [
+          "#23262a",
+          "#394047",
+          "#4e5965",
+          "#627384",
+          "#8594a3",
+          "#a9b2bc",
+          "#cdd1d6",
+          "#f1f2f3"
+        ]
+      },
+      "two-fuse": {
+        "role": "tertiary",
+        "displayName": "Two-Fuse Bone",
+        "canonical": "#ece6d6",
+        "tonalRamp": [
+          "#2e2a1e",
+          "#50472f",
+          "#74653e",
+          "#9a854b",
+          "#b7a470",
+          "#c8bc9d",
+          "#dbd6c7",
+          "#f4f3f0"
+        ]
+      },
+      "two-fuse-hard": {
+        "role": "tertiary",
+        "displayName": "Two-Fuse Hard Red",
+        "canonical": "#ff6a5a",
+        "tonalRamp": [
+          "#3c1410",
+          "#6c1c13",
+          "#a21e10",
+          "#df1c07",
+          "#f54633",
+          "#ed8478",
+          "#edbab5",
+          "#f8eeec"
+        ]
+      },
+      "spark": {
+        "role": "tertiary",
+        "displayName": "Spark Orange",
+        "canonical": "#ff7a1a",
+        "tonalRamp": [
+          "#3c2310",
+          "#6c3913",
+          "#a24d10",
+          "#df6107",
+          "#f58433",
+          "#eda978",
+          "#edcdb5",
+          "#f8f1ec"
+        ]
+      },
+      "hud-navy": {
+        "role": "neutral",
+        "displayName": "HUD Navy",
+        "canonical": "#1e1e28",
+        "tonalRamp": [
+          "#232329",
+          "#393946",
+          "#4f4f64",
+          "#636382",
+          "#8686a2",
+          "#aaaabb",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "hud-deep": {
+        "role": "neutral",
+        "displayName": "HUD Deep",
+        "canonical": "#14141c",
+        "tonalRamp": [
+          "#23232a",
+          "#383847",
+          "#4d4d65",
+          "#616185",
+          "#8484a4",
+          "#a9a9bc",
+          "#ccccd6",
+          "#f1f1f3"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Menu Panel",
+        "canonical": "#2a2a37",
+        "tonalRamp": [
+          "#232329",
+          "#3a3a46",
+          "#4f4f63",
+          "#646481",
+          "#8787a1",
+          "#ababba",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "panel-raised": {
+        "role": "neutral",
+        "displayName": "Raised Panel",
+        "canonical": "#333345",
+        "tonalRamp": [
+          "#23232a",
+          "#393946",
+          "#4e4e64",
+          "#636383",
+          "#8585a2",
+          "#aaaabb",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "frame": {
+        "role": "neutral",
+        "displayName": "Frame Black",
+        "canonical": "#0c0c12",
+        "tonalRamp": [
+          "#22222b",
+          "#373749",
+          "#4b4b68",
+          "#5d5d88",
+          "#8181a7",
+          "#a7a7be",
+          "#cbcbd7",
+          "#f1f1f3"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#46465c",
+        "tonalRamp": [
+          "#232329",
+          "#3a3a46",
+          "#4f4f63",
+          "#646481",
+          "#8787a1",
+          "#ababba",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Text",
+        "canonical": "#f4f4f6",
+        "tonalRamp": [
+          "#242428",
+          "#3b3b44",
+          "#525261",
+          "#68687e",
+          "#8a8a9e",
+          "#adadb8",
+          "#ceced4",
+          "#f2f2f3"
+        ]
+      },
+      "text-dim": {
+        "role": "neutral",
+        "displayName": "Text Dim",
+        "canonical": "#b7b7c9",
+        "tonalRamp": [
+          "#232329",
+          "#393946",
+          "#4f4f64",
+          "#636382",
+          "#8686a2",
+          "#aaaabb",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "text-faint": {
+        "role": "neutral",
+        "displayName": "Text Faint",
+        "canonical": "#9a9ab0",
+        "tonalRamp": [
+          "#242429",
+          "#3a3a45",
+          "#505062",
+          "#666680",
+          "#8888a0",
+          "#ababba",
+          "#ceced5",
+          "#f2f2f3"
+        ]
+      },
+      "floor": {
+        "role": "neutral",
+        "displayName": "Arena Floor",
+        "canonical": "#808080",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#949494",
+          "#b2b2b2",
+          "#d1d1d1",
+          "#f2f2f2"
+        ]
+      },
+      "floor-light": {
+        "role": "neutral",
+        "displayName": "Arena Floor Light",
+        "canonical": "#838383",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#949494",
+          "#b2b2b2",
+          "#d1d1d1",
+          "#f2f2f2"
+        ]
+      },
+      "floor-dark": {
+        "role": "neutral",
+        "displayName": "Arena Floor Dark",
+        "canonical": "#7b7b7b",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#949494",
+          "#b2b2b2",
+          "#d1d1d1",
+          "#f2f2f2"
         ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Page titles and the slip's pairing line; 78% width."
+        "purpose": "Page titles in Silkscreen; game-moment words (countdown, YOU WIN / YOU LOSE) run larger."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Section heads on felt and in prose sheets."
+        "purpose": "Section and panel titles in Silkscreen."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Sheet titles: ladder, standings caption."
-      },
-      "numeral": {
-        "displayName": "Numeral",
-        "purpose": "Ratings, clock readings, stakes; tabular at 72% width."
+        "purpose": "Fighter names, buttons, wordmark, stakes values, HUD timer."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Running text; prose sheets 1.06rem/1.6 within 68ch."
+        "purpose": "All reading text in Archivo; long-form 1.06rem/1.6 held to 68ch."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Uppercase table heads, slip header row, clock owners. Never above a heading."
+        "purpose": "Uppercase Silkscreen HUD and roster status, VS card meta strip."
       },
-      "button": {
-        "displayName": "Button",
-        "purpose": "Button text at 85% width."
+      "table-head": {
+        "displayName": "Table head",
+        "purpose": "Uppercase Archivo column headings in standings and crosstable."
       }
     },
     "shadows": [
       {
-        "name": "sheet-contact",
-        "value": "0 1px 0 var(--felt-deep), 0 10px 24px -14px rgb(5 20 13 / 0.55)",
-        "purpose": "Every sheet, slip, chart and pane pinned to the felt."
+        "name": "panel-bevel",
+        "value": "inset 0 2px 0 rgb(255 255 255 / 0.09), inset 0 -3px 0 rgb(0 0 0 / 0.35)",
+        "purpose": "Game-menu bevel on panels, quiet buttons and roster cards."
       },
       {
-        "name": "clock-bezel",
-        "value": "inset 0 1px 0 rgb(255 255 255 / 0.06), 0 10px 24px -16px rgb(0 0 0 / 0.7)",
-        "purpose": "Chess-clock housing only."
+        "name": "button-bevel",
+        "value": "inset 0 3px 0 rgb(255 255 255 / 0.35), inset 0 -4px 0 rgb(0 0 0 / 0.22)",
+        "purpose": "Deeper bevel on the yellow primary button."
       },
       {
-        "name": "chart-tooltip",
-        "value": "0 6px 16px -10px rgb(0 0 0 / 0.4)",
-        "purpose": "Crosshair readout over a chart."
+        "name": "button-pressed",
+        "value": "inset 0 -1px 0 rgb(0 0 0 / 0.22)",
+        "purpose": "Active state, paired with translateY(2px)."
       }
     ],
     "motion": [
       {
         "name": "ease-out",
         "value": "cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Default easing: button state 160ms, stamp 420ms, slip flip 520ms, clock panel colour 500ms after 300ms delay."
+        "purpose": "All state transitions and game-moment entrances."
       },
       {
-        "name": "flag-fall",
-        "value": "transform 650ms cubic-bezier(0.5, 0, 0.75, 0)",
-        "purpose": "The clock pennant's accelerating fall at sudden death."
+        "name": "press",
+        "value": "140ms",
+        "purpose": "Button brightness and press, roster card lift."
+      },
+      {
+        "name": "sudden-death-drop",
+        "value": "500ms drop + blink 900ms steps(2, start) x3",
+        "purpose": "Sudden-death banner entrance."
+      },
+      {
+        "name": "result-slam",
+        "value": "380ms scale(1.35) to 1",
+        "purpose": "YOU WIN / YOU LOSE entrance."
       },
       {
         "name": "reduced-motion",
         "value": "1ms durations, single iteration",
-        "purpose": "All animation and transition collapses under prefers-reduced-motion."
+        "purpose": "prefers-reduced-motion collapses all animation."
       }
     ],
     "breakpoints": [
       {
-        "name": "bar-stack",
+        "name": "phone",
         "value": "640px"
       },
       {
-        "name": "clock-wrap",
+        "name": "hud-stack",
         "value": "720px"
       },
       {
-        "name": "panes-stack",
+        "name": "roster-list",
         "value": "760px"
       },
       {
-        "name": "agent-view-stack",
-        "value": "860px"
-      },
-      {
-        "name": "hall-single",
+        "name": "one-column",
         "value": "1000px"
       }
     ]
@@ -352,150 +414,132 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The one black button on a slip.",
-      "html": "<button class=\"ds-btn\">Start match</button>",
-      "css": ".ds-btn{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:2px;padding:0.95em 1.4em;background:var(--ink,#141618);color:var(--sheet,#f4f5f0);font-size:1.1rem;font-weight:700;font-stretch:85%;letter-spacing:0.04em;cursor:pointer;transition:background 160ms cubic-bezier(0.16,1,0.3,1),transform 160ms cubic-bezier(0.16,1,0.3,1);}.ds-btn:hover{background:#2a2e31;}.ds-btn:active{transform:translateY(1px);}.ds-btn:focus-visible{outline:3px solid var(--agent,#2340a0);outline-offset:3px;}.ds-btn:disabled{background:var(--rule-strong,#8d928a);cursor:not-allowed;}"
+      "description": "Yellow arcade button for the player's own actions (Start match, Record result).",
+      "html": "<button class=\"ds-btn\">START MATCH</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:.6em;border:3px solid var(--edge,#0c0c12);border-radius:4px;padding:.75em 1.3em;background:var(--you,#f2b51d);color:var(--bg-deep,#14141c);font-family:var(--pixel,'Silkscreen',monospace);font-size:1rem;font-weight:700;letter-spacing:0;cursor:pointer;box-shadow:inset 0 3px 0 rgb(255 255 255 / .35),inset 0 -4px 0 rgb(0 0 0 / .22);transition:filter 140ms cubic-bezier(.16,1,.3,1),transform 140ms cubic-bezier(.16,1,.3,1)}.ds-btn:hover{filter:brightness(1.08)}.ds-btn:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-btn:active{transform:translateY(2px);box-shadow:inset 0 -1px 0 rgb(0 0 0 / .22)}.ds-btn:disabled{background:var(--line,#46465c);color:var(--text-dim,#b7b7c9);cursor:not-allowed;filter:none;transform:none}"
     },
     {
       "name": "Quiet Button",
       "kind": "button",
       "refersTo": "button-quiet",
-      "description": "Secondary action beside the black button after a match.",
-      "html": "<button class=\"ds-btn-quiet\">Full crosstable</button>",
-      "css": ".ds-btn-quiet{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);border:0;border-radius:2px;padding:0.95em 1.4em;background:transparent;color:var(--ink,#141618);box-shadow:inset 0 0 0 1.5px var(--ink,#141618);font-size:1.1rem;font-weight:700;font-stretch:85%;letter-spacing:0.04em;cursor:pointer;transition:background 160ms cubic-bezier(0.16,1,0.3,1);}.ds-btn-quiet:hover{background:var(--sheet-alt,#e9ebe3);}.ds-btn-quiet:focus-visible{outline:3px solid var(--agent,#2340a0);outline-offset:3px;}"
+      "description": "Secondary game-menu button on the raised panel fill.",
+      "html": "<button class=\"ds-btn-quiet\">PICK OPPONENT</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;justify-content:center;border:3px solid var(--edge,#0c0c12);border-radius:4px;padding:.75em 1.3em;background:var(--panel-2,#333345);color:var(--text,#f4f4f6);font-family:var(--pixel,'Silkscreen',monospace);font-size:1rem;font-weight:700;cursor:pointer;box-shadow: inset 0 2px 0 var(--bevel-light, rgb(255 255 255 / 0.09)), inset 0 -3px 0 var(--bevel-dark, rgb(0 0 0 / 0.35));transition:filter 140ms cubic-bezier(.16,1,.3,1),transform 140ms cubic-bezier(.16,1,.3,1)}.ds-btn-quiet:hover{filter:brightness(1.08)}.ds-btn-quiet:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-btn-quiet:active{transform:translateY(2px)}"
     },
     {
-      "name": "Handle Field",
+      "name": "Menu Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Bevelled game-menu panel in a 3px dark frame; every container uses it.",
+      "html": "<section class=\"ds-panel\"><h2>WHERE YOU STAND</h2><p>Your first recorded match puts you on this table.</p></section>",
+      "css": ".ds-panel{background:var(--panel,#2a2a37);color:var(--text,#f4f4f6);border:3px solid var(--edge,#0c0c12);border-radius:4px;padding:16px 22px;box-shadow: inset 0 2px 0 var(--bevel-light, rgb(255 255 255 / 0.09)), inset 0 -3px 0 var(--bevel-dark, rgb(0 0 0 / 0.35));font-family:var(--font,'Archivo',system-ui,sans-serif)}.ds-panel h2{margin:0 0 8px;font-family:var(--pixel,'Silkscreen',monospace);font-weight:700;font-size:1.15rem;line-height:1.1}.ds-panel p{margin:0;color:var(--text-dim,#b7b7c9)}"
+    },
+    {
+      "name": "Handle Input",
       "kind": "input",
       "refersTo": "input",
-      "description": "Text field on a slip; error state in flag ink.",
-      "html": "<label class=\"ds-field\"><span>Your handle</span><input class=\"ds-input\" value=\"sandeep\"></label>",
-      "css": ".ds-field{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);display:grid;gap:6px;color:var(--ink,#141618);background:var(--sheet,#f4f5f0);padding:16px;}.ds-field span{font-weight:650;}.ds-input{font:inherit;font-size:1.05rem;padding:0.6em 0.7em;border:1.5px solid var(--ink,#141618);border-radius:2px;background:#fff;color:var(--ink,#141618);}.ds-input:focus-visible{outline:3px solid var(--agent,#2340a0);outline-offset:3px;}.ds-input[aria-invalid=true]{border-color:var(--flag-ink,#b52a1e);}"
+      "description": "Text field for the player's handle, on HUD Deep in the dark frame.",
+      "html": "<input class=\"ds-input\" placeholder=\"your handle\" aria-label=\"Handle\">",
+      "css": ".ds-input{font-family:var(--font,'Archivo',system-ui,sans-serif);font-size:1.05rem;padding:.6em .7em;border:3px solid var(--edge,#0c0c12);border-radius:4px;background:var(--bg-deep,#14141c);color:var(--text,#f4f4f6)}.ds-input:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-input[aria-invalid=true]{border-color:var(--danger,#ff5a5a)}"
     },
     {
-      "name": "Top Bar",
+      "name": "HUD Nav",
       "kind": "nav",
-      "refersTo": "nav-link",
-      "description": "Chalk wordmark and links on felt; current page underlined.",
+      "refersTo": "hud-bar",
+      "description": "Top HUD bar: yellow pixel wordmark, pixel nav with a yellow underline on the current page.",
       "html": "<header class=\"ds-bar\"><a class=\"ds-mark\" href=\"#\">SMART-BOMBERMAN</a><nav><a href=\"#\" aria-current=\"page\">Play</a><a href=\"#\">Crosstable</a><a href=\"#\">How they learned</a></nav></header>",
-      "css": ".ds-bar{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 24px;min-height:64px;background:var(--felt,#1d4a37);border-bottom:1px solid var(--felt-deep,#163a2b);box-shadow:0 1px 0 var(--felt-seam,#24553f);}.ds-mark{font-weight:800;font-stretch:80%;font-size:1.35rem;letter-spacing:0.035em;text-decoration:none;color:var(--chalk,#eef3ee);}.ds-bar nav{display:flex;gap:32px;}.ds-bar nav a{color:var(--chalk-dim,#b9cdbf);text-decoration:none;padding:20px 0 18px;border-bottom:2px solid transparent;}.ds-bar nav a:hover{color:var(--chalk,#eef3ee);}.ds-bar nav a[aria-current=page]{color:var(--chalk,#eef3ee);border-bottom-color:var(--chalk,#eef3ee);}.ds-bar a:focus-visible{outline:3px solid var(--chalk,#eef3ee);outline-offset:3px;}"
+      "css": ".ds-bar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 24px;min-height:64px;background:var(--bg-deep,#14141c);border-bottom:3px solid var(--edge,#0c0c12)}.ds-mark{font-family:var(--pixel,'Silkscreen',monospace);font-weight:700;font-size:1.2rem;color:var(--you,#f2b51d);text-decoration:none}.ds-bar nav{display:flex;gap:32px}.ds-bar nav a{font-family:var(--pixel,'Silkscreen',monospace);font-size:.9rem;color:var(--text-dim,#b7b7c9);text-decoration:none;padding:20px 0 17px;border-bottom:3px solid transparent}.ds-bar nav a:hover{color:var(--text,#f4f4f6)}.ds-bar nav a:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-bar nav a[aria-current=page]{color:var(--text,#f4f4f6);border-bottom-color:var(--you,#f2b51d)}"
     },
     {
-      "name": "Chess Clock",
+      "name": "Sudden Death Timer",
       "kind": "custom",
-      "refersTo": "clock-face",
-      "description": "Twin faces in a bezel; the sudden-death panel stays paper until the flag falls.",
-      "html": "<div class=\"ds-clock\"><div class=\"ds-face\"><span class=\"ds-who\">You</span><span class=\"ds-reading\">Bomb ready</span></div><div class=\"ds-face ds-agent\"><span class=\"ds-who\">Camper</span><span class=\"ds-reading\">Bomb ready</span></div><div class=\"ds-face ds-flagpanel\" tabindex=\"0\"><span class=\"ds-who\">Sudden death in</span><span class=\"ds-reading\">0:29</span></div></div>",
-      "css": ".ds-clock{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);display:grid;grid-template-columns:1fr 1fr minmax(150px,0.8fr);gap:8px;padding:8px;background:var(--bezel,#0f2a1f);border-radius:6px;box-shadow:inset 0 1px 0 rgb(255 255 255/0.06),0 10px 24px -16px rgb(0 0 0/0.7);font-variant-numeric:tabular-nums;}.ds-face{display:grid;align-content:center;gap:2px;min-height:84px;padding:10px 16px 12px;background:var(--sheet,#f4f5f0);color:var(--ink,#141618);border-radius:2px;transition:background 500ms cubic-bezier(0.16,1,0.3,1),color 500ms cubic-bezier(0.16,1,0.3,1);}.ds-who{font-size:0.8rem;font-weight:650;letter-spacing:0.08em;text-transform:uppercase;}.ds-reading{font-size:2rem;font-weight:780;font-stretch:72%;line-height:1.05;white-space:nowrap;}.ds-agent{color:var(--agent,#2340a0);}.ds-flagpanel:hover,.ds-flagpanel:focus-visible{background:var(--flag,#d93a2b);color:#fff;outline:none;}"
+      "refersTo": "sudden-death-banner",
+      "description": "Match HUD timer; flips to a red banner when sudden death begins.",
+      "html": "<div class=\"ds-timer\"><span class=\"ds-timer-label\">SUDDEN DEATH IN</span><span class=\"ds-timer-value\">0:29</span></div><div class=\"ds-timer ds-fallen\"><span class=\"ds-timer-label\">SUDDEN DEATH</span></div>",
+      "css": ".ds-timer{display:inline-grid;justify-items:center;min-width:170px;padding:6px 14px;border-radius:3px;font-family:var(--pixel,'Silkscreen',monospace);background:var(--bg-deep,#14141c);color:var(--text,#f4f4f6);margin:4px}.ds-timer-label{font-size:.78rem;color:var(--text-dim,#b7b7c9);text-transform:uppercase;letter-spacing:.06em}.ds-timer-value{font-size:1.7rem;font-weight:700;line-height:1.1}.ds-fallen{background:var(--danger,#ff5a5a)}.ds-fallen .ds-timer-label{color:var(--bg-deep,#14141c);font-size:1.35rem;letter-spacing:0}"
     },
     {
-      "name": "Ladder Rung",
+      "name": "Roster Card",
       "kind": "custom",
-      "refersTo": "ladder-rung",
-      "description": "Agent rung in carbon blue; carbon wash on hover and when selected.",
-      "html": "<ol class=\"ds-ladder\"><li><button class=\"ds-rung\"><b>Two-Fuse · hard</b><span>1118</span></button></li><li class=\"ds-current\"><button class=\"ds-rung\"><b>Camper</b><span>903</span></button></li></ol>",
-      "css": ".ds-ladder{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);list-style:none;margin:0;padding:16px;background:var(--sheet,#f4f5f0);font-variant-numeric:tabular-nums;}.ds-ladder li{border-top:1px solid var(--rule,#c9ccc2);}.ds-ladder li:last-child{border-bottom:2px solid var(--ink,#141618);}.ds-rung{width:100%;display:flex;justify-content:space-between;padding:10px 6px;border:0;background:transparent;color:var(--agent,#2340a0);font:inherit;cursor:pointer;}.ds-rung b{font-weight:720;font-stretch:85%;font-size:1.08rem;}.ds-rung span{font-weight:700;font-stretch:72%;}.ds-rung:hover,.ds-current .ds-rung{background:var(--agent-wash,#dfe4f3);}.ds-rung:focus-visible{outline:3px solid var(--agent,#2340a0);outline-offset:3px;}"
+      "refersTo": "roster-card",
+      "description": "Character-select card: sprite, name in signature colour, Elo, status. Locked cards dim the agent's own sprite.",
+      "html": "<div class=\"ds-roster\"><button class=\"ds-card ds-current\"><span class=\"ds-art\" style=\"background:#5fb36a\"></span><span class=\"ds-name\" style=\"color:#5fb36a\">CAMPER</span><span class=\"ds-elo\">903</span><span class=\"ds-status ds-next\">NEXT</span></button><button class=\"ds-card ds-locked\" disabled><span class=\"ds-art\" style=\"background:#3fc9b8\"></span><span class=\"ds-name\">WANDERER</span><span class=\"ds-elo\">926</span><span class=\"ds-status\">LOCKED</span></button></div>",
+      "css": ".ds-roster{display:flex;gap:10px}.ds-card{display:grid;justify-items:center;gap:4px;width:128px;padding:12px 8px;border:3px solid var(--edge,#0c0c12);border-radius:4px;background:var(--panel-2,#333345);color:var(--text,#f4f4f6);cursor:pointer;box-shadow: inset 0 2px 0 var(--bevel-light, rgb(255 255 255 / 0.09)), inset 0 -3px 0 var(--bevel-dark, rgb(0 0 0 / 0.35));transition:transform 140ms cubic-bezier(.16,1,.3,1)}.ds-card:hover:not(:disabled){transform:translateY(-2px)}.ds-card:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-current{border-color:var(--you,#f2b51d);background:#3a3a2c}.ds-art{width:48px;height:48px;image-rendering:pixelated}.ds-locked .ds-art{filter:grayscale(.75) brightness(.7);opacity:.6}.ds-name{margin-top:6px;font-family:var(--pixel,'Silkscreen',monospace);font-size:.95rem;font-weight:700}.ds-locked .ds-name{color:var(--text-faint,#9a9ab0)}.ds-elo{font-family:var(--pixel,'Silkscreen',monospace);font-size:.9rem}.ds-status{font-family:var(--pixel,'Silkscreen',monospace);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint,#9a9ab0)}.ds-next{color:var(--you,#f2b51d)}"
     },
     {
-      "name": "Ruled Standings",
-      "kind": "card",
-      "refersTo": "",
-      "description": "Scoresheet table: ink rule under the head, agent rows blue, your row on alt row.",
-      "html": "<table class=\"ds-table\"><thead><tr><th>Name</th><th class=\"n\">Elo</th></tr></thead><tbody><tr class=\"a\"><td>Two-Fuse · hard</td><td class=\"n\">1118</td></tr><tr class=\"you\"><td>You</td><td class=\"n\">1000</td></tr><tr class=\"a\"><td>Camper</td><td class=\"n\">903</td></tr></tbody></table>",
-      "css": ".ds-table{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);width:100%;border-collapse:collapse;background:var(--sheet,#f4f5f0);color:var(--ink,#141618);font-variant-numeric:tabular-nums;box-shadow:0 1px 0 #163a2b,0 10px 24px -14px rgb(5 20 13/0.55);}.ds-table th,.ds-table td{padding:9px 12px;border-bottom:1px solid var(--rule,#c9ccc2);text-align:left;}.ds-table thead th{font-size:0.8rem;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft,#4a5054);border-bottom:2px solid var(--ink,#141618);}.ds-table .n{text-align:right;font-stretch:80%;}.ds-table .a td{color:var(--agent,#2340a0);}.ds-table .you td{background:var(--sheet-alt,#e9ebe3);font-weight:780;}.ds-table tbody tr:hover td{text-decoration:underline;text-decoration-thickness:1px;}"
-    },
-    {
-      "name": "Result Stamp",
+      "name": "Stakes Strip",
       "kind": "custom",
-      "refersTo": "",
-      "description": "Match result stamped onto the slip; a loss stamps in flag ink.",
-      "html": "<p class=\"ds-stamp\">Win</p> <p class=\"ds-stamp ds-loss\">Loss</p>",
-      "css": ".ds-stamp{font-family: var(--font, 'Archivo Variable', Archivo, system-ui, sans-serif);display:inline-block;margin:16px;padding:0 12px;font-size:4rem;font-weight:760;font-stretch:70%;letter-spacing:0.01em;text-transform:uppercase;color:var(--ink,#141618);border:4px solid currentColor;border-radius:4px;transform:rotate(-3deg);transition:transform 420ms cubic-bezier(0.16,1,0.3,1);}.ds-stamp:hover{transform:rotate(-3deg) scale(1.05);}.ds-loss{color:var(--flag-ink,#b52a1e);}"
+      "refersTo": "panel",
+      "description": "VS card win/draw/loss deltas: gains yellow, losses red, on HUD Deep.",
+      "html": "<dl class=\"ds-stakes\"><div><dd class=\"ds-up\">+15</dd><dt>Win</dt></div><div><dd>-5</dd><dt>Draw</dt></div><div><dd class=\"ds-down\">-25</dd><dt>Loss</dt></div></dl>",
+      "css": ".ds-stakes{display:grid;grid-template-columns:repeat(3,1fr);margin:0;border:3px solid var(--edge,#0c0c12);border-radius:4px;background:var(--bg-deep,#14141c);color:var(--text,#f4f4f6);width:320px}.ds-stakes div{display:flex;flex-direction:column;padding:8px 0 6px;text-align:center}.ds-stakes div+div{border-left:2px solid var(--line,#46465c)}.ds-stakes dt{font-family:var(--font,'Archivo',sans-serif);font-size:.85rem;color:var(--text-dim,#b7b7c9)}.ds-stakes dd{margin:0;font-family:var(--pixel,'Silkscreen',monospace);font-size:1.4rem;font-weight:700}.ds-up{color:var(--you,#f2b51d)}.ds-down{color:var(--danger,#ff5a5a)}"
     }
   ],
   "narrative": {
-    "northStar": "The Tournament Hall",
-    "overview": "The site is a rated tournament hall. Baize-green felt owns every surface the paper does not; cool white sheets (pairing slips, scoresheets, the crosstable) are pinned to it and carry all the content. You are paired against the agents on one Elo scale, and every result is written into a ruled table in tabular figures. The world refuses the dark neon arcade portal and the hero-plus-card-row game landing.\n\nDensity is that of a scoresheet: ruled rows, fixed cells that never reflow, numbers set narrow and aligned. Ornament comes only from the hall's own objects: the pairing slip pinned slightly askew, twin chess-clock faces in a dark bezel with a pennant that falls at sudden death, a result stamped onto the slip in a bordered rotated block, hatched cells where a player meets itself. Motion is brief and physical (a slip flip, a stamp, a falling flag) and collapses to near-instant under reduced motion.\n\nColour is not decoration. Three inks carry meaning (black for you, carbon-copy blue for the agents, flag red for danger and losses); everything else is felt, chalk, paper and grey rules.",
+    "northStar": "The Game, Unframed",
+    "overview": "The site is the actual game, not a page about it. The page is the original pygame HUD bar's navy; the arena keeps the original grey checker floor and the repo's own generic wall, brick, stone, bomb and explosion sprites, drawn pixel-crisp; the opponents are original 16x16 characters picked from a character-select roster. Everything around the arena borrows the vocabulary of a game menu: bevelled panels in a dark frame, a yellow action button, pixel lettering for the game's own words, a VS card, a HUD that flips red for sudden death.\n\nDensity is game-HUD dense on Play and reading-comfortable on How they learned. Pixel lettering is reserved for words the game would say (names, ratings, timers, buttons, section titles); everything a person reads at length is set in a plain sans. The confirmed rejections are the earlier tournament-table world (felt, chalk, score sheets: the site must not look like a chess table) and any reuse of the Bomberman franchise's characters, balloon enemies or title art.",
     "keyCharacteristics": [
-      "Felt page, paper sheets, one field colour at page scale.",
-      "Colour only ever means state: you, agent, danger.",
-      "One family (Archivo Variable), narrow width for display and numerals, tabular figures everywhere.",
-      "Ruled tables with a heavy ink rule under the header row and hairline rules between rows.",
-      "Flat paper on felt; the only shadow is the sheet's contact shadow."
+      "HUD navy page, grey checker arena, original tile sprites at crisp pixel scale.",
+      "Original characters, each with one signature colour that its name wears everywhere.",
+      "Yellow belongs to you; red means danger and sudden death.",
+      "Bevelled game-menu panels in a 3px near-black frame.",
+      "Silkscreen for the game's words, Archivo for reading."
     ],
     "rules": [
       {
-        "name": "The State-Only Rule",
-        "body": "Colour only ever means state: ink is you, carbon blue is an agent, red is danger, sudden death or a loss. Neutral content is ink on paper or chalk on felt. If a colour has no state to name, it does not appear.",
+        "name": "The Yours Is Yellow Rule",
+        "body": "Yellow marks the player and the player's actions only. No agent, chart series or decoration wears it.",
         "section": "colors"
       },
       {
-        "name": "The Carbon Blue Rule",
-        "body": "Agents are carbon-copy blue (#2340a0). Never violet, purple or any indigo-violet gradient; the user replaced the original violet to avoid the common AI-generated colour.",
+        "name": "The Signature Rule",
+        "body": "An agent's name always wears its character's signature colour; a locked roster entry drops to Text Faint until it opens.",
         "section": "colors"
       },
       {
-        "name": "The Red Ink Rule",
-        "body": "Red sets text on paper only as flag ink (#b52a1e); bright flag red (#d93a2b) is for fills, pennants and the board's enemy.",
+        "name": "The Red Means Danger Rule",
+        "body": "Red is reserved for danger, sudden death, losses and errors. It is never decorative.",
         "section": "colors"
       },
       {
-        "name": "The One Field Rule",
-        "body": "Felt is the only colour at page scale. Paper sits on it; nothing else tints the page.",
-        "section": "colors"
-      },
-      {
-        "name": "The One Family Rule",
-        "body": "Archivo Variable for everything. Hierarchy comes from width, weight and size, never from a second face.",
+        "name": "The Game Words Rule",
+        "body": "Silkscreen sets only what the game itself would print: names, ratings, timers, scores, buttons, nav and titles. Sentences go in Archivo.",
         "section": "typography"
       },
       {
-        "name": "The Narrow Numeral Rule",
-        "body": "Numerals are tabular everywhere (set on body) and narrow (72% width) wherever they are the point: ratings, clock readings, stakes, table figures.",
+        "name": "The Legible Pixels Rule",
+        "body": "A pixel face must keep C, O, 5 and S distinct. Silkscreen passes; Pixelify Sans does not.",
         "section": "typography"
       },
       {
-        "name": "The No Eyebrow Rule",
-        "body": "No small uppercase label sits above a heading. Uppercase labels belong to table heads, ruled header rows and clock faces only.",
+        "name": "The Tabular Rule",
+        "body": "Numbers are tabular everywhere (set on body).",
         "section": "typography"
       },
       {
-        "name": "The Fixed Cell Rule",
-        "body": "Cells do not reflow with their contents: clock faces, stakes and table columns hold their width, and names do not wrap.",
-        "section": "layout"
-      },
-      {
-        "name": "The Pinned Sheet Rule",
-        "body": "Paper sits on felt with the sheet contact shadow and nothing more. Depth never signals interactivity.",
+        "name": "The Bevel Not Blur Rule",
+        "body": "Depth comes from inset bevel lines and the dark frame. Never a soft drop shadow.",
         "section": "elevation"
-      },
-      {
-        "name": "The Flag Falls Once Rule",
-        "body": "The sudden-death panel stays paper until the flag falls. Red fills it only at that moment.",
-        "section": "components"
-      },
-      {
-        "name": "The One Hue Chart Rule",
-        "body": "Charts separate series by dash pattern and direct labels in one carbon hue, never by adding hues.",
-        "section": "components"
       }
     ],
     "dos": [
-      "**Do** keep felt (#1d4a37) as the only page-scale colour and put content on paper sheets with the sheet contact shadow.",
-      "**Do** set agents in carbon-copy blue (#2340a0), you in ink (#141618), danger and losses in red.",
-      "**Do** use flag ink (#b52a1e) for red text on paper and flag red (#d93a2b) only for fills.",
-      "**Do** set every figure in tabular numerals, narrowed to 72% width where the number is the point.",
-      "**Do** separate chart series by dash pattern and direct labels in carbon blue.",
-      "**Do** rule tables with a 2px ink rule under the head and 1px rules between rows.",
-      "**Do** keep the sudden-death panel paper until the flag falls."
+      "**Do** use HUD Navy (#1e1e28) for the page and the grey checker floor with the repo's own tile sprites for the arena, drawn pixel-crisp.",
+      "**Do** draw characters from the original 16x16 grids in web/src/art/characters.json.",
+      "**Do** keep Your Jacket Yellow for the player and the player's actions; keep HUD Alarm Red for danger and sudden death.",
+      "**Do** colour every agent's name with its character's signature colour.",
+      "**Do** frame panels in 3px Frame Black (#0c0c12) with the inset bevel.",
+      "**Do** tell chart series apart by dash pattern plus direct labels in a single hue.",
+      "**Do** show locked roster opponents as their own sprite, dimmed.",
+      "**Do** run live matches on arena_1."
     ],
     "donts": [
-      "**Don't** use violet, purple or indigo-violet for agents or anywhere else; the user replaced it to avoid the common AI-generated colour.",
-      "**Don't** add a colour that does not name a state, including a new hue for an extra chart series.",
-      "**Don't** put an uppercase eyebrow label above a heading.",
-      "**Don't** introduce a second typeface or a system display face; Archivo Variable carries everything.",
-      "**Don't** build a dark neon arcade portal or a hero-plus-card-row game landing.",
-      "**Don't** lift sheets on hover or add shadows beyond the sheet contact, bezel and tooltip."
+      "**Don't** use the Bomberman franchise characters, the balloon enemies or the official title art that exist in src/graphics (player.png, enemy.png, enemy_later.png, bomberman_title.png).",
+      "**Don't** return to the tournament-table world: no felt, chalk or score-sheet look.",
+      "**Don't** use Pixelify Sans or any pixel face whose C reads as O or 5 as S.",
+      "**Don't** set sentences or long reading text in Silkscreen.",
+      "**Don't** render locked opponents as silhouettes.",
+      "**Don't** separate chart series by hue alone.",
+      "**Don't** smooth or blur raster art; never resample sprites with smoothing on."
     ]
   }
 }

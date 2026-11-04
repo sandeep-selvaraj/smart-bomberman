@@ -1,287 +1,258 @@
 ---
 name: smart-bomberman
-description: A rated tournament hall where you play trained reinforcement-learning agents on one Elo scale.
+description: The game itself on the web; pick a character from the roster, fight the trained agents in the original arena, and earn an Elo on their scale.
 colors:
-  felt: "#1d4a37"
-  felt-deep: "#163a2b"
-  felt-seam: "#24553f"
-  bezel: "#0f2a1f"
-  chalk: "#eef3ee"
-  chalk-dim: "#b9cdbf"
-  sheet: "#f4f5f0"
-  sheet-alt: "#e9ebe3"
-  rule: "#c9ccc2"
-  rule-strong: "#8d928a"
-  ink: "#141618"
-  ink-soft: "#4a5054"
-  ink-faint: "#5b6166"
-  agent: "#2340a0"
-  agent-wash: "#dfe4f3"
-  flag: "#d93a2b"
-  flag-ink: "#b52a1e"
+  you: "#f2b51d"
+  danger: "#ff5a5a"
+  fuse: "#ff8a1f"
+  camper: "#5fb36a"
+  wanderer: "#3fc9b8"
+  heuristic: "#c4ccd4"
+  two-fuse: "#ece6d6"
+  two-fuse-hard: "#ff6a5a"
+  spark: "#ff7a1a"
+  hud-navy: "#1e1e28"
+  hud-deep: "#14141c"
+  panel: "#2a2a37"
+  panel-raised: "#333345"
+  frame: "#0c0c12"
+  line: "#46465c"
+  text: "#f4f4f6"
+  text-dim: "#b7b7c9"
+  text-faint: "#9a9ab0"
+  floor: "#808080"
+  floor-light: "#838383"
+  floor-dark: "#7b7b7b"
 typography:
   display:
-    fontFamily: "Archivo Variable, Archivo, system-ui, sans-serif"
-    fontSize: "clamp(2.6rem, 6vw, 4.5rem)"
-    fontWeight: 760
-    lineHeight: 1.02
-    letterSpacing: "-0.012em"
-    fontVariation: "'wdth' 78"
+    fontFamily: "Silkscreen, monospace"
+    fontSize: "clamp(2rem, 5.6vw, 4.2rem)"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "0"
   headline:
-    fontFamily: "Archivo Variable, Archivo, system-ui, sans-serif"
-    fontSize: "clamp(1.8rem, 3vw, 2.4rem)"
-    fontWeight: 760
-    lineHeight: 1.02
-    letterSpacing: "-0.012em"
-    fontVariation: "'wdth' 78"
+    fontFamily: "Silkscreen, monospace"
+    fontSize: "clamp(1.3rem, 2.2vw, 1.75rem)"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "0"
   title:
-    fontFamily: "Archivo Variable, Archivo, system-ui, sans-serif"
-    fontSize: "1.5rem"
-    fontWeight: 760
-    lineHeight: 1.02
-    fontVariation: "'wdth' 78"
-  numeral:
-    fontFamily: "Archivo Variable, Archivo, system-ui, sans-serif"
-    fontSize: "1.85rem"
-    fontWeight: 780
-    lineHeight: 1.05
-    fontFeature: "'tnum'"
-    fontVariation: "'wdth' 72"
+    fontFamily: "Silkscreen, monospace"
+    fontSize: "1.1rem"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "0"
   body:
     fontFamily: "Archivo Variable, Archivo, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
-    fontFeature: "'tnum'"
   label:
+    fontFamily: "Silkscreen, monospace"
+    fontSize: "0.78rem"
+    fontWeight: 400
+    lineHeight: 1.1
+    letterSpacing: "0.06em"
+  table-head:
     fontFamily: "Archivo Variable, Archivo, system-ui, sans-serif"
     fontSize: "0.8rem"
     fontWeight: 650
     letterSpacing: "0.06em"
-    fontFeature: "'tnum'"
-  button:
-    fontFamily: "Archivo Variable, Archivo, system-ui, sans-serif"
-    fontSize: "1.1rem"
-    fontWeight: 700
-    letterSpacing: "0.04em"
-    fontVariation: "'wdth' 85"
 rounded:
-  hairline: "2px"
-  key: "3px"
-  stamp: "4px"
-  bezel: "6px"
+  tile: "3px"
+  panel: "4px"
 spacing:
   gutter: "clamp(16px, 3.4vw, 48px)"
-  cell: "9px 12px"
-  sheet: "22px"
   measure: "68ch"
-  container: "1344px"
+  frame: "3px"
+  stack-sm: "12px"
+  stack-md: "18px"
 components:
   button-primary:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.sheet}"
-    typography: "{typography.button}"
-    rounded: "{rounded.hairline}"
-    padding: "0.95em 1.4em"
-  button-primary-hover:
-    backgroundColor: "#2a2e31"
+    backgroundColor: "{colors.you}"
+    textColor: "{colors.hud-deep}"
+    typography: "{typography.title}"
+    rounded: "{rounded.panel}"
+    padding: "0.75em 1.3em"
   button-primary-disabled:
-    backgroundColor: "{colors.rule-strong}"
+    backgroundColor: "{colors.line}"
+    textColor: "{colors.text-dim}"
   button-quiet:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
-    rounded: "{rounded.hairline}"
-    padding: "0.95em 1.4em"
-  button-quiet-hover:
-    backgroundColor: "{colors.sheet-alt}"
-  button-on-felt:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.hairline}"
-    padding: "0.7em 1.2em"
+    backgroundColor: "{colors.panel-raised}"
+    textColor: "{colors.text}"
+    rounded: "{rounded.panel}"
+    padding: "0.75em 1.3em"
+  panel:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.text}"
+    rounded: "{rounded.panel}"
+  hud-bar:
+    backgroundColor: "{colors.hud-deep}"
+    height: "64px"
   input:
-    backgroundColor: "#ffffff"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.hairline}"
+    backgroundColor: "{colors.hud-deep}"
+    textColor: "{colors.text}"
+    rounded: "{rounded.panel}"
     padding: "0.6em 0.7em"
-  clock-face:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.ink}"
-    typography: "{typography.numeral}"
-    rounded: "{rounded.hairline}"
-    padding: "10px 16px 12px"
-  clock-face-agent:
-    backgroundColor: "{colors.sheet}"
-    textColor: "{colors.agent}"
-  clock-flag-fallen:
-    backgroundColor: "{colors.flag}"
-    textColor: "#ffffff"
-  ladder-rung:
-    backgroundColor: "transparent"
-    textColor: "{colors.agent}"
-    padding: "10px 6px"
-  ladder-rung-current:
-    backgroundColor: "{colors.agent-wash}"
-    textColor: "{colors.agent}"
-  nav-link:
-    textColor: "{colors.chalk-dim}"
-    padding: "20px 0 18px"
-  nav-link-current:
-    textColor: "{colors.chalk}"
+  roster-card:
+    backgroundColor: "{colors.panel-raised}"
+    textColor: "{colors.text}"
+    rounded: "{rounded.panel}"
+    padding: "12px 8px"
+  roster-card-current:
+    backgroundColor: "#3a3a2c"
+  sudden-death-banner:
+    backgroundColor: "{colors.danger}"
+    textColor: "{colors.hud-deep}"
+    rounded: "{rounded.tile}"
 ---
 
 # Design System: smart-bomberman
 
 ## Overview
 
-**Creative North Star: "The Tournament Hall"**
+**Creative North Star: "The Game, Unframed"**
 
-The site is a rated tournament hall. Baize-green felt owns every surface the paper does not; cool white sheets (pairing slips, scoresheets, the crosstable) are pinned to it and carry all the content. You are paired against the agents on one Elo scale, and every result is written into a ruled table in tabular figures. The world refuses the dark neon arcade portal and the hero-plus-card-row game landing.
+The site is the actual game, not a page about it. The page is the original pygame HUD bar's navy; the arena keeps the original grey checker floor and the repo's own generic wall, brick, stone, bomb and explosion sprites, drawn pixel-crisp; the opponents are original 16x16 characters picked from a character-select roster. Everything around the arena borrows the vocabulary of a game menu: bevelled panels in a dark frame, a yellow action button, pixel lettering for the game's own words, a VS card, a HUD that flips red for sudden death.
 
-Density is that of a scoresheet: ruled rows, fixed cells that never reflow, numbers set narrow and aligned. Ornament comes only from the hall's own objects: the pairing slip pinned slightly askew, twin chess-clock faces in a dark bezel with a pennant that falls at sudden death, a result stamped onto the slip in a bordered rotated block, hatched cells where a player meets itself. Motion is brief and physical (a slip flip, a stamp, a falling flag) and collapses to near-instant under reduced motion.
-
-Colour is not decoration. Three inks carry meaning (black for you, carbon-copy blue for the agents, flag red for danger and losses); everything else is felt, chalk, paper and grey rules.
+Density is game-HUD dense on Play and reading-comfortable on How they learned. Pixel lettering is reserved for words the game would say (names, ratings, timers, buttons, section titles); everything a person reads at length is set in a plain sans. The confirmed rejections are the earlier tournament-table world (felt, chalk, score sheets: the site must not look like a chess table) and any reuse of the Bomberman franchise's characters, balloon enemies or title art.
 
 **Key Characteristics:**
-- Felt page, paper sheets, one field colour at page scale.
-- Colour only ever means state: you, agent, danger.
-- One family (Archivo Variable), narrow width for display and numerals, tabular figures everywhere.
-- Ruled tables with a heavy ink rule under the header row and hairline rules between rows.
-- Flat paper on felt; the only shadow is the sheet's contact shadow.
+- HUD navy page, grey checker arena, original tile sprites at crisp pixel scale.
+- Original characters, each with one signature colour that its name wears everywhere.
+- Yellow belongs to you; red means danger and sudden death.
+- Bevelled game-menu panels in a 3px near-black frame.
+- Silkscreen for the game's words, Archivo for reading.
 
 ## Colors
 
-A green felt field, cool paper, and three state inks; no colour appears without a meaning.
+A dark HUD navy field with one owner colour (yellow), one alarm colour (red), and a cast of character signature colours; neutrals are cool navies and greys.
 
 ### Primary
-- **Carbon-Copy Blue** (agent): every agent, everywhere. Agent names on the slip, the agent's clock face, ladder rungs, standings and crosstable rows, chart lines, the centre of the agent's view, text selection, and focus rings on paper. Chosen by the user in place of the violet first sketched for Two-Fuse, to avoid the common AI-generated colour.
-- **Carbon Wash** (agent-wash): the pale tint behind a hovered or selected agent rung. Never a fill for anything that is not an agent.
+- **Your Jacket Yellow** (you): the player's colour. The primary button, your name in the HUD, VS card, standings and crosstable, the wordmark, the current-page nav underline, rating gains, the countdown digits, focus rings and text selection. The "you" character's jacket is drawn in it.
 
 ### Secondary
-- **Flag Red** (flag): fills only. The wandering enemy on the board, the clock pennant, and the sudden-death panel once the flag has fallen.
-- **Flag Ink** (flag-ink): the same red where it sets text or strokes on paper: a lost result stamp, a rating drop, a field error, the practice marker on the slip. Darkened for contrast on the sheet.
+- **HUD Alarm Red** (danger): the original HUD's SUDDEN DEATH red. The sudden-death banner, the countdown when it warns, VS lettering, losses and rating drops, practice-match markers, invalid inputs and errors. The arena tints closing cells and dangerous squares with a translucent red (rgba(255, 60, 60, 0.15-0.65)) and marks a fallen fighter with a red cross.
+- **Lit Fuse Orange** (fuse): the HUD status when a fighter's bomb is lit.
+
+### Tertiary: character signatures
+- **Camper Green** (camper), **Wanderer Teal** (wanderer), **Heuristic Steel** (heuristic), **Two-Fuse Bone** (two-fuse), **Two-Fuse Hard Red** (two-fuse-hard), **Spark Orange** (spark): each agent's name is drawn in its character's signature colour wherever it appears (HUD, VS card, roster, standings, crosstable). The source of truth is `SIGNATURE` in web/src/art/sprites.ts, mirrored as custom properties in global.css. Two-Fuse Bone is also the single hue of the training charts.
 
 ### Neutral
-- **Baize Felt** (felt): the page. Every surface that is not paper.
-- **Deep Felt** (felt-deep) and **Felt Seam** (felt-seam): the top bar's double rule, the sheet's contact edge, scrollbars on felt.
-- **Bezel** (bezel): the chess-clock housing; the only near-black surface.
-- **Chalk** (chalk) and **Dim Chalk** (chalk-dim): text on felt; dim chalk for intros, captions, legends and idle nav links.
-- **Scoresheet** (sheet) and **Alt Row** (sheet-alt): paper, and the row or face that is yours or out of play.
-- **Rule** (rule) and **Strong Rule** (rule-strong): hairline row rules; strong rule for control borders, disabled buttons, and the superseded series (v1) in comparisons.
-- **Ink** (ink), **Soft Ink** (ink-soft), **Faint Ink** (ink-faint): you, body text and the primary button; secondary text and column heads; axis ticks and locked rungs.
+- **HUD Navy** (hud-navy): the page, taken from the pygame HUD bar (30, 30, 40).
+- **HUD Deep** (hud-deep): the top bar, the match HUD strip, the stakes strip, inputs, and text on yellow and red fills.
+- **Menu Panel** (panel) and **Raised Panel** (panel-raised): panel fills; raised for quiet buttons, roster cards, keycaps and your highlighted table row.
+- **Frame Black** (frame): every panel, button, arena and input frame, and heavy rules under headers.
+- **Line** (line): hairline table rules, dividers, disabled button fill.
+- **Text / Text Dim / Text Faint**: primary copy, secondary copy and labels, locked and tertiary states.
+- **Arena Floor** (floor, floor-light, floor-dark): the original grey floor, drawn on canvas as a checker of floor-light and floor-dark; floor itself backs the arena frame and HUD bomb chips.
 
 ### Named Rules
-**The State-Only Rule.** Colour only ever means state: ink is you, carbon blue is an agent, red is danger, sudden death or a loss. Neutral content is ink on paper or chalk on felt. If a colour has no state to name, it does not appear.
+**The Yours Is Yellow Rule.** Yellow marks the player and the player's actions only. No agent, chart series or decoration wears it.
 
-**The Carbon Blue Rule.** Agents are carbon-copy blue (#2340a0). Never violet, purple or any indigo-violet gradient; the user replaced the original violet to avoid the common AI-generated colour.
+**The Signature Rule.** An agent's name always wears its character's signature colour; a locked roster entry drops to Text Faint until it opens.
 
-**The Red Ink Rule.** Red sets text on paper only as flag ink (#b52a1e); bright flag red (#d93a2b) is for fills, pennants and the board's enemy.
-
-**The One Field Rule.** Felt is the only colour at page scale. Paper sits on it; nothing else tints the page.
+**The Red Means Danger Rule.** Red is reserved for danger, sudden death, losses and errors. It is never decorative.
 
 ## Typography
 
-**Display Font:** Archivo Variable (self-hosted via @fontsource-variable/archivo, width axis), with Archivo, system-ui, sans-serif
-**Body Font:** Archivo Variable, same stack
+**Display Font:** Silkscreen (with monospace)
+**Body Font:** Archivo Variable (with Archivo, system-ui, sans-serif)
 
-**Character:** One grotesque in two widths. Narrowed (78%) and heavy for headings so the pairing line sets large without wrapping; narrower still (72%) for numerals so ratings, clocks and stakes read like a printed scoresheet.
+**Character:** Silkscreen is a blocky, caps-only bitmap face that speaks for the game; Archivo is a plain grotesque that does the explaining. Pixelify Sans was tried and rejected: its C reads as O and its 5 as S, which breaks names and scores.
 
 ### Hierarchy
-- **Display** (760, clamp(2.6rem, 6vw, 4.5rem) on Crosstable up to clamp(3rem, 8vw, 6rem) on How they learned, 1.02): page titles and the slip's "You vs <agent>" line (clamp(2.4rem, 4.2vw, 3.6rem)).
-- **Headline** (760, clamp(1.8rem, 3vw, 2.4rem), 1.02): section heads on felt and inside prose sheets.
-- **Title** (760, 1.35 to 1.5rem): sheet titles such as the ladder and standings captions.
-- **Numeral** (780, width 72%, 1.85rem stakes; clamp(1.4rem, 2.6vw, 2.35rem) clock readings): every figure that matters.
-- **Body** (400, 1rem, 1.5): prose sheets run 1.06rem at 1.6 within a 68ch measure.
-- **Label** (650, 0.78 to 0.82rem, 0.06 to 0.1em, uppercase): table column heads, the slip's ruled header row, clock face owners, ladder status, agent tags. Labels head columns and cells; they never sit above a heading.
-- **Result stamp** (width 70%, clamp(3.4rem, 6vw, 5rem), uppercase, 4px border, rotated -3deg): the match result, stamped onto the slip.
+- **Display** (Silkscreen 700, clamp(2rem, 5.6vw, 4.2rem), 1.1): page titles. Game-moment words run larger: the countdown (clamp(5rem, 12vw, 9rem)) and YOU WIN / YOU LOSE (clamp(2.2rem, 4vw, 3.2rem)).
+- **Headline** (Silkscreen 700, clamp(1.3rem, 2.2vw, 1.75rem), 1.1): section titles, panel captions (1.15-1.3rem).
+- **Title** (Silkscreen 700, 1-1.2rem, 1.1): fighter names, buttons, the wordmark (1.2rem), stakes values (1.4rem), the HUD timer (1.7rem).
+- **Body** (Archivo 400, 1rem, 1.5; long-form 1.06rem at 1.6, max 68ch): all reading text, descriptions, notes, table cells, legends.
+- **Label** (Silkscreen 400, 0.72-0.82rem, 0.06em, uppercase): HUD status, roster status, VS card meta strip, nav (0.9rem).
+- **Table head** (Archivo 650, 0.8rem, 0.06em, uppercase): column headings in standings and crosstable.
 
 ### Named Rules
-**The One Family Rule.** Archivo Variable for everything. Hierarchy comes from width, weight and size, never from a second face.
+**The Game Words Rule.** Silkscreen sets only what the game itself would print: names, ratings, timers, scores, buttons, nav and titles. Sentences go in Archivo.
 
-**The Narrow Numeral Rule.** Numerals are tabular everywhere (set on body) and narrow (72% width) wherever they are the point: ratings, clock readings, stakes, table figures.
+**The Legible Pixels Rule.** A pixel face must keep C, O, 5 and S distinct. Silkscreen passes; Pixelify Sans does not.
 
-**The No Eyebrow Rule.** No small uppercase label sits above a heading. Uppercase labels belong to table heads, ruled header rows and clock faces only.
+**The Tabular Rule.** Numbers are tabular everywhere (set on body).
 
 ## Layout
 
-A felt page with a 1344px container and a fluid gutter (clamp(16px, 3.4vw, 48px)). Play is a two-column hall: the table (clock above the board on a white sheet, legend on felt, then the ladder) at 1.45fr and a sticky side column (pairing slip, standings) at minimum 320px. The crosstable follows as a full-width sheet. How they learned is a 1100px reading column of prose sheets with paired figures between them.
-
-Sheets pad at about 22px; table cells at 9px 12px. Breakpoints: 1000px collapses Play to one column (board, slip, ladder) and straightens the slip; 860px and 760px stack paired panes; 720px moves the sudden-death panel under the two clock faces; 640px stacks the top bar. Wide tables scroll horizontally with a sticky name column, a right-edge fade and a swipe hint rather than reflowing.
-
-**The Fixed Cell Rule.** Cells do not reflow with their contents: clock faces, stakes and table columns hold their width, and names do not wrap.
+Play is a two-column hall (max 1344px, centred, gutter clamp(16px, 3.4vw, 48px)): left column 1.5fr holds the match HUD, the arena and the roster beneath it; right column (min 320px) holds the VS card and Where you stand. Below 1000px it collapses to one column ordered arena, VS card, roster, and the standings panel hides. The roster is a five-up grid of cards that becomes a single-column list of horizontal rows below 760px. The top bar is 64px, wordmark left, nav right, stacking under 640px. How they learned is a single 1100px column of panels with prose held to 68ch. Spacing runs on a loose 4px rhythm (6, 10, 12, 14, 18, 22, 32px); panels pad 16-22px.
 
 ## Elevation & Depth
 
-Flat paper on felt. Depth means "pinned to the table": one contact shadow under every sheet, plus the clock bezel's inset highlight. No other lift, no hover elevation.
+Depth is a game-menu bevel, not a shadow. Surfaces are flat fills with a 3px Frame Black border and two inset lines: a light top edge and a dark bottom edge. Buttons have a deeper bevel and press down 2px on click, losing the top highlight. Roster cards lift 2px on hover. No ambient or drop shadows on boxes.
 
 ### Shadow Vocabulary
-- **Sheet contact** (`box-shadow: 0 1px 0 #163a2b, 0 10px 24px -14px rgb(5 20 13 / 0.55)`): every sheet, slip, chart and pane on felt.
-- **Clock bezel** (`box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 10px 24px -16px rgb(0 0 0 / 0.7)`): the chess-clock housing only.
-- **Chart tooltip** (`box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.4)`): the crosshair readout over a chart.
+- **Panel bevel** (`box-shadow: inset 0 2px 0 rgb(255 255 255 / 0.09), inset 0 -3px 0 rgb(0 0 0 / 0.35)`): panels, quiet buttons, roster cards.
+- **Button bevel** (`box-shadow: inset 0 3px 0 rgb(255 255 255 / 0.35), inset 0 -4px 0 rgb(0 0 0 / 0.22)`): the yellow primary button.
+- **Button pressed** (`box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.22)` with `translateY(2px)`): active state.
 
 ### Named Rules
-**The Pinned Sheet Rule.** Paper sits on felt with the sheet contact shadow and nothing more. Depth never signals interactivity.
+**The Bevel Not Blur Rule.** Depth comes from inset bevel lines and the dark frame. Never a soft drop shadow.
 
 ## Shapes
 
-Square paper with near-square corners. Sheets have no radius; controls take a 2px hairline corner, keycaps and tooltips 3px, the result stamp 4px, and the clock bezel 6px. Tables are ruled, never boxed: a 2px ink rule under the header row, 1px rules between rows, 1px vertical rules only where columns change meaning. A diagonal hatch (135deg) marks cells that cannot be played: breakable walls on the board, a player against itself in the crosstable. The pairing slip is rotated -0.5deg; the result stamp -3deg.
+Nearly square corners: 4px on panels, buttons, inputs, roster cards and the arena frame; 3px on keycaps and the sudden-death banner. Every container is framed in a 3px Frame Black border; keycaps use a 2px border with a 4px bottom edge. Raster art (tiles, characters, bomb chips) is always rendered with image-rendering: pixelated and image smoothing off, scaled in whole-sprite steps from 16px character grids and 32px tiles.
 
 ## Components
 
 ### Buttons
-Each slip has one black button.
-- **Shape:** hairline corner (2px).
-- **Primary:** ink fill, paper text, 700 weight at 85% width, 0.04em tracking, padding 0.95em 1.4em. Start match runs full slip width at 1.25rem.
-- **Hover / Active / Disabled:** fill lifts to #2a2e31 over 160ms; pressing nudges it down 1px; disabled turns strong-rule grey.
-- **Quiet:** transparent with a 1.5px inset ink ring; hover fills alt row.
-- **On felt:** paper fill with ink text for figure controls on felt; hover goes to white.
+Chunky, pressable arcade buttons.
+- **Shape:** gently squared (4px), 3px Frame Black border.
+- **Primary:** Your Jacket Yellow fill, HUD Deep text, Silkscreen 700 at 1rem, padding 0.75em 1.3em, button bevel. Start match runs full width at 1.2rem.
+- **Hover / Focus:** brightness(1.08) over 140ms ease-out; 3px yellow focus outline offset 3px. Active presses down 2px.
+- **Quiet:** Raised Panel fill with the panel bevel, for secondary actions.
+- **Disabled:** Line fill, Text Dim, no motion.
+
+### Cards / Containers (panel)
+- **Corner Style:** 4px.
+- **Background:** Menu Panel.
+- **Shadow Strategy:** panel bevel (see Elevation).
+- **Border:** 3px Frame Black.
+- **Internal Padding:** 16-22px.
 
 ### Inputs / Fields
-- **Style:** white field, 1.5px ink border, 2px corner, padding 0.6em 0.7em, label above in 650 weight.
-- **Focus:** 3px carbon-blue outline offset 3px (chalk outline on felt).
-- **Error:** border and help text turn flag ink.
+- **Style:** HUD Deep fill, 3px Frame Black border, 4px radius, Archivo 1.05rem.
+- **Focus:** the global yellow focus ring.
+- **Error:** border turns HUD Alarm Red; help text turns red.
 
 ### Navigation
-Wordmark at left in chalk (800, 80% width, 0.035em tracking); links at right in dim chalk, 1rem. Hover brightens to chalk; the current page gets chalk text and a 2px chalk underline. A double rule (deep felt over felt seam) separates the bar from the page. Under 640px the bar stacks.
+Top bar on HUD Deep with a 3px Frame Black bottom border. Yellow Silkscreen wordmark left; Silkscreen nav links at 0.9rem in Text Dim, Text on hover, and Text with a 3px yellow underline for the current page.
 
-### Chess Clock
-Signature. Two paper faces and a sudden-death panel in a 6px-radius bezel. Each face names its owner as a label and shows its reading as a numeral; the agent's face is carbon blue, a face that is out of play turns alt row with faint ink. The sudden-death panel stays paper while counting down (the reading turns flag ink in warning) and only turns flag red, with white text, when the flag falls; a red pennant on a 2px staff rotates 100deg over 650ms with an accelerating fall.
+### Match HUD (signature)
+A HUD Deep strip above the arena: your portrait, name and bomb chip left; the sudden-death countdown centre; the opponent mirrored right. Status lines read BOMB READY in Text Dim and turn Lit Fuse Orange when lit. At sudden death the timer becomes a red banner with HUD Deep lettering that drops in and blinks three times.
 
-**The Flag Falls Once Rule.** The sudden-death panel stays paper until the flag falls. Red fills it only at that moment.
+### Arena (signature)
+A canvas at 32px per tile scaled to its column with crisp pixels, framed 3px and backed by Arena Floor. Floor cells checker floor-light and floor-dark; the original wall, brick (one blast) and stone (two blasts) tiles; the original two-frame bomb that swells near detonation; the original explosion; characters ease between tiles at the tick rate and face their direction of travel. Live matches use the arena_1 map. A tile legend sits under the arena in Archivo.
 
-### Pairing Slip
-A sheet rotated -0.5deg with a ruled header row (round, board, map, rated) over a 2px ink rule, the display pairing line with the agent name in carbon blue, a ratings line, three stake cells (win, draw, loss) divided by hairlines, and the one black button. The result replaces the pairing line as a rotated bordered stamp; a loss stamps in flag ink.
+### VS Card (signature)
+A panel with a meta strip (round, map, rated) in uppercase Silkscreen labels over a Frame Black rule; both portraits facing each other with names in their signature colours and ratings; red VS between them; a HUD Deep stakes strip of win / draw / loss deltas (gains yellow, losses red); the yellow Start match button; keycaps for the controls.
 
-### Ruled Tables (Crosstable, Standings)
-Uppercase soft-ink column heads over a 2px ink rule; 1px rule rows; right-aligned narrow tabular figures. Agent rows are carbon blue; your row is ink on alt row and is pinned with a 2px ink top rule. Rating changes animate down 4px once; drops are flag ink.
-
-### Ladder
-Rungs stacked bottom-up (hardest at top) as full-width buttons in carbon blue, hairline-ruled with a 2px ink rule at the base. Hover and the current rung take the carbon wash; locked rungs fall to faint ink.
+### Character-Select Roster (signature)
+Five cards from lowest-rated agent to Two-Fuse hard. Each shows the agent's 64px sprite, its name in signature colour, its Elo and a status (NEXT in yellow). The current pick takes a yellow border on a warm olive fill (#3a3a2c). Locked opponents show their own sprite dimmed (grayscale 0.75, brightness 0.7, opacity 0.6) with names and copy in Text Faint.
 
 ### Charts
-One sheet per chart with a bold caption, a direct-label legend, light grid lines, faint tick labels and a crosshair tooltip, plus a data table behind a disclosure. Every series is carbon blue; series differ by dash pattern (solid, 7 5, 2 4) and are labelled at their line ends. Comparisons of an old and new version use strong-rule grey for the old and carbon blue for the new.
-
-**The One Hue Chart Rule.** Charts separate series by dash pattern and direct labels in one carbon hue, never by adding hues.
-
-### Board
-A canvas on a white sheet: paper floor, hairline grid, dark solid walls, hatched breakable walls, you as an ink ring, the agent as a carbon-blue ring, wandering enemies as flag-red diamonds. The legend beneath sits on felt in dim chalk.
+Line charts and dumbbells sit in panels on hairline grids. Series share one hue (Two-Fuse Bone) and are told apart by dash pattern (solid, 7 5, 2 4) plus direct end labels; legend swatches repeat the dash.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep felt (#1d4a37) as the only page-scale colour and put content on paper sheets with the sheet contact shadow.
-- **Do** set agents in carbon-copy blue (#2340a0), you in ink (#141618), danger and losses in red.
-- **Do** use flag ink (#b52a1e) for red text on paper and flag red (#d93a2b) only for fills.
-- **Do** set every figure in tabular numerals, narrowed to 72% width where the number is the point.
-- **Do** separate chart series by dash pattern and direct labels in carbon blue.
-- **Do** rule tables with a 2px ink rule under the head and 1px rules between rows.
-- **Do** keep the sudden-death panel paper until the flag falls.
+- **Do** use HUD Navy (#1e1e28) for the page and the grey checker floor with the repo's own tile sprites for the arena, drawn pixel-crisp.
+- **Do** draw characters from the original 16x16 grids in web/src/art/characters.json.
+- **Do** keep Your Jacket Yellow for the player and the player's actions; keep HUD Alarm Red for danger and sudden death.
+- **Do** colour every agent's name with its character's signature colour.
+- **Do** frame panels in 3px Frame Black (#0c0c12) with the inset bevel.
+- **Do** tell chart series apart by dash pattern plus direct labels in a single hue.
+- **Do** show locked roster opponents as their own sprite, dimmed.
+- **Do** run live matches on arena_1.
 
 ### Don't:
-- **Don't** use violet, purple or indigo-violet for agents or anywhere else; the user replaced it to avoid the common AI-generated colour.
-- **Don't** add a colour that does not name a state, including a new hue for an extra chart series.
-- **Don't** put an uppercase eyebrow label above a heading.
-- **Don't** introduce a second typeface or a system display face; Archivo Variable carries everything.
-- **Don't** build a dark neon arcade portal or a hero-plus-card-row game landing.
-- **Don't** lift sheets on hover or add shadows beyond the sheet contact, bezel and tooltip.
+- **Don't** use the Bomberman franchise characters, the balloon enemies or the official title art that exist in src/graphics (player.png, enemy.png, enemy_later.png, bomberman_title.png).
+- **Don't** return to the tournament-table world: no felt, chalk or score-sheet look.
+- **Don't** use Pixelify Sans or any pixel face whose C reads as O or 5 as S.
+- **Don't** set sentences or long reading text in Silkscreen.
+- **Don't** render locked opponents as silhouettes.
+- **Don't** separate chart series by hue alone.
+- **Don't** smooth or blur raster art; never resample sprites with smoothing on.
