@@ -1,7 +1,0 @@
-fire>=0.5
-numpy>=1.24,<3
-pathfinding>=1.0
-pygame>=2.5
-gymnasium>=0.29
-stable-baselines3>=2.3
-tensorboard>=2.14

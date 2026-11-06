@@ -1,4 +1,0 @@
--r requirements.txt
-mypy>=1.2
-pylint>=2.17
-pytest>=7

@@ -73,10 +73,10 @@ The final numbers use 200 episodes per map.
 ## Reproduce
 
 ```bash
-smart-bomberman train --maps map_2 --timesteps 1000000 --n_envs 5 --run_name r2_map_2
-smart-bomberman train --maps map_1,map_2 --timesteps 1500000 --n_envs 4 \
+uv run smart-bomberman train --maps map_2 --timesteps 1000000 --n_envs 5 --run_name r2_map_2
+uv run smart-bomberman train --maps map_1,map_2 --timesteps 1500000 --n_envs 4 \
     --init_from runs/r2_map_2/best.zip --run_name r3a_transfer
-smart-bomberman evaluate runs/r3a_transfer/best.zip --maps map_1 --episodes 200 --deterministic
+uv run smart-bomberman evaluate runs/r3a_transfer/best.zip --maps map_1 --episodes 200 --deterministic
 ```
 
 Round 1 ran before the escape features existed (13-dim state, no threat

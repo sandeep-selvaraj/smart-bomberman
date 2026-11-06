@@ -31,14 +31,17 @@ Released under [MIT](/LICENSE).
 - [Documentation](#documentation)
 
 ### Installation of package
-`pip install -e .` (Python 3.10+)
+The project uses [uv](https://docs.astral.sh/uv/). It installs the right Python (3.11 by default, 3.10+ supported)
+and the exact dependency versions from `uv.lock`:
 
-_(Tip: Do it in your virtual environment)_
+```bash
+uv sync
+```
 
 
 ### To start the game
 
-run `smart-bomberman play` in your terminal
+run `uv run smart-bomberman play` in your terminal
 
 ### Game controls
 - Arrow keys to move
@@ -63,14 +66,14 @@ and a Gymnasium env. A PPO agent trained on it wins:
 | map_2 (open grid, 3 enemies) | **79.5%** | 0% |
 
 ```bash
-pip install -e .
-smart-bomberman watch models/ppo_map1_map2.zip --maps map_1      # watch the trained agent
-smart-bomberman evaluate models/ppo_map1_map2.zip --maps map_2 --episodes 200 --deterministic
-smart-bomberman train --maps map_2 --timesteps 1000000           # about 7 minutes on a laptop CPU
+uv sync
+uv run smart-bomberman watch models/ppo_map1_map2.zip --maps map_1 --deterministic   # watch the trained agent
+uv run smart-bomberman evaluate models/ppo_map1_map2.zip --maps map_2 --episodes 200 --deterministic
+uv run smart-bomberman train --maps map_2 --timesteps 1000000    # about 7 minutes on a laptop CPU
 ```
 
 See [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) for what was wrong, what changed, and the
-results of each round of trials. Tests: `pip install -r requirements-dev.txt && pytest`.
+results of each round of trials. Tests and linters: `uv run pytest`, `uv run pylint src tests`, `uv run mypy src`.
 
 ### Information of the AI agents (2023)
 ### Following branches can be explored for the different AI agents built for this team project
@@ -83,11 +86,11 @@ results of each round of trials. Tests: `pip install -r requirements-dev.txt && 
 
 ### Note to keep in mind for untracked or potenital issues
 
-- **Only for Non-MacOs users**: For using GPUs while training it's required that after installation
-`pytorch` is uninstalled and the stable version which supports
-`CUDA > 11.7` is installed from [pytorch](https://pytorch.org/)
-  - For Linux and Windows, run this command: `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
-  - For Mac, the default package should be alright. 
+- **PyTorch builds**: on Linux and Windows, `pyproject.toml` installs the CPU-only PyTorch wheels
+(PyPI's default ones bundle several GB of CUDA). The agents here train fine on a CPU. To train on an
+NVIDIA GPU, change the `pytorch-cpu` index URL in `pyproject.toml` to a CUDA one from
+[pytorch.org](https://pytorch.org/get-started/locally/) (e.g. `https://download.pytorch.org/whl/cu126`) and run `uv lock && uv sync`.
+On macOS the default wheels are used.
 - Follow the requisite instructions for each branch and be careful with `gymnasium` and `stable-baselines` libraries. 
 
 ### Documentation
