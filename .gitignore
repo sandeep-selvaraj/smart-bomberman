@@ -280,3 +280,6 @@ src/ppo_bomberman_map_3_2023-06-29_21-57-58.zip
 src/ppo_bomberman_map_3_2023-06-29_23-03-00.zip
 src/ppo_bomberman_map_3_2023-06-30_00-24-01.zip
 src/ppo_bomberman_map_3_2023-06-30_12-13-17.zip
+
+# RL training runs (models, tensorboard logs)
+runs/
