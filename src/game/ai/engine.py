@@ -19,9 +19,9 @@ from __future__ import annotations
 
 import csv
 import heapq
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -31,7 +31,7 @@ NOOP, UP, DOWN, LEFT, RIGHT, BOMB = range(6)
 ACTION_NAMES = ("noop", "up", "down", "left", "right", "bomb")
 MOVES = {UP: (-1, 0), DOWN: (1, 0), LEFT: (0, -1), RIGHT: (0, 1)}
 
-Cell = Tuple[int, int]
+Cell = tuple[int, int]
 
 
 @dataclass
@@ -76,7 +76,7 @@ class StepEvents:
     player_died: bool = False
     reached_door: bool = False
     truncated: bool = False
-    killed_by: Optional[str] = None
+    killed_by: str | None = None
 
 
 @dataclass
@@ -87,11 +87,11 @@ class MapLayout:
     solid: np.ndarray  # bool (H, W)
     wall_hp: np.ndarray  # int (H, W), >0 for breakable walls
     player: Cell
-    enemies: List[Cell]
-    door: Optional[Cell]
+    enemies: list[Cell]
+    door: Cell | None
 
     @property
-    def shape(self) -> Tuple[int, int]:
+    def shape(self) -> tuple[int, int]:
         """Grid height and width."""
         return self.solid.shape  # type: ignore[return-value]
 
@@ -107,9 +107,9 @@ def load_map(name_or_path: str) -> MapLayout:
     height, width = len(rows), max(len(row) for row in rows)
     solid = np.zeros((height, width), dtype=bool)
     wall_hp = np.zeros((height, width), dtype=np.int8)
-    player: Optional[Cell] = None
-    enemies: List[Cell] = []
-    door: Optional[Cell] = None
+    player: Cell | None = None
+    enemies: list[Cell] = []
+    door: Cell | None = None
     for r, row in enumerate(rows):
         for c in range(width):
             token = row[c].strip() if c < len(row) else "#"
@@ -130,18 +130,18 @@ def load_map(name_or_path: str) -> MapLayout:
     return MapLayout(path.stem, solid, wall_hp, player, enemies, door)
 
 
-class Engine:  # pylint: disable=too-many-instance-attributes
+class Engine:
     """Grid simulation of one level."""
 
-    def __init__(self, layout: MapLayout, config: Optional[EngineConfig] = None,
-                 rng: Optional[np.random.Generator] = None):
+    def __init__(self, layout: MapLayout, config: EngineConfig | None = None,
+                 rng: np.random.Generator | None = None):
         self.layout = layout
         self.config = config or EngineConfig()
         self.rng = rng or np.random.default_rng()
         self.reset()
 
     # ------------------------------------------------------------------ setup
-    def reset(self, rng: Optional[np.random.Generator] = None) -> None:
+    def reset(self, rng: np.random.Generator | None = None) -> None:
         """Restore the level to its initial state."""
         if rng is not None:
             self.rng = rng
@@ -151,7 +151,7 @@ class Engine:  # pylint: disable=too-many-instance-attributes
         self.alive = True
         self.won = False
         self.steps = 0
-        self.bombs: List[Bomb] = []
+        self.bombs: list[Bomb] = []
         self.flames = np.zeros(self.solid.shape, dtype=np.int8)
         self.enemies = [Enemy(cell, self._random_direction(cell)) for cell in self.layout.enemies]
         self.initial_enemies = len(self.enemies)
@@ -167,7 +167,7 @@ class Engine:  # pylint: disable=too-many-instance-attributes
 
     # ---------------------------------------------------------------- queries
     @property
-    def shape(self) -> Tuple[int, int]:
+    def shape(self) -> tuple[int, int]:
         """Grid height and width."""
         return self.layout.shape
 
@@ -196,7 +196,7 @@ class Engine:  # pylint: disable=too-many-instance-attributes
             return True
         return any(bomb.cell == cell for bomb in self.bombs)
 
-    def blast_cells(self, bomb: Bomb) -> List[Cell]:
+    def blast_cells(self, bomb: Bomb) -> list[Cell]:
         """Cells a bomb's explosion would cover, without changing anything."""
         cells = [bomb.cell]
         for dr, dc in MOVES.values():
@@ -218,7 +218,7 @@ class Engine:  # pylint: disable=too-many-instance-attributes
                 danger[cell] = max(danger[cell], urgency)
         return danger
 
-    def escape_distances(self, extra_bomb: Optional[Cell] = None) -> np.ndarray:
+    def escape_distances(self, extra_bomb: Cell | None = None) -> np.ndarray:
         """Steps from each cell to the nearest cell no current (or hypothetical) bomb can reach.
 
         ``extra_bomb`` adds a bomb that has not been placed yet, which answers
@@ -395,7 +395,7 @@ class Engine:  # pylint: disable=too-many-instance-attributes
         return "\n".join("".join(row) for row in grid)
 
 
-def available_maps() -> List[str]:
+def available_maps() -> list[str]:
     """Names of the map files shipped with the game."""
     return sorted(path.stem for path in MAP_DIR.glob("*.csv"))
 

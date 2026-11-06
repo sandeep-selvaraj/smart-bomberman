@@ -1,25 +1,24 @@
 """Setting up the player character, interaction"""
-# pylint: disable=cyclic-import
 
-from typing import Tuple, List
+
 import pygame
+
+from . import bomb, level
 from .constants import PlayerBomberman, PlayerStatus
-from .utils.fileutils import import_from_spritesheet
-from . import bomb
-from . import level
 from .settings import Game
+from .utils.fileutils import import_from_spritesheet
+
 
 class Player(pygame.sprite.Sprite):
     """
     Encapsulates bomberman ie, player character in game
-    
-    """
-    # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, position: Tuple,
+    """
+
+    def __init__(self, position: tuple,
                  walls: pygame.sprite.Group,
                  display_surface: pygame.Surface):
-        """ 
+        """
         Parameters
         ----------
         position: Tuple
@@ -27,8 +26,6 @@ class Player(pygame.sprite.Sprite):
         walls: pygame.sprite.Group
             group representing all the wall sprites in level
         """
-        # pylint: disable=no-member
-        # pylint: disable=c-extension-no-member
         super().__init__()
 
         #animation inits
@@ -42,7 +39,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0,0)
         self.speed = PlayerBomberman.SPEED.value
         self.status = PlayerStatus.IDLE
-        self.bombs: List = []
+        self.bombs: list = []
         self.bomb_range = PlayerBomberman.BOMB_RANGE.value
         self.bomb_limit = PlayerBomberman.BOMB_LIMIT.value
         self.walls = walls
@@ -78,14 +75,9 @@ class Player(pygame.sprite.Sprite):
         """
         handles player input for interaction
         """
-        # pylint: disable=no-member
-        # pylint: disable=c-extension-no-member
         keys = pygame.key.get_pressed()
 
-        if level.Level.player_hit_skate:
-            player_vel = 2
-        else:
-            player_vel = 1
+        player_vel = 2 if level.Level.player_hit_skate else 1
 
         if keys[pygame.K_RIGHT]:
             self.direction = pygame.math.Vector2(player_vel,0)
@@ -118,10 +110,7 @@ class Player(pygame.sprite.Sprite):
     def deploy_bomb(self) -> pygame.sprite.Sprite:
         """places the bomb on level"""
         bomb_deploy_pos = self._get_grid_aligned_bomb_position([self.rect.x, self.rect.y])
-        if level.Level.player_hit_bomb_length:
-            bomb_length = self.bomb_range + 1
-        else:
-            bomb_length = self.bomb_range
+        bomb_length = self.bomb_range + 1 if level.Level.player_hit_bomb_length else self.bomb_range
         return bomb.Bomb(bomb_deploy_pos, bomb_length, self.walls, self.display_surface)
 
     def _clean_up_bombs_after_explosion(self):
@@ -130,9 +119,8 @@ class Player(pygame.sprite.Sprite):
             if temp_bomb.sprite.has_explosion_ended:
                 self.bombs.remove(temp_bomb)
 
-    def _get_grid_aligned_bomb_position(self, position):
+    def _get_grid_aligned_bomb_position(self, position):  # noqa: PLR0912
         """grid align the bombs based on level shift and offset"""
-        # pylint: disable=too-many-branches
         # calculate level offset based on overall level shift
         level_offset = [0,0]
         if (abs(self.level_shifted[0])%Game.TILE_SIZE.value) != 0:

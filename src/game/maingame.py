@@ -1,12 +1,13 @@
 """Main file to run the game."""
+import csv
 import sys
 from pathlib import Path
-from typing import List
-import csv
+
 import pygame
+
 from . import level
-from .settings import GameWindow
 from .constants import ItemType
+from .settings import GameWindow
 
 _SCREEN = pygame.display.set_mode((GameWindow.SCREEN_WIDTH.value, GameWindow.SCREEN_HEIGHT.value))
 _MAP_FOLDER = "maps"
@@ -16,11 +17,8 @@ _WHITE_FONT_TEXT = (255, 255, 255)
 _ITEM_COLOR = [(0, 0, 255), (255, 0, 0), (255, 255, 0)]
 
 
-def start_game(level_number: int):
+def start_game(level_number: int):  # noqa: PLR0912, PLR0915
     """Run the game."""
-    # pylint: disable=no-member
-    # pylint: disable=too-many-branches
-    # pylint: disable=too-many-statements
     pygame.init()
     pygame.display.set_caption("Smart-Bomberman")
     level_maps = _get_all_levels()
@@ -86,7 +84,7 @@ def start_game(level_number: int):
         pygame.display.update()
 
 
-def _get_all_levels() -> List:
+def _get_all_levels() -> list:
     """Read  and store different maps."""
     map_path = Path.cwd().joinpath(_MAP_FOLDER)
     available_level_files = list(map_path.iterdir())
@@ -102,10 +100,7 @@ def _endgame_screen(font, time_remaining, enemies_alive):
     """Endgame screen once player is killed."""
     _SCREEN.fill("black")
     text_to_render = ""
-    if enemies_alive > 0:
-        text_to_render = "GAMEOVER"
-    else:
-        text_to_render = "You have killed all the enemies!! <3"
+    text_to_render = "GAMEOVER" if enemies_alive > 0 else "You have killed all the enemies!! <3"
     gameover_text = font.render(text_to_render, True, _WHITE_FONT_TEXT)
     if time_remaining == 0:
         time_up_text = font.render("You ran out of time!", True, _WHITE_FONT_TEXT)

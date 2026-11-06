@@ -35,8 +35,8 @@ smart-bomberman = "cli:main"
 dev = [
     "mypy>=1.2",
     "pillow>=10",  # only for exporting GIFs of episodes
-    "pylint>=3",
     "pytest>=7",
+    "ruff>=0.17.4",
 ]
 
 [build-system]
@@ -74,18 +74,31 @@ testpaths = ["tests"]
 [tool.mypy]
 ignore_missing_imports = true
 
-[tool.pylint.main]
-init-hook = "import sys; sys.path.insert(0, 'src')"
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
 
-[tool.pylint.design]
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # flake8-bugbear
+    "UP",       # pyupgrade
+    "SIM",      # flake8-simplify
+    "PL",       # pylint rules
+    "NPY",      # numpy
+    "RUF",      # ruff-specific
+]
+ignore = [
+    "PLC0415",  # lazy imports are deliberate: `play` must not load torch, headless training must not load pygame
+    "PLR2004",  # game code compares against tile/action constants all the time
+]
+
+[tool.ruff.lint.pylint]
 # Training entry points expose their hyperparameters as keyword arguments.
 max-args = 14
-max-positional-arguments = 14
+max-positional-args = 14
 max-locals = 25
-max-attributes = 12
-
-[tool.pylint.format]
-max-line-length = 120
-
-[tool.pylint."messages control"]
-disable = ["missing-function-docstring"]
+max-branches = 14

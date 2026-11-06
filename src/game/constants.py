@@ -1,6 +1,8 @@
 """file to hold various constants"""
 from enum import Enum
+
 from .settings import Game, GameWindow
+
 
 class Camera(Enum):
     """

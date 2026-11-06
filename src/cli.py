@@ -14,7 +14,7 @@ import fire  # type: ignore
 
 def play(level: int = 1):
     """Play the game yourself (arrow keys to move, X to place a bomb)."""
-    from game.menu import main_menu  # pylint: disable=import-outside-toplevel
+    from game.menu import main_menu
 
     os.chdir(Path(__file__).resolve().parent)
     main_menu(level)
@@ -22,7 +22,7 @@ def play(level: int = 1):
 
 def train(**kwargs):
     """Train a PPO agent. See game.ai.train.train for all options."""
-    from game.ai.train import train as _train  # pylint: disable=import-outside-toplevel
+    from game.ai.train import train as _train
 
     run_dir = _train(**kwargs)
     print(f"saved run to {run_dir}")
@@ -31,7 +31,7 @@ def train(**kwargs):
 def evaluate(model: str = "random", maps: str = "map_2", episodes: int = 100,
              deterministic: bool = False):
     """Evaluate a saved model (or 'random') and print outcome statistics."""
-    from game.ai.train import evaluate as _evaluate  # pylint: disable=import-outside-toplevel
+    from game.ai.train import evaluate as _evaluate
 
     print(json.dumps(_evaluate(model, maps, episodes, deterministic), indent=2))
 
@@ -39,7 +39,7 @@ def evaluate(model: str = "random", maps: str = "map_2", episodes: int = 100,
 def watch(model: str = "random", maps: str = "map_2", episodes: int = 3, fps: int = 8,
           deterministic: bool = False, save_frames: str = ""):
     """Watch an agent play in a pygame window."""
-    from game.ai.train import watch as _watch  # pylint: disable=import-outside-toplevel
+    from game.ai.train import watch as _watch
 
     _watch(model, maps, episodes, deterministic, fps, save_frames or None)
 

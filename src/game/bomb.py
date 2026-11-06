@@ -1,22 +1,22 @@
 """Setting up the bomb item used by bomberman"""
 
-from typing import List
+
 import pygame
-from .utils.fileutils import import_from_spritesheet
+
+from . import explosion, level
 from .constants import BombItem, TileType
 from .settings import Game
-from . import explosion
-from . import level
+from .utils.fileutils import import_from_spritesheet
+
 
 class Bomb(pygame.sprite.Sprite):
     """
     Encapsulates the bomb item used by the player character in game
-    
+
     """
-    # pylint: disable=too-many-instance-attributes
-    def __init__(self, position: List, bomb_range: int,
+    def __init__(self, position: list, bomb_range: int,
                  walls: pygame.sprite.Group, display_surface: pygame.Surface):
-        """ 
+        """
         Parameters
         ----------
         position: Tuple
@@ -34,8 +34,8 @@ class Bomb(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = position)
         self.start_time = pygame.time.get_ticks()
         self.range = bomb_range
-        self.explosion_tiles_pos: List = []
-        self.explosions: List = []
+        self.explosion_tiles_pos: list = []
+        self.explosions: list = []
         self.elapsed_time = 0
         self.has_bomb_exploded = False
         self.has_explosion_ended = False
@@ -61,7 +61,6 @@ class Bomb(pygame.sprite.Sprite):
         self.image = self.animations[int(self.frame_index)]
 
     def _get_bomb_explosion_tiles(self):
-        # pylint: disable=line-too-long
         """get the position of tiles where a bomb explosion is valid"""
         bomb_pos = [self.rect.x, self.rect.y]
         self.explosion_tiles_pos.append(bomb_pos) #center explosion tile
@@ -95,12 +94,12 @@ class Bomb(pygame.sprite.Sprite):
             else:
                 left_tile_check = False
 
-    def _can_explosion_happen_on_tile(self, explosion_pos: List):
+    def _can_explosion_happen_on_tile(self, explosion_pos: list):
         """
-        detemine tile explosion behavior based on 
+        detemine tile explosion behavior based on
         1. whether it is a destroyable tile or not
         2. whether it breaks after 2 explosions or not
-        3. whether it hides a bomb 
+        3. whether it hides a bomb
         ----------
         Parameters
         ----------
@@ -126,7 +125,7 @@ class Bomb(pygame.sprite.Sprite):
                 return True
         return True
 
-    def render_and_update_explosions(self, level_shift: List):
+    def render_and_update_explosions(self, level_shift: list):
         """
         render and update explosions caused by bombs placed in the level
         ----------
@@ -139,7 +138,7 @@ class Bomb(pygame.sprite.Sprite):
             expl.draw(self.display_surface)
             expl.update(level_shift)
 
-    def update(self, level_shift: List):
+    def update(self, level_shift: list):
         """
         updates bomb state
         ----------

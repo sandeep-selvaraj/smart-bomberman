@@ -1,7 +1,7 @@
 """utility code related to file reading/writing like sprite, spritesheet loading"""
-# pylint: disable=cyclic-import
-from typing import List
+
 import pygame
+
 
 def import_sprite(path: str) -> pygame.Surface:
     """
@@ -15,11 +15,11 @@ def import_sprite(path: str) -> pygame.Surface:
     return pygame.image.load(path)
 
 def import_from_spritesheet(path: str, sprite_width: int,
-                            sprite_height: int) -> List[pygame.Surface]:
+                            sprite_height: int) -> list[pygame.Surface]:
     """
-    reads and returns a list of sprite(in surface format) corresponding to the 
+    reads and returns a list of sprite(in surface format) corresponding to the
     individual sprites in the sprite sheet
-    
+
     Parameters
     ----------
     path: str

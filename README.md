@@ -2,7 +2,7 @@
   <img src="src/graphics/bomberman_title.png" width="350" alt="Smart-Bomberman">
 </p>
 
-# smart-bomberman ![GitHub release](https://img.shields.io/github/release/sandeep-selvaraj/smart-bomberman?include_prereleases=&sort=semver&color=blue) [![Pylint](https://img.shields.io/github/actions/workflow/status/sandeep-selvaraj/smart-bomberman/pylint.yml?branch=master&label=pylint)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/pylint.yml) [![mypy](https://img.shields.io/github/actions/workflow/status/sandeep-selvaraj/smart-bomberman/mypy.yml?branch=master&label=mypy)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/mypy.yml) [![tests](https://img.shields.io/github/actions/workflow/status/sandeep-selvaraj/smart-bomberman/tests.yml?branch=master&label=tests)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/tests.yml)
+# smart-bomberman ![GitHub release](https://img.shields.io/github/release/sandeep-selvaraj/smart-bomberman?include_prereleases=&sort=semver&color=blue) [![ruff](https://img.shields.io/github/actions/workflow/status/sandeep-selvaraj/smart-bomberman/ruff.yml?branch=master&label=ruff)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/ruff.yml) [![mypy](https://img.shields.io/github/actions/workflow/status/sandeep-selvaraj/smart-bomberman/mypy.yml?branch=master&label=mypy)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/mypy.yml) [![tests](https://img.shields.io/github/actions/workflow/status/sandeep-selvaraj/smart-bomberman/tests.yml?branch=master&label=tests)](https://github.com/sandeep-selvaraj/smart-bomberman/actions/workflows/tests.yml)
 <a href="https://github.com/sandeep-selvaraj/smart-bomberman/blob/master/LICENSE">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-yellow">
 </a>
@@ -72,7 +72,7 @@ uv run smart-bomberman train --maps map_2 --timesteps 1000000    # about 7 minut
 ```
 
 See [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) for what was wrong, what changed, and the
-results of each round of trials. Tests and linters: `uv run pytest`, `uv run pylint src tests`, `uv run mypy src`.
+results of each round of trials. Tests and checks: `uv run pytest`, `uv run ruff check`, `uv run mypy src`.
 
 ## AI agents from the 2023 project
 

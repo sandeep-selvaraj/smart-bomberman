@@ -1,17 +1,18 @@
 """Setting up the bomb explosions"""
 
-from typing import Tuple
+
 import pygame
+
 from .utils.fileutils import import_sprite
+
 
 class Explosion(pygame.sprite.Sprite):
     """
     Encapsulates the explosion at each individual tile caused by a bomb
-    
+
     """
-    # pylint: disable=too-few-public-methods
-    def __init__(self, position: Tuple):
-        """ 
+    def __init__(self, position: tuple):
+        """
         Parameters
         ----------
         position: Tuple

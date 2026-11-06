@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -17,13 +17,13 @@ GRAPHICS = Path(__file__).resolve().parents[2] / "graphics"
 class Renderer:
     """Pygame view of an ``Engine``. In headless mode it only produces RGB arrays."""
 
-    def __init__(self, grid_shape: Tuple[int, int], headless: bool = False):
+    def __init__(self, grid_shape: tuple[int, int], headless: bool = False):
         if headless:
             os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
-        import pygame  # pylint: disable=import-outside-toplevel
+        import pygame
 
         self.pygame = pygame
-        pygame.init()  # pylint: disable=no-member
+        pygame.init()
         height, width = grid_shape
         size = (width * TILE, height * TILE + HUD)
         if headless:
@@ -43,7 +43,7 @@ class Renderer:
         surface.set_colorkey((0, 0, 0))
         return surface
 
-    def _load_sprites(self) -> Dict[str, Any]:
+    def _load_sprites(self) -> dict[str, Any]:
         load = self.pygame.image.load
         door = self.pygame.transform.scale(load(str(GRAPHICS / "blackhole_1.png")), (TILE, TILE))
         return {
@@ -57,12 +57,12 @@ class Renderer:
             "door": door,
         }
 
-    def draw(self, engine: Engine, fps: int = 8) -> Optional[np.ndarray]:  # pylint: disable=too-many-branches
+    def draw(self, engine: Engine, fps: int = 8) -> np.ndarray | None:
         """Draw one frame. Returns an RGB array in headless mode."""
         pygame = self.pygame
         if not self.headless:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:  # pylint: disable=no-member
+                if event.type == pygame.QUIT:
                     raise KeyboardInterrupt
         screen, sprites = self.screen, self.sprites
         screen.fill((128, 128, 128))
@@ -107,4 +107,4 @@ class Renderer:
 
     def close(self) -> None:
         """Shut pygame down."""
-        self.pygame.quit()  # pylint: disable=no-member
+        self.pygame.quit()

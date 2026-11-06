@@ -4,26 +4,27 @@ from __future__ import annotations
 import json
 import time
 from collections import Counter, deque
+from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union
+from typing import Any
 
 import numpy as np
 
 from .env import BombermanEnv
 
 RUNS_DIR = Path(__file__).resolve().parents[3] / "runs"
-MapSpec = Union[str, Sequence[str]]
+MapSpec = str | Sequence[str]
 
 
-def _parse_maps(maps: MapSpec) -> List[str]:
+def _parse_maps(maps: MapSpec) -> list[str]:
     if isinstance(maps, str):
         return [name.strip() for name in maps.split(",") if name.strip()]
     return list(maps)
 
 
-def _env_factory(maps: List[str], seed: int, rank: int) -> Callable[[], BombermanEnv]:
+def _env_factory(maps: list[str], seed: int, rank: int) -> Callable[[], BombermanEnv]:
     def _init() -> BombermanEnv:
-        from stable_baselines3.common.monitor import Monitor  # pylint: disable=import-outside-toplevel
+        from stable_baselines3.common.monitor import Monitor
 
         env = BombermanEnv(maps=maps)
         env.reset(seed=seed + rank)
@@ -32,14 +33,14 @@ def _env_factory(maps: List[str], seed: int, rank: int) -> Callable[[], Bomberma
 
 
 def evaluate(model: Any, maps: MapSpec, episodes: int = 100, deterministic: bool = False,
-             seed: int = 10_000) -> Dict[str, Any]:
+             seed: int = 10_000) -> dict[str, Any]:
     """Run a policy (a PPO model, or ``"random"``) and summarise the outcomes."""
     map_names = _parse_maps(maps)
     env = BombermanEnv(maps=map_names)
     if isinstance(model, (str, Path)) and str(model) != "random":
-        from stable_baselines3 import PPO  # pylint: disable=import-outside-toplevel
+        from stable_baselines3 import PPO
         model = PPO.load(str(model), device="cpu")
-    results: List[Dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
     for episode in range(episodes):
         obs, _ = env.reset(seed=seed + episode, options={"map_index": episode % len(map_names)})
         done, total = False, 0.0
@@ -55,9 +56,9 @@ def evaluate(model: Any, maps: MapSpec, episodes: int = 100, deterministic: bool
     return summarise(results)
 
 
-def summarise(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+def summarise(results: list[dict[str, Any]]) -> dict[str, Any]:
     """Aggregate per-episode stats, overall and per map."""
-    def agg(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def agg(rows: list[dict[str, Any]]) -> dict[str, Any]:
         n = len(rows)
         return {
             "episodes": n,
@@ -78,14 +79,13 @@ def summarise(results: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def train(maps: MapSpec = "map_2", timesteps: int = 300_000, n_envs: int = 8, seed: int = 0,
-          run_name: Optional[str] = None, eval_every: int = 25_000, eval_episodes: int = 30,
+          run_name: str | None = None, eval_every: int = 25_000, eval_episodes: int = 30,
           learning_rate: float = 3e-4, ent_coef: float = 0.01, n_steps: int = 256,
-          init_from: Optional[str] = None, verbose: int = 0) -> Path:
+          init_from: str | None = None, verbose: int = 0) -> Path:
     """Train PPO and save ``final.zip``, ``best.zip`` (by eval win rate) and metrics.
 
     Returns the run directory.
     """
-    # pylint: disable=import-outside-toplevel,too-many-arguments,too-many-locals
     import torch
     from stable_baselines3 import PPO
     from stable_baselines3.common.callbacks import BaseCallback
@@ -112,7 +112,7 @@ def train(maps: MapSpec = "map_2", timesteps: int = 300_000, n_envs: int = 8, se
                     policy_kwargs={"net_arch": [256, 256]}, seed=seed, device="cpu",
                     verbose=verbose, tensorboard_log=str(run_dir / "tb"))
 
-    history: List[Dict[str, Any]] = []
+    history: list[dict[str, Any]] = []
     best = {"win_rate": -1.0}
 
     class Progress(BaseCallback):
@@ -159,14 +159,14 @@ def train(maps: MapSpec = "map_2", timesteps: int = 300_000, n_envs: int = 8, se
 
 
 def watch(model: str = "random", maps: MapSpec = "map_2", episodes: int = 3,
-          deterministic: bool = False, fps: int = 8, save_frames: Optional[str] = None) -> None:
+          deterministic: bool = False, fps: int = 8, save_frames: str | None = None) -> None:
     """Play episodes in a pygame window, or save PNG frames with ``save_frames``."""
     map_names = _parse_maps(maps)
     env = BombermanEnv(maps=map_names, render_mode="rgb_array" if save_frames else "human")
     env.metadata = {**env.metadata, "render_fps": fps}
     policy: Any = model
     if model != "random":
-        from stable_baselines3 import PPO  # pylint: disable=import-outside-toplevel
+        from stable_baselines3 import PPO
         policy = PPO.load(model, device="cpu")
     out = Path(save_frames) if save_frames else None
     if out:
@@ -192,5 +192,5 @@ def watch(model: str = "random", maps: MapSpec = "map_2", episodes: int = 3,
 
 
 def _save_png(rgb: np.ndarray, path: Path) -> None:
-    import pygame  # pylint: disable=import-outside-toplevel
+    import pygame
     pygame.image.save(pygame.surfarray.make_surface(np.transpose(rgb, (1, 0, 2))), str(path))

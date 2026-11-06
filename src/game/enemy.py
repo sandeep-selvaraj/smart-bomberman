@@ -1,9 +1,12 @@
 """Setting up the Enemy character."""
 
 import math
+
 import pygame
+
+from .constants import EnemyBomberman, EnemyStatus
 from .utils.fileutils import import_from_spritesheet
-from .constants import EnemyStatus, EnemyBomberman
+
 # from .algorithms import a_star
 
 
@@ -16,10 +19,6 @@ class Enemy(pygame.sprite.Sprite):
     postion [Tuple] : To place the enemy on a certain point
     """
 
-    # pylint: disable=too-many-instance-attributes
-    # pylint: disable=superfluous-parens
-    # pylint: disable=unused-argument
-    # pylint: disable=line-too-long
 
     def __init__(self, position, level_number):
         pygame.sprite.Sprite.__init__(self)
@@ -75,20 +74,19 @@ class Enemy(pygame.sprite.Sprite):
             else:
                 self.rect.y += self.direction
                 self.prev_move = 1
-        else:
-            if v_ava:
-                self.rect.y += self.direction
-                self.prev_move = 1
-            elif (not h_ava and not v_ava):
-                if (self.prev_move == 0):
-                    self.rect.x += self.direction
-                    self.prev_move = 0
-                else:
-                    self.rect.y += self.direction
-                    self.prev_move = 1
-            else:
+        elif v_ava:
+            self.rect.y += self.direction
+            self.prev_move = 1
+        elif (not h_ava and not v_ava):
+            if (self.prev_move == 0):
                 self.rect.x += self.direction
                 self.prev_move = 0
+            else:
+                self.rect.y += self.direction
+                self.prev_move = 1
+        else:
+            self.rect.x += self.direction
+            self.prev_move = 0
 
     def enemy_collision(self):
         """Reverse the enemy once it collides with a wall"""
@@ -114,9 +112,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def is_paused(self) -> bool:
         """Check if the enemy paused after hitting the bomb."""
-        if self.pause:
-            return True
-        return False
+        return bool(self.pause)
 
     def set_life(self, level_number: int):
         """Set enemy lives based on difficulty of level."""
@@ -154,9 +150,11 @@ class Enemy(pygame.sprite.Sprite):
         ava_list.append((self.current_location[1],self.current_location[0]+1))
         ava_list.append((self.current_location[1],self.current_location[0]-1))
 
-        if (((ava_list[0] not in unavailable_move) or (ava_list[1] not in unavailable_move)) and self.rect.x-acc_shift[0] == self.current_location[0]*32 and self.rect.y-acc_shift[1] == self.current_location[1]*32):
+        on_grid = (self.rect.x - acc_shift[0] == self.current_location[0] * 32
+                   and self.rect.y - acc_shift[1] == self.current_location[1] * 32)
+        if on_grid and (ava_list[0] not in unavailable_move or ava_list[1] not in unavailable_move):
             vertical_avail = True
-        if (((ava_list[2] not in unavailable_move) or (ava_list[3] not in unavailable_move)) and self.rect.x-acc_shift[0] == self.current_location[0]*32 and self.rect.y-acc_shift[1] == self.current_location[1]*32):
+        if on_grid and (ava_list[2] not in unavailable_move or ava_list[3] not in unavailable_move):
             horizontal_avail = True
 
         # path = a_star.get_path(mapdata, player_location, self.current_location)

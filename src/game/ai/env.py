@@ -7,8 +7,9 @@ the policy has no way to know where walls, flames or enemies are.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any
 
 import gymnasium as gym
 import numpy as np
@@ -35,22 +36,23 @@ class RewardConfig:
     threat_distance: int = 4
 
 
-class BombermanEnv(gym.Env):  # pylint: disable=too-many-instance-attributes
+class BombermanEnv(gym.Env):
     """Single-agent Bomberman on the team's maps.
 
     Actions: 0 noop, 1 up, 2 down, 3 left, 4 right, 5 place bomb.
     Goal: kill every enemy with bombs, then walk onto the door.
     """
 
-    metadata = {"render_modes": ["ansi", "human", "rgb_array"], "render_fps": 8}
+    # gymnasium declares `metadata` as an instance attribute, so it can't be a ClassVar here
+    metadata = {"render_modes": ["ansi", "human", "rgb_array"], "render_fps": 8}  # noqa: RUF012
 
-    def __init__(self, maps: Union[str, Sequence[str]] = "map_2",
-                 engine_config: Optional[EngineConfig] = None,
-                 reward_config: Optional[RewardConfig] = None,
-                 view_radius: int = 4, render_mode: Optional[str] = None):
+    def __init__(self, maps: str | Sequence[str] = "map_2",
+                 engine_config: EngineConfig | None = None,
+                 reward_config: RewardConfig | None = None,
+                 view_radius: int = 4, render_mode: str | None = None):
         super().__init__()
         names = [maps] if isinstance(maps, str) else list(maps)
-        self.layouts: List[MapLayout] = [load_map(name) for name in names]
+        self.layouts: list[MapLayout] = [load_map(name) for name in names]
         self.engine_config = engine_config or EngineConfig()
         self.rewards = reward_config or RewardConfig()
         self.view_radius = view_radius
@@ -70,10 +72,10 @@ class BombermanEnv(gym.Env):  # pylint: disable=too-many-instance-attributes
         self._dist = np.zeros(self.engine.shape, dtype=np.float32)
         self._can_escape = False
         self._enemy_dist = np.inf
-        self._episode_stats: Dict[str, int] = {}
+        self._episode_stats: dict[str, int] = {}
 
     # ------------------------------------------------------------------ gym API
-    def reset(self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None):
+    def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None):
         super().reset(seed=seed)
         index = 0
         if options and "map_index" in options:
@@ -121,7 +123,7 @@ class BombermanEnv(gym.Env):  # pylint: disable=too-many-instance-attributes
         if self.render_mode in ("human", "rgb_array"):
             if self._renderer is None:
                 # pygame is only needed for visual modes
-                from .render import Renderer  # pylint: disable=import-outside-toplevel
+                from .render import Renderer
                 self._renderer = Renderer(self.engine.shape, headless=self.render_mode == "rgb_array")
             return self._renderer.draw(self.engine, fps=self.metadata["render_fps"])
         return None
@@ -167,7 +169,7 @@ class BombermanEnv(gym.Env):  # pylint: disable=too-many-instance-attributes
         return float(reward)
 
     # ------------------------------------------------------------ observation
-    def _observation(self) -> Dict[str, np.ndarray]:  # pylint: disable=too-many-locals
+    def _observation(self) -> dict[str, np.ndarray]:
         eng = self.engine
         height, width = eng.shape
         radius = self.view_radius
@@ -236,11 +238,11 @@ class BombermanEnv(gym.Env):  # pylint: disable=too-many-instance-attributes
         r, c = eng.player
         return min(alive, key=lambda cell: abs(cell[0] - r) + abs(cell[1] - c))
 
-    def _info(self) -> Dict[str, Any]:
+    def _info(self) -> dict[str, Any]:
         eng = self.engine
         return {"enemies_alive": eng.enemies_alive, "door_open": eng.door_open, "steps": eng.steps}
 
 
-def make_env(maps: Union[str, Sequence[str]] = "map_2", **kwargs: Any) -> BombermanEnv:
+def make_env(maps: str | Sequence[str] = "map_2", **kwargs: Any) -> BombermanEnv:
     """Factory used by training scripts."""
     return BombermanEnv(maps=maps, **kwargs)

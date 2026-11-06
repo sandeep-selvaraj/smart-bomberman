@@ -1,17 +1,14 @@
 """Setting up the players,obstacles and enemies in different maps."""
-from typing import List
 import random
+
 import pygame
-from . import tile
-from . import player
-from . import enemy
-from . import item
-from . import gateway
+
+from . import enemy, gateway, item, player, tile
+from .constants import Camera, ItemType, PlayerBomberman, TileType
 from .settings import Game
-from .constants import Camera, PlayerBomberman, ItemType, TileType
+
 
 class Level:
-    # pylint: disable=too-many-instance-attributes
     """
     Storing and graphically setting up the map for each level.
 
@@ -21,7 +18,7 @@ class Level:
     player_hit_bomb_length = False
     level_bombs: pygame.sprite.Group = pygame.sprite.Group()
 
-    def __init__(self, level_data: List, surface: pygame.Surface, level_number: int):
+    def __init__(self, level_data: list, surface: pygame.Surface, level_number: int):
         """
         Parameters
         ----------
@@ -42,8 +39,7 @@ class Level:
         self.shift_accumulated = [0,0]
         self.item_class = 0
 
-    def setup_level(self, layout: List):
-        # pylint: disable=too-many-branches
+    def setup_level(self, layout: list):
         """
         Setup up the map for a level.
 
@@ -336,7 +332,6 @@ class Level:
 
     def cheat_key(self):
         """cheat key for deleting all enemies"""
-        # pylint: disable=no-member
         keys = pygame.key.get_pressed()
         if keys[pygame.K_0]:
             for enemy_sprite in self.bomberman_enemy.sprites():

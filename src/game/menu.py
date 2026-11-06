@@ -1,11 +1,13 @@
 """Setting up the Main Menu of the Game"""
 
 import pygame
+
+# from pathlib import Path
+from .button import Button
+
 # from .settings import GameWindow
 from .maingame import start_game
 from .utils.fileutils import import_sprite
-# from pathlib import Path
-from .button import Button
 
 
 def main_menu(level_number: int):
@@ -17,14 +19,12 @@ def main_menu(level_number: int):
     level_number: int
         initial level of the map
     """
-    # pylint: disable=no-member
-    # pylint: disable=line-too-long
 
     pygame.init()
 
     #https://miscrave.com/articles/bomberman-history/
-    BG = import_sprite("graphics/bomberman_title.png") # pylint: disable=invalid-name
-    SCREEN = pygame.display.set_mode((BG.get_width(),BG.get_height())) # pylint: disable=invalid-name
+    BG = import_sprite("graphics/bomberman_title.png")
+    SCREEN = pygame.display.set_mode((BG.get_width(),BG.get_height()))
     pygame.display.set_caption("Menu")
 
     #https://www.freepik.com/premium-vector/set-pixel-graphics-icons-game-art-play-buttons-animation_36747298.htm
@@ -57,4 +57,3 @@ def main_menu(level_number: int):
         pygame.display.update()
 
     pygame.quit()
-    

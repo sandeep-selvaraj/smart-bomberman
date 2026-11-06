@@ -1,12 +1,13 @@
 """Setting up the Button for Main Menu"""
 #code from https://www.youtube.com/watch?v=G8MYGDf_9ho&ab_channel=CodingWithRuss
-import pygame # type: ignore
+import pygame  # type: ignore
 
-class Button(): # pylint: disable=too-few-public-methods
+
+class Button:
     """
     Constants related to Button
     """
-    def __init__(self, x, y, image, scale): # pylint: disable=invalid-name
+    def __init__(self, x, y, image, scale):
         width = image.get_width()
         height = image.get_height()
         self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
@@ -19,10 +20,9 @@ class Button(): # pylint: disable=too-few-public-methods
         action = False
         pos = pygame.mouse.get_pos()
 
-        if self.rect.collidepoint(pos):
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked is False:
-                self.clicked = True
-                action = True
+        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked is False:
+            self.clicked = True
+            action = True
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
@@ -31,4 +31,3 @@ class Button(): # pylint: disable=too-few-public-methods
         surface.blit(self.image, (self.rect.x, self.rect.y))
 
         return action
-    
