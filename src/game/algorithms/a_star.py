@@ -1,4 +1,5 @@
 """File handles the implementation of A star algorithm."""
+
 from pathfinding.core.diagonal_movement import DiagonalMovement  # type: ignore
 from pathfinding.core.grid import Grid  # type: ignore
 from pathfinding.finder.a_star import AStarFinder  # type: ignore
@@ -27,7 +28,7 @@ def _encode_map(mapdata: list) -> list:
     for row in mapdata:
         encoded_column = []
         for column in row:
-            if column in ('W', '#', 'B_1', 'B_2'):
+            if column in ("W", "#", "B_1", "B_2"):
                 encoded_column.append(0)
             else:
                 encoded_column.append(1)

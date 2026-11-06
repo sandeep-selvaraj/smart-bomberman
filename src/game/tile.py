@@ -1,20 +1,22 @@
 """Processing of a simple Tile of a game."""
-from typing import Tuple
+
 import random
+
 import pygame
-from .utils.fileutils import import_sprite
+
 from .constants import TileType
+from .utils.fileutils import import_sprite
 
 
 class Tile(pygame.sprite.Sprite):
-    # pylint: disable=too-few-public-methods
     """
     Create a simple tile for the game.
 
     Attributes:
         pygame.sprite.Sprite
     """
-    def __init__(self, position: Tuple, destroyable: bool, tile_type: TileType):
+
+    def __init__(self, position: tuple, destroyable: bool, tile_type: TileType):
         """
         Initialize the tile.
 
@@ -52,7 +54,6 @@ class Tile(pygame.sprite.Sprite):
             self.does_wall_contain_bomb = False
 
     def update_tile_type(self, from_tile_type: TileType, to_tile_type: TileType):
-        # pylint: disable=unused-argument
         """
         Updates the tile type for the tile including its graphics
         Parameters
@@ -67,7 +68,7 @@ class Tile(pygame.sprite.Sprite):
         self.image = import_sprite("graphics/destrWall_1.png")
         self._init_hidden_bomb()
 
-    def update(self, level_shift: Tuple):
+    def update(self, level_shift: tuple):
         """
         Scrolls the tile in x and y direction to simulate camera movement
 

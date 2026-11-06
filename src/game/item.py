@@ -1,12 +1,12 @@
 """Processing of power-up items for the game"""
-from typing import Tuple
+
 import pygame
-from .utils.fileutils import import_sprite
+
 from .constants import ItemType
+from .utils.fileutils import import_sprite
 
 
 class Item(pygame.sprite.Sprite):
-    # pylint: disable=too-few-public-methods
     """
     Create items for the game
 
@@ -14,7 +14,8 @@ class Item(pygame.sprite.Sprite):
     ----------
     postion [Tuple] : To place the item on a certain point
     """
-    def __init__(self, position: Tuple, item_type):
+
+    def __init__(self, position: tuple, item_type):
         pygame.sprite.Sprite.__init__(self)
         if item_type == ItemType.SKATE.value:
             self.image = import_sprite("graphics/skate.png")
@@ -30,7 +31,7 @@ class Item(pygame.sprite.Sprite):
             self.item_num = ItemType.EXTRA_TIME.value
         self.rect = self.image.get_rect(topleft=position)
 
-    def update(self, level_shift: Tuple):
+    def update(self, level_shift: tuple):
         """
         Update the locations of items according to the camera movement
         """

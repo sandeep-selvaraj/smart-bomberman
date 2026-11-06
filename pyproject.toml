@@ -1,0 +1,104 @@
+[project]
+name = "smart-bomberman"
+version = "2.0.0"
+description = "A Bomberman-style game with reinforcement-learning agents (VC Team Project 2023, TU Dresden)"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Divyendu Dutta" },
+    { name = "Juhyun Jonathan Seo" },
+    { name = "Ken Nakahara" },
+    { name = "Sandeep Selvaraj" },
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "fire>=0.5",
+    "gymnasium>=0.29",
+    "numpy>=1.24,<3",
+    "pathfinding>=1.0",
+    "pygame>=2.5",
+    "stable-baselines3>=2.3",
+    "tensorboard>=2.14",
+    "torch>=2.3",
+]
+
+[project.scripts]
+smart-bomberman = "cli:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.2",
+    "pillow>=10",  # only for exporting GIFs of episodes
+    "pytest>=7",
+    "ruff>=0.17.4",
+]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["game", "game.ai", "game.algorithms", "game.utils"]
+py-modules = ["cli"]
+
+[tool.setuptools.package-data]
+game = ["py.typed"]
+
+# PyPI's Linux/Windows torch wheels bundle CUDA (several GB). Use the CPU builds there;
+# macOS wheels on PyPI are already CPU/MPS. For a GPU, point torch at a CUDA index instead.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
+
+# Pin the public index so a machine-wide UV_INDEX_URL (e.g. a company mirror) can't rewrite the lock.
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # flake8-bugbear
+    "UP",       # pyupgrade
+    "SIM",      # flake8-simplify
+    "PL",       # pylint rules
+    "NPY",      # numpy
+    "RUF",      # ruff-specific
+]
+ignore = [
+    "PLC0415",  # lazy imports are deliberate: `play` must not load torch, headless training must not load pygame
+    "PLR2004",  # game code compares against tile/action constants all the time
+]
+
+[tool.ruff.lint.pylint]
+# Training entry points expose their hyperparameters as keyword arguments.
+max-args = 14
+max-positional-args = 14
+max-locals = 25
+max-branches = 14
