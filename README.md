@@ -25,26 +25,54 @@ Released under [MIT](/LICENSE).
 - [Installation](#installation-of-package)
 - [Run the game](#to-start-the-game)
 - [How to play the game](#game-controls)
-- [Information of the AI agents](#information-of-the-ai-agents)
+- [AI agent (2026 revival)](#ai-agent-2026-revival)
+- [Information of the AI agents](#information-of-the-ai-agents-2023)
 - [Note on problems](#note-to-keep-in-mind-for-untracked-or-potenital-issues)
 - [Documentation](#documentation)
 
 ### Installation of package
-`pip install -e .` 
+`pip install -e .` (Python 3.10+)
 
 _(Tip: Do it in your virtual environment)_
 
 
 ### To start the game
 
-run `smart-bomberman` in your terminal
+run `smart-bomberman play` in your terminal
 
 ### Game controls
 - Arrow keys to move
 - 'X' to place bomb
 
 
-### Information of the AI agents
+### AI agent (2026 revival)
+
+<p align="center">
+  <img src="docs/agent_map_1.gif" width="600" title="PPO agent clearing map 1">
+</p>
+
+The `ai/clean-agent` branch picks up `feature/juhyun` and makes the agent actually train.
+The original setup could not learn: the game only advanced inside `render()`,
+bomb fuses ran on wall-clock time, and one tile of movement took 16-32 actions.
+`src/game/ai/` now holds a headless, tile-based engine with the same rules
+and a Gymnasium env. A PPO agent trained on it wins:
+
+| Map | Win rate (deterministic, 200 episodes) | Random policy |
+|---|---|---|
+| map_1 (maze, 3 enemies) | **91%** | 0% |
+| map_2 (open grid, 3 enemies) | **79.5%** | 0% |
+
+```bash
+pip install -e .
+smart-bomberman watch models/ppo_map1_map2.zip --maps map_1      # watch the trained agent
+smart-bomberman evaluate models/ppo_map1_map2.zip --maps map_2 --episodes 200 --deterministic
+smart-bomberman train --maps map_2 --timesteps 1000000           # about 7 minutes on a laptop CPU
+```
+
+See [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) for what was wrong, what changed, and the
+results of each round of trials. Tests: `pip install -r requirements-dev.txt && pytest`.
+
+### Information of the AI agents (2023)
 ### Following branches can be explored for the different AI agents built for this team project
 
 - _feature/divyendu_ : Multiple observation space related PPO and NEAT models that fuel the AI agent
