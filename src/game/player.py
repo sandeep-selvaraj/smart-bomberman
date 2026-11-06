@@ -1,6 +1,5 @@
 """Setting up the player character, interaction"""
 
-
 import pygame
 
 from . import bomb, level
@@ -15,9 +14,7 @@ class Player(pygame.sprite.Sprite):
 
     """
 
-    def __init__(self, position: tuple,
-                 walls: pygame.sprite.Group,
-                 display_surface: pygame.Surface):
+    def __init__(self, position: tuple, walls: pygame.sprite.Group, display_surface: pygame.Surface):
         """
         Parameters
         ----------
@@ -28,15 +25,15 @@ class Player(pygame.sprite.Sprite):
         """
         super().__init__()
 
-        #animation inits
+        # animation inits
         self.build_player_animation_spritesheet()
         self.frame_index = 0
         self.animation_speed = PlayerBomberman.ANIMATION_SPEED.value
         self.image = self.animations[PlayerStatus.IDLE][self.frame_index]
 
-        #reduce the size of the bounding box of player for easier player manueverability
-        self.rect = self.image.get_rect(topleft = position).inflate(-2,-2)
-        self.direction = pygame.math.Vector2(0,0)
+        # reduce the size of the bounding box of player for easier player manueverability
+        self.rect = self.image.get_rect(topleft=position).inflate(-2, -2)
+        self.direction = pygame.math.Vector2(0, 0)
         self.speed = PlayerBomberman.SPEED.value
         self.status = PlayerStatus.IDLE
         self.bombs: list = []
@@ -48,15 +45,14 @@ class Player(pygame.sprite.Sprite):
         # to ensure that holding down bomb deploy button doesnt spam bombs
         self.bomb_deploy_key_pressed = False
 
-        self.level_shifted = [0,0]
+        self.level_shifted = [0, 0]
 
     def build_player_animation_spritesheet(self):
         """creates an internal dictionary of player state animations"""
         self.animations = {PlayerStatus.IDLE: [], PlayerStatus.RUN: []}
-        player_sprites = import_from_spritesheet('graphics/player.png',
-                                                    PlayerBomberman.SPRITE_WIDTH.value,
-                                                    PlayerBomberman.SPRITE_HEIGHT.value
-                                                 )
+        player_sprites = import_from_spritesheet(
+            "graphics/player.png", PlayerBomberman.SPRITE_WIDTH.value, PlayerBomberman.SPRITE_HEIGHT.value
+        )
 
         self.animations[PlayerStatus.IDLE].append(player_sprites[1])
         self.animations[PlayerStatus.RUN] = player_sprites
@@ -70,7 +66,6 @@ class Player(pygame.sprite.Sprite):
 
         self.image = animation[int(self.frame_index)]
 
-
     def player_input(self):
         """
         handles player input for interaction
@@ -80,19 +75,17 @@ class Player(pygame.sprite.Sprite):
         player_vel = 2 if level.Level.player_hit_skate else 1
 
         if keys[pygame.K_RIGHT]:
-            self.direction = pygame.math.Vector2(player_vel,0)
+            self.direction = pygame.math.Vector2(player_vel, 0)
         elif keys[pygame.K_LEFT]:
-            self.direction = pygame.math.Vector2(-player_vel,0)
+            self.direction = pygame.math.Vector2(-player_vel, 0)
         elif keys[pygame.K_UP]:
-            self.direction = pygame.math.Vector2(0,-player_vel)
+            self.direction = pygame.math.Vector2(0, -player_vel)
         elif keys[pygame.K_DOWN]:
-            self.direction = pygame.math.Vector2(0,player_vel)
-        elif ( not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]
-               and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]):
+            self.direction = pygame.math.Vector2(0, player_vel)
+        elif not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]:
             # nested if here to ensure player stops to place the bomb, cant place bomb when moving
-            self.direction = pygame.math.Vector2(0,0)
-            if ( keys[pygame.K_x] and len(self.bombs) < self.bomb_limit
-                                  and not self.bomb_deploy_key_pressed ):
+            self.direction = pygame.math.Vector2(0, 0)
+            if keys[pygame.K_x] and len(self.bombs) < self.bomb_limit and not self.bomb_deploy_key_pressed:
                 self.bomb_deploy_key_pressed = True
                 temp_bomb = pygame.sprite.GroupSingle()
                 temp_bomb.add(self.deploy_bomb())
@@ -122,11 +115,11 @@ class Player(pygame.sprite.Sprite):
     def _get_grid_aligned_bomb_position(self, position):  # noqa: PLR0912
         """grid align the bombs based on level shift and offset"""
         # calculate level offset based on overall level shift
-        level_offset = [0,0]
-        if (abs(self.level_shifted[0])%Game.TILE_SIZE.value) != 0:
-            level_offset[0] = Game.TILE_SIZE.value-(abs(self.level_shifted[0])%Game.TILE_SIZE.value)
-        if (abs(self.level_shifted[1])%Game.TILE_SIZE.value) != 0:
-            level_offset[1] = Game.TILE_SIZE.value-(abs(self.level_shifted[1])%Game.TILE_SIZE.value)
+        level_offset = [0, 0]
+        if (abs(self.level_shifted[0]) % Game.TILE_SIZE.value) != 0:
+            level_offset[0] = Game.TILE_SIZE.value - (abs(self.level_shifted[0]) % Game.TILE_SIZE.value)
+        if (abs(self.level_shifted[1]) % Game.TILE_SIZE.value) != 0:
+            level_offset[1] = Game.TILE_SIZE.value - (abs(self.level_shifted[1]) % Game.TILE_SIZE.value)
         # add offset to current bomb position
         if self.level_shifted[0] < 0:
             position[0] -= level_offset[0]
@@ -140,16 +133,18 @@ class Player(pygame.sprite.Sprite):
         grid_aligned_pos = position
         if position[0] % Game.TILE_SIZE.value != 0:
             if position[0] % Game.TILE_SIZE.value < (Game.TILE_SIZE.value // 2):
-                grid_aligned_pos[0] = position[0] - (position[0]%Game.TILE_SIZE.value)
+                grid_aligned_pos[0] = position[0] - (position[0] % Game.TILE_SIZE.value)
             else:
-                grid_aligned_pos[0] = ( Game.TILE_SIZE.value +
-                                      ((position[0] // Game.TILE_SIZE.value)*Game.TILE_SIZE.value))
+                grid_aligned_pos[0] = Game.TILE_SIZE.value + (
+                    (position[0] // Game.TILE_SIZE.value) * Game.TILE_SIZE.value
+                )
         if position[1] % Game.TILE_SIZE.value != 0:
             if position[1] % Game.TILE_SIZE.value < (Game.TILE_SIZE.value // 2):
-                grid_aligned_pos[1] = position[1] - (position[1]%Game.TILE_SIZE.value)
+                grid_aligned_pos[1] = position[1] - (position[1] % Game.TILE_SIZE.value)
             else:
-                grid_aligned_pos[1] = ( Game.TILE_SIZE.value +
-                                      ((position[1] // Game.TILE_SIZE.value)*Game.TILE_SIZE.value))
+                grid_aligned_pos[1] = Game.TILE_SIZE.value + (
+                    (position[1] // Game.TILE_SIZE.value) * Game.TILE_SIZE.value
+                )
         # add the level offset back after grid alignment
         if self.level_shifted[0] < 0:
             grid_aligned_pos[0] += level_offset[0]

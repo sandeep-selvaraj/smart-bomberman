@@ -15,6 +15,7 @@ Rules carried over from the game:
 * enemies wander and turn around when blocked; touching one kills the player
 * the door only opens once every enemy is dead; reaching it wins the level
 """
+
 from __future__ import annotations
 
 import csv
@@ -133,8 +134,7 @@ def load_map(name_or_path: str) -> MapLayout:
 class Engine:
     """Grid simulation of one level."""
 
-    def __init__(self, layout: MapLayout, config: EngineConfig | None = None,
-                 rng: np.random.Generator | None = None):
+    def __init__(self, layout: MapLayout, config: EngineConfig | None = None, rng: np.random.Generator | None = None):
         self.layout = layout
         self.config = config or EngineConfig()
         self.rng = rng or np.random.default_rng()
@@ -249,8 +249,11 @@ class Engine:
                         nxt_frontier.append(nxt)
             frontier = nxt_frontier
         for cell in bomb_cells:  # you can always step off a bomb you are standing on
-            neighbours = [dist[cell[0] + dr, cell[1] + dc] for dr, dc in MOVES.values()
-                          if self.in_bounds((cell[0] + dr, cell[1] + dc))]
+            neighbours = [
+                dist[cell[0] + dr, cell[1] + dc]
+                for dr, dc in MOVES.values()
+                if self.in_bounds((cell[0] + dr, cell[1] + dc))
+            ]
             dist[cell] = min(neighbours, default=np.inf) + 1
         return dist
 
@@ -312,8 +315,7 @@ class Engine:
             dr, dc = enemy.direction
             ahead_blocked = enemy.direction == (0, 0) or self.is_blocked((r + dr, c + dc))
             if ahead_blocked or self.rng.random() < self.config.enemy_turn_prob:
-                options = [d for d in MOVES.values()
-                           if not self.is_blocked((r + d[0], c + d[1]))]
+                options = [d for d in MOVES.values() if not self.is_blocked((r + d[0], c + d[1]))]
                 forward = [d for d in options if d != (-dr, -dc)]
                 pool = forward or options  # only reverse at dead ends, like the game's enemies
                 enemy.direction = pool[self.rng.integers(len(pool))] if pool else (0, 0)
@@ -401,6 +403,17 @@ def available_maps() -> list[str]:
 
 
 __all__ = [
-    "ACTION_NAMES", "BOMB", "DOWN", "LEFT", "NOOP", "RIGHT", "UP",
-    "Engine", "EngineConfig", "MapLayout", "StepEvents", "available_maps", "load_map",
+    "ACTION_NAMES",
+    "BOMB",
+    "DOWN",
+    "LEFT",
+    "NOOP",
+    "RIGHT",
+    "UP",
+    "Engine",
+    "EngineConfig",
+    "MapLayout",
+    "StepEvents",
+    "available_maps",
+    "load_map",
 ]

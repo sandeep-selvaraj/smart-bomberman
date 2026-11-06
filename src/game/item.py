@@ -14,6 +14,7 @@ class Item(pygame.sprite.Sprite):
     ----------
     postion [Tuple] : To place the item on a certain point
     """
+
     def __init__(self, position: tuple, item_type):
         pygame.sprite.Sprite.__init__(self)
         if item_type == ItemType.SKATE.value:

@@ -1,4 +1,5 @@
 """Rule tests for the headless engine and the Gymnasium environment."""
+
 import numpy as np
 import pytest
 

@@ -1,4 +1,5 @@
 """Main file to run the game."""
+
 import csv
 import sys
 from pathlib import Path
@@ -27,7 +28,7 @@ def start_game(level_number: int):  # noqa: PLR0912, PLR0915
     extra_time = 0
     item_start = [0, 0, 0, 0]
     item_seconds = [0, 0, 0, 0]
-    item_text = [font.render('', True, 0), font.render('', True, 0), font.render('', True, 0)]
+    item_text = [font.render("", True, 0), font.render("", True, 0), font.render("", True, 0)]
     item_duration = 15
     while True:
         time_remaining = max(0, _TIMER_DURATION + extra_time - pygame.time.get_ticks() // 1000)
@@ -55,13 +56,13 @@ def start_game(level_number: int):  # noqa: PLR0912, PLR0915
                 elif level_map.item_class == ItemType.EXTRA_TIME.value:
                     continue
             level_map.player_hit_item = False
-        timer_text = font.render(f'Time Remaining: {time_remaining}', True, _WHITE_FONT_TEXT)
+        timer_text = font.render(f"Time Remaining: {time_remaining}", True, _WHITE_FONT_TEXT)
         for i in ItemType:
             if i.value == ItemType.EXTRA_TIME.value:
                 continue
-            item_seconds[i.value] = (pygame.time.get_ticks() - item_start[i.value])  // 1000
+            item_seconds[i.value] = (pygame.time.get_ticks() - item_start[i.value]) // 1000
             if item_start[i.value] == 0:
-                item_text[i.value] = font.render('', True, 0)
+                item_text[i.value] = font.render("", True, 0)
             else:
                 if item_seconds[i.value] > item_duration:
                     if i.value == ItemType.SKATE.value:
@@ -72,13 +73,13 @@ def start_game(level_number: int):  # noqa: PLR0912, PLR0915
                         level_map.player_hit_invincible = False
                     item_start[i.value] = 0
                 remain = item_duration - item_seconds[i.value]
-                item_text[i.value] = font.render(f'{i.name}: {remain}', True, _ITEM_COLOR[i.value])
-        _SCREEN.fill((128, 128, 128)) #fill bg with grey color
+                item_text[i.value] = font.render(f"{i.name}: {remain}", True, _ITEM_COLOR[i.value])
+        _SCREEN.fill((128, 128, 128))  # fill bg with grey color
         _SCREEN.blit(timer_text, (10, 10))
         for i in ItemType:
             if i.value == ItemType.EXTRA_TIME.value:
                 continue
-            _SCREEN.blit(item_text[i.value], (220 + 120*i.value, 10))
+            _SCREEN.blit(item_text[i.value], (220 + 120 * i.value, 10))
         level_map.run()
         _CLOCK.tick(60)
         pygame.display.update()
@@ -90,7 +91,7 @@ def _get_all_levels() -> list:
     available_level_files = list(map_path.iterdir())
     all_maps = []
     for level_file in available_level_files:
-        with open(level_file, newline='', encoding="utf-8-sig") as file:
+        with open(level_file, newline="", encoding="utf-8-sig") as file:
             reader = csv.reader(file)
             all_maps.append(list(reader))
     return all_maps
@@ -105,4 +106,4 @@ def _endgame_screen(font, time_remaining, enemies_alive):
     if time_remaining == 0:
         time_up_text = font.render("You ran out of time!", True, _WHITE_FONT_TEXT)
         _SCREEN.blit(time_up_text, (150, 200))
-    _SCREEN.blit(gameover_text,  (150, 150))
+    _SCREEN.blit(gameover_text, (150, 150))

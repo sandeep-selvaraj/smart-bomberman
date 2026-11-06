@@ -5,6 +5,7 @@ team's best-performing setup), with the agent position, target, bomb state and
 enemy count. It adds a local view of the tiles around the agent, without which
 the policy has no way to know where walls, flames or enemies are.
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -46,10 +47,14 @@ class BombermanEnv(gym.Env):
     # gymnasium declares `metadata` as an instance attribute, so it can't be a ClassVar here
     metadata = {"render_modes": ["ansi", "human", "rgb_array"], "render_fps": 8}  # noqa: RUF012
 
-    def __init__(self, maps: str | Sequence[str] = "map_2",
-                 engine_config: EngineConfig | None = None,
-                 reward_config: RewardConfig | None = None,
-                 view_radius: int = 4, render_mode: str | None = None):
+    def __init__(
+        self,
+        maps: str | Sequence[str] = "map_2",
+        engine_config: EngineConfig | None = None,
+        reward_config: RewardConfig | None = None,
+        view_radius: int = 4,
+        render_mode: str | None = None,
+    ):
         super().__init__()
         names = [maps] if isinstance(maps, str) else list(maps)
         self.layouts: list[MapLayout] = [load_map(name) for name in names]
@@ -61,10 +66,12 @@ class BombermanEnv(gym.Env):
 
         size = 2 * view_radius + 1
         self.action_space = spaces.Discrete(6)
-        self.observation_space = spaces.Dict({
-            "local": spaces.Box(0.0, 1.0, shape=(len(LOCAL_CHANNELS), size, size), dtype=np.float32),
-            "state": spaces.Box(-1.0, 1.0, shape=(19,), dtype=np.float32),
-        })
+        self.observation_space = spaces.Dict(
+            {
+                "local": spaces.Box(0.0, 1.0, shape=(len(LOCAL_CHANNELS), size, size), dtype=np.float32),
+                "state": spaces.Box(-1.0, 1.0, shape=(19,), dtype=np.float32),
+            }
+        )
         self.engine = Engine(self.layouts[0], self.engine_config)
         self._potential = 0.0
         self._enemies_before = 0
@@ -93,8 +100,7 @@ class BombermanEnv(gym.Env):
         return self._observation(), self._info()
 
     def step(self, action):
-        threat = (int(action) == BOMB and self._can_escape
-                  and self._enemy_dist <= self.rewards.threat_distance)
+        threat = int(action) == BOMB and self._can_escape and self._enemy_dist <= self.rewards.threat_distance
         events = self.engine.step(int(action))
         events_threat = threat and events.bomb_placed
         self._dist = self._target_distances()
@@ -124,6 +130,7 @@ class BombermanEnv(gym.Env):
             if self._renderer is None:
                 # pygame is only needed for visual modes
                 from .render import Renderer
+
                 self._renderer = Renderer(self.engine.shape, headless=self.render_mode == "rgb_array")
             return self._renderer.draw(self.engine, fps=self.metadata["render_fps"])
         return None
@@ -159,8 +166,7 @@ class BombermanEnv(gym.Env):
         reward += cfg.death * events.player_died
 
         potential = self._compute_potential()
-        target_changed = (self.engine.enemies_alive != self._enemies_before
-                          or self.engine.door_open != self._door_before)
+        target_changed = self.engine.enemies_alive != self._enemies_before or self.engine.door_open != self._door_before
         if not target_changed and not events.player_died:
             reward += cfg.shaping * (potential - self._potential)
         self._potential = potential
@@ -188,7 +194,7 @@ class BombermanEnv(gym.Env):
                 planes[5][enemy.cell[0] + pad, enemy.cell[1] + pad] = 1.0
         planes[6][eng.door[0] + pad, eng.door[1] + pad] = 1.0 if eng.door_open else 0.5
         r, c = eng.player
-        local = planes[:, r:r + 2 * radius + 1, c:c + 2 * radius + 1]
+        local = planes[:, r : r + 2 * radius + 1, c : c + 2 * radius + 1]
 
         danger = eng.danger_map()
         dist = self._dist
@@ -213,21 +219,24 @@ class BombermanEnv(gym.Env):
             ok = 0 <= nr < height and 0 <= nc < width and np.isfinite(dist[nr, nc]) and np.isfinite(here)
             step_gain.append(float(np.clip(here - dist[nr, nc], -1, 1)) if ok else 0.0)
         target = eng.door if eng.door_open else self._nearest_enemy()
-        state = np.array([
-            r / (height - 1) * 2 - 1,
-            c / (width - 1) * 2 - 1,
-            (target[0] - r) / height,
-            (target[1] - c) / width,
-            min(float(here), 60.0) / 60.0 if np.isfinite(here) else 1.0,
-            float(eng.bombs_available > 0),
-            eng.enemies_alive / max(eng.initial_enemies, 1),
-            float(eng.door_open),
-            float(danger[r, c]),
-            *step_gain,
-            float(self._can_escape),
-            *escape_gain,
-            min(self._enemy_dist, 20.0) / 20.0 if enemy_cells else 1.0,
-        ], dtype=np.float32)
+        state = np.array(
+            [
+                r / (height - 1) * 2 - 1,
+                c / (width - 1) * 2 - 1,
+                (target[0] - r) / height,
+                (target[1] - c) / width,
+                min(float(here), 60.0) / 60.0 if np.isfinite(here) else 1.0,
+                float(eng.bombs_available > 0),
+                eng.enemies_alive / max(eng.initial_enemies, 1),
+                float(eng.door_open),
+                float(danger[r, c]),
+                *step_gain,
+                float(self._can_escape),
+                *escape_gain,
+                min(self._enemy_dist, 20.0) / 20.0 if enemy_cells else 1.0,
+            ],
+            dtype=np.float32,
+        )
         return {"local": np.ascontiguousarray(local), "state": np.clip(state, -1.0, 1.0)}
 
     def _nearest_enemy(self):

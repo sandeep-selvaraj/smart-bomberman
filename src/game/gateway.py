@@ -13,6 +13,7 @@ class Gateway(pygame.sprite.Sprite):
     ----------
     postion [Tuple] : To place the item on a certain point
     """
+
     def __init__(self, position: tuple):
         pygame.sprite.Sprite.__init__(self)
         self.image = import_sprite("graphics/blackhole_1.png")

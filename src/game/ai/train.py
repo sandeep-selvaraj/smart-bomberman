@@ -1,4 +1,5 @@
 """Train and evaluate PPO agents on the headless Bomberman environment."""
+
 from __future__ import annotations
 
 import json
@@ -29,16 +30,19 @@ def _env_factory(maps: list[str], seed: int, rank: int) -> Callable[[], Bomberma
         env = BombermanEnv(maps=maps)
         env.reset(seed=seed + rank)
         return Monitor(env)  # type: ignore[return-value]
+
     return _init
 
 
-def evaluate(model: Any, maps: MapSpec, episodes: int = 100, deterministic: bool = False,
-             seed: int = 10_000) -> dict[str, Any]:
+def evaluate(
+    model: Any, maps: MapSpec, episodes: int = 100, deterministic: bool = False, seed: int = 10_000
+) -> dict[str, Any]:
     """Run a policy (a PPO model, or ``"random"``) and summarise the outcomes."""
     map_names = _parse_maps(maps)
     env = BombermanEnv(maps=map_names)
     if isinstance(model, (str, Path)) and str(model) != "random":
         from stable_baselines3 import PPO
+
         model = PPO.load(str(model), device="cpu")
     results: list[dict[str, Any]] = []
     for episode in range(episodes):
@@ -58,6 +62,7 @@ def evaluate(model: Any, maps: MapSpec, episodes: int = 100, deterministic: bool
 
 def summarise(results: list[dict[str, Any]]) -> dict[str, Any]:
     """Aggregate per-episode stats, overall and per map."""
+
     def agg(rows: list[dict[str, Any]]) -> dict[str, Any]:
         n = len(rows)
         return {
@@ -71,6 +76,7 @@ def summarise(results: list[dict[str, Any]]) -> dict[str, Any]:
             "mean_return": float(np.mean([r["return"] for r in rows])),
             "deaths_by": dict(Counter(r["killed_by"] for r in rows if r["died"])),
         }
+
     summary = agg(results)
     maps = sorted({r["map"] for r in results})
     if len(maps) > 1:
@@ -78,10 +84,20 @@ def summarise(results: list[dict[str, Any]]) -> dict[str, Any]:
     return summary
 
 
-def train(maps: MapSpec = "map_2", timesteps: int = 300_000, n_envs: int = 8, seed: int = 0,
-          run_name: str | None = None, eval_every: int = 25_000, eval_episodes: int = 30,
-          learning_rate: float = 3e-4, ent_coef: float = 0.01, n_steps: int = 256,
-          init_from: str | None = None, verbose: int = 0) -> Path:
+def train(
+    maps: MapSpec = "map_2",
+    timesteps: int = 300_000,
+    n_envs: int = 8,
+    seed: int = 0,
+    run_name: str | None = None,
+    eval_every: int = 25_000,
+    eval_episodes: int = 30,
+    learning_rate: float = 3e-4,
+    ent_coef: float = 0.01,
+    n_steps: int = 256,
+    init_from: str | None = None,
+    verbose: int = 0,
+) -> Path:
     """Train PPO and save ``final.zip``, ``best.zip`` (by eval win rate) and metrics.
 
     Returns the run directory.
@@ -96,21 +112,46 @@ def train(maps: MapSpec = "map_2", timesteps: int = 300_000, n_envs: int = 8, se
     run_name = run_name or f"ppo_{'+'.join(map_names)}_s{seed}_{time.strftime('%Y%m%d-%H%M%S')}"
     run_dir = RUNS_DIR / run_name
     run_dir.mkdir(parents=True, exist_ok=True)
-    config = {k: v for k, v in locals().items()
-              if k in ("timesteps", "n_envs", "seed", "eval_every", "eval_episodes",
-                       "learning_rate", "ent_coef", "n_steps", "init_from")}
+    config = {
+        k: v
+        for k, v in locals().items()
+        if k
+        in (
+            "timesteps",
+            "n_envs",
+            "seed",
+            "eval_every",
+            "eval_episodes",
+            "learning_rate",
+            "ent_coef",
+            "n_steps",
+            "init_from",
+        )
+    }
     config["maps"] = map_names
 
-    vec_env = SubprocVecEnv([_env_factory(map_names, seed * 1000, i) for i in range(n_envs)],
-                            start_method="spawn")
+    vec_env = SubprocVecEnv([_env_factory(map_names, seed * 1000, i) for i in range(n_envs)], start_method="spawn")
     if init_from:
-        model = PPO.load(init_from, env=vec_env, device="cpu", seed=seed,
-                         learning_rate=learning_rate, ent_coef=ent_coef)
+        model = PPO.load(
+            init_from, env=vec_env, device="cpu", seed=seed, learning_rate=learning_rate, ent_coef=ent_coef
+        )
     else:
-        model = PPO("MultiInputPolicy", vec_env, learning_rate=learning_rate, n_steps=n_steps,
-                    batch_size=512, n_epochs=4, gamma=0.99, gae_lambda=0.95, ent_coef=ent_coef,
-                    policy_kwargs={"net_arch": [256, 256]}, seed=seed, device="cpu",
-                    verbose=verbose, tensorboard_log=str(run_dir / "tb"))
+        model = PPO(
+            "MultiInputPolicy",
+            vec_env,
+            learning_rate=learning_rate,
+            n_steps=n_steps,
+            batch_size=512,
+            n_epochs=4,
+            gamma=0.99,
+            gae_lambda=0.95,
+            ent_coef=ent_coef,
+            policy_kwargs={"net_arch": [256, 256]},
+            seed=seed,
+            device="cpu",
+            verbose=verbose,
+            tensorboard_log=str(run_dir / "tb"),
+        )
 
     history: list[dict[str, Any]] = []
     best = {"win_rate": -1.0}
@@ -136,17 +177,25 @@ def train(maps: MapSpec = "map_2", timesteps: int = 300_000, n_envs: int = 8, se
         def _evaluate(self) -> None:
             result = evaluate(self.model, map_names, episodes=eval_episodes, seed=50_000)
             train_win = (sum(s["won"] for s in self.recent) / len(self.recent)) if self.recent else 0.0
-            row = {"timesteps": self.num_timesteps, "minutes": round((time.time() - self.start) / 60, 2),
-                   "train_win_rate": round(train_win, 3),
-                   **{k: result[k] for k in ("win_rate", "death_rate", "timeout_rate",
-                                             "kills_per_ep", "walls_per_ep", "mean_return")}}
+            row = {
+                "timesteps": self.num_timesteps,
+                "minutes": round((time.time() - self.start) / 60, 2),
+                "train_win_rate": round(train_win, 3),
+                **{
+                    k: result[k]
+                    for k in ("win_rate", "death_rate", "timeout_rate", "kills_per_ep", "walls_per_ep", "mean_return")
+                },
+            }
             history.append(row)
             self.logger.record("eval/win_rate", result["win_rate"])
             self.logger.record("eval/death_rate", result["death_rate"])
-            print(f"[{run_name}] {row['timesteps']:>8} steps  eval win {row['win_rate']:.0%}  "
-                  f"died {row['death_rate']:.0%}  kills {row['kills_per_ep']:.2f}  "
-                  f"walls {row['walls_per_ep']:.1f}  return {row['mean_return']:.2f}  "
-                  f"({row['minutes']} min)", flush=True)
+            print(
+                f"[{run_name}] {row['timesteps']:>8} steps  eval win {row['win_rate']:.0%}  "
+                f"died {row['death_rate']:.0%}  kills {row['kills_per_ep']:.2f}  "
+                f"walls {row['walls_per_ep']:.1f}  return {row['mean_return']:.2f}  "
+                f"({row['minutes']} min)",
+                flush=True,
+            )
             if result["win_rate"] >= best["win_rate"]:
                 best.update(result)
                 self.model.save(run_dir / "best.zip")
@@ -158,8 +207,14 @@ def train(maps: MapSpec = "map_2", timesteps: int = 300_000, n_envs: int = 8, se
     return run_dir
 
 
-def watch(model: str = "random", maps: MapSpec = "map_2", episodes: int = 3,
-          deterministic: bool = False, fps: int = 8, save_frames: str | None = None) -> None:
+def watch(
+    model: str = "random",
+    maps: MapSpec = "map_2",
+    episodes: int = 3,
+    deterministic: bool = False,
+    fps: int = 8,
+    save_frames: str | None = None,
+) -> None:
     """Play episodes in a pygame window, or save PNG frames with ``save_frames``."""
     map_names = _parse_maps(maps)
     env = BombermanEnv(maps=map_names, render_mode="rgb_array" if save_frames else "human")
@@ -167,6 +222,7 @@ def watch(model: str = "random", maps: MapSpec = "map_2", episodes: int = 3,
     policy: Any = model
     if model != "random":
         from stable_baselines3 import PPO
+
         policy = PPO.load(model, device="cpu")
     out = Path(save_frames) if save_frames else None
     if out:
@@ -178,8 +234,11 @@ def watch(model: str = "random", maps: MapSpec = "map_2", episodes: int = 3,
             while not done:
                 if out:
                     _save_png(env.render(), out / f"ep{episode}_{frame:04d}.png")
-                action = env.action_space.sample() if policy == "random" else \
-                    policy.predict(obs, deterministic=deterministic)[0]
+                action = (
+                    env.action_space.sample()
+                    if policy == "random"
+                    else policy.predict(obs, deterministic=deterministic)[0]
+                )
                 obs, _, terminated, truncated, info = env.step(action)
                 done, frame = terminated or truncated, frame + 1
             if out:
@@ -193,4 +252,5 @@ def watch(model: str = "random", maps: MapSpec = "map_2", episodes: int = 3,
 
 def _save_png(rgb: np.ndarray, path: Path) -> None:
     import pygame
+
     pygame.image.save(pygame.surfarray.make_surface(np.transpose(rgb, (1, 0, 2))), str(path))

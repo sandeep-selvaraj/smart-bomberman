@@ -1,4 +1,5 @@
 """Draw the headless engine with the game's own sprites."""
+
 from __future__ import annotations
 
 import os
@@ -94,9 +95,11 @@ class Renderer:
             screen.blit(sprites["player"], at(engine.player))
 
         status = "WON" if engine.won else ("DEAD" if not engine.alive else "")
-        hud = (f"{engine.layout.name}   step {engine.steps}/{engine.config.max_steps}   "
-               f"enemies {engine.enemies_alive}/{engine.initial_enemies}   "
-               f"door {'open' if engine.door_open else 'closed'}   {status}")
+        hud = (
+            f"{engine.layout.name}   step {engine.steps}/{engine.config.max_steps}   "
+            f"enemies {engine.enemies_alive}/{engine.initial_enemies}   "
+            f"door {'open' if engine.door_open else 'closed'}   {status}"
+        )
         screen.blit(self.font.render(hud, True, (255, 255, 255)), (8, 8))
 
         if self.headless:

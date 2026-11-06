@@ -1,4 +1,5 @@
 """Processing of a simple Tile of a game."""
+
 import random
 
 import pygame
@@ -14,6 +15,7 @@ class Tile(pygame.sprite.Sprite):
     Attributes:
         pygame.sprite.Sprite
     """
+
     def __init__(self, position: tuple, destroyable: bool, tile_type: TileType):
         """
         Initialize the tile.

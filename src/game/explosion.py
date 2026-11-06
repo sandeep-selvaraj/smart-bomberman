@@ -1,6 +1,5 @@
 """Setting up the bomb explosions"""
 
-
 import pygame
 
 from .utils.fileutils import import_sprite
@@ -11,6 +10,7 @@ class Explosion(pygame.sprite.Sprite):
     Encapsulates the explosion at each individual tile caused by a bomb
 
     """
+
     def __init__(self, position: tuple):
         """
         Parameters
@@ -21,7 +21,7 @@ class Explosion(pygame.sprite.Sprite):
         super().__init__()
 
         self.image = import_sprite("graphics/explosion.png")
-        self.rect = self.image.get_rect(topleft = position)
+        self.rect = self.image.get_rect(topleft=position)
 
     def update(self, level_shift):
         """
