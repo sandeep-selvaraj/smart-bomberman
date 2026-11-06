@@ -1,6 +1,6 @@
 [project]
 name = "smart-bomberman"
-version = "0.2.0"
+version = "2.0.0"
 description = "A Bomberman-style game with reinforcement-learning agents (VC Team Project 2023, TU Dresden)"
 readme = "README.md"
 license = "MIT"
