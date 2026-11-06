@@ -283,3 +283,8 @@ src/ppo_bomberman_map_3_2023-06-30_12-13-17.zip
 
 # RL training runs (models, tensorboard logs)
 runs/
+
+# local tooling and design-review scratch
+.claude/
+.impeccable/mocks/
+.impeccable/review/
