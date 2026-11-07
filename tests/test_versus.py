@@ -5,6 +5,7 @@ import pytest
 
 from game.ai.engine import BOMB, DOWN, LEFT, NOOP, RIGHT, UP, MapLayout, available_arenas, load_map
 from game.ai.versus_engine import VersusConfig, VersusEngine, mirror_spawn
+from game.ai.versus_env import VersusEnv
 
 QUIET = {"enemy_move_every": 1000}  # enemies that never move, so tests stay deterministic
 
@@ -114,6 +115,18 @@ def test_closing_cells_count_as_danger():
     danger = engine.danger_map()
     assert danger[engine.closing_order[0]] > 0
     assert np.isinf(engine.escape_distances()[engine.closing_order[0]]) or engine.escape_distances()[(1, 1)] > 0
+
+
+def test_env_observation_and_episode_stats():
+    env = VersusEnv("arena_1", opponent="random")
+    obs, _ = env.reset(seed=0)
+    assert env.observation_space.contains(obs)
+    done, info = False, {}
+    while not done:
+        obs, _, terminated, truncated, info = env.step(env.action_space.sample())
+        done = terminated or truncated
+    stats = info["episode_stats"]
+    assert stats["won"] + stats["lost"] + stats["draw"] == 1
 
 
 def test_up_and_down_are_the_engine_moves():
