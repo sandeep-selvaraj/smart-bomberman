@@ -24,6 +24,7 @@ from .versus_env import STATE_SIZE, VersusEnv, warm_start_policy
 CHAMPION = Path(__file__).resolve().parents[3] / "models" / "two_fuse.zip"
 SINGLE_PLAYER_MODEL = CHAMPION.with_name("ppo_map1_map2.zip")
 DEFAULT_MAPS = "arena_1,map_2,map_3"
+GAUNTLET = ("heuristic", "camper", "wanderer")  # an attacker, and two opponents that have to be hunted down
 
 
 # --------------------------------------------------------------------- duels
@@ -185,7 +186,7 @@ def train_versus(
 
     snapshot(0)
     history: list[dict[str, Any]] = []
-    heuristic = make_policy("heuristic", seed=123)
+    gauntlet = [make_policy(name, seed=123) for name in GAUNTLET]
 
     class Progress(BaseCallback):
         """Save league snapshots and report progress against the scripted bot."""
@@ -211,23 +212,23 @@ def train_versus(
 
         def _evaluate(self) -> None:
             me = ModelPolicy(self.model, deterministic=True, name="current")
-            record = duel(me, heuristic, map_names, eval_games, seed=50_000)
+            records = {bot.name: duel(me, bot, map_names, eval_games, seed=50_000) for bot in gauntlet}
             league = [s for s in self.recent if s["opponent"].startswith("snap_")]
-            row = {
+            row: dict[str, Any] = {
                 "timesteps": self.num_timesteps,
                 "minutes": round((time.time() - self.start) / 60, 2),
                 "train_win_rate": _rate(self.recent, "won"),
                 "league_win_rate": _rate(league, "won"),
-                "vs_heuristic": record["win_rate"],
-                "vs_heuristic_draws": record["draw_rate"],
-                "deaths_by": record["a_deaths_by"],
+                **{f"vs_{name}": r["win_rate"] for name, r in records.items()},
+                **{f"steps_vs_{name}": round(r["mean_steps"]) for name, r in records.items()},
             }
             history.append(row)
-            self.logger.record("eval/vs_heuristic", record["win_rate"])
+            for name, r in records.items():
+                self.logger.record(f"eval/vs_{name}", r["win_rate"])
+            scores = "  ".join(f"{name} {r['win_rate']:.0%} ({r['mean_steps']:.0f} st)" for name, r in records.items())
             print(
-                f"[{run_name}] {row['timesteps']:>9} steps  vs heuristic {row['vs_heuristic']:.0%} "
-                f"(draws {row['vs_heuristic_draws']:.0%})  train win {row['train_win_rate']:.0%}  "
-                f"vs league {row['league_win_rate']:.0%}  deaths {row['deaths_by']}  ({row['minutes']} min)",
+                f"[{run_name}] {row['timesteps']:>9} steps  {scores}  train win {row['train_win_rate']:.0%}  "
+                f"vs league {row['league_win_rate']:.0%}  ({row['minutes']} min)",
                 flush=True,
             )
 
@@ -239,7 +240,7 @@ def train_versus(
     print("tournament:", flush=True)
     snaps = sorted(league_dir.glob("snap_*.zip"))[-tournament_size:]
     players: list[Policy] = [ModelPolicy(path) for path in snaps]
-    players += [make_policy("heuristic", seed=7), make_policy("random", seed=7)]
+    players += [make_policy(name, seed=7) for name in (*GAUNTLET, "random")]
     ranking = tournament(players, map_names, tournament_games)
     best = next(row["name"] for row in ranking if row["name"].startswith("snap_"))
     shutil.copy(league_dir / f"{best}.zip", run_dir / "two_fuse.zip")

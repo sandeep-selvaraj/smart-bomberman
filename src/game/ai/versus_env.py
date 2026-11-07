@@ -37,11 +37,12 @@ STATE_SIZE = BASE_STATE_SIZE + 5
 class VersusRewardConfig:
     """Reward weights for Battle mode."""
 
-    step: float = -0.005
+    step: float = -0.01
     invalid_action: float = -0.01
     wall_destroyed: float = 0.05
     enemy_killed: float = 0.3
     win: float = 5.0
+    early_win: float = 2.0  # extra for winning before sudden death: hunt, don't wait for the walls
     loss: float = -5.0
     draw: float = -2.0  # dying together is not a win: discourages suicide trades
     shaping: float = 0.05
@@ -234,6 +235,7 @@ class VersusEnv(gym.Env):
         reward += cfg.wall_destroyed * mine.walls_destroyed + cfg.enemy_killed * mine.enemies_killed
         if events.done:
             reward += cfg.draw if events.draw else (cfg.win if events.winner == 0 else cfg.loss)
+            reward += cfg.early_win * (events.winner == 0 and not self.engine.sudden_death)
             return float(reward)
 
         def potential(p: Perception) -> float:
