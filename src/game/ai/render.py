@@ -18,7 +18,13 @@ GRAPHICS = Path(__file__).resolve().parents[2] / "graphics"
 class Renderer:
     """Pygame view of an ``Engine``. In headless mode it only produces RGB arrays."""
 
-    def __init__(self, grid_shape: tuple[int, int], headless: bool = False):
+    def __init__(
+        self,
+        grid_shape: tuple[int, int],
+        headless: bool = False,
+        hud: int = HUD,
+        caption: str = "Smart-Bomberman - agent",
+    ):
         if headless:
             os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
         import pygame
@@ -26,12 +32,13 @@ class Renderer:
         self.pygame = pygame
         pygame.init()
         height, width = grid_shape
-        size = (width * TILE, height * TILE + HUD)
+        self.hud = hud
+        size = (width * TILE, height * TILE + hud)
         if headless:
             self.screen = pygame.Surface(size)
         else:
             self.screen = pygame.display.set_mode(size)
-            pygame.display.set_caption("Smart-Bomberman - agent")
+            pygame.display.set_caption(caption)
         self.headless = headless
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(pygame.font.get_default_font(), 16)

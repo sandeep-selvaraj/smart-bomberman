@@ -27,6 +27,7 @@ from pathlib import Path
 import numpy as np
 
 MAP_DIR = Path(__file__).resolve().parents[2] / "maps"
+ARENA_DIR = Path(__file__).resolve().parents[2] / "arenas"  # versus maps; kept apart so `play` does not list them
 
 NOOP, UP, DOWN, LEFT, RIGHT, BOMB = range(6)
 ACTION_NAMES = ("noop", "up", "down", "left", "right", "bomb")
@@ -55,6 +56,7 @@ class Bomb:
     cell: Cell
     timer: int
     range: int
+    owner: int = 0
 
 
 @dataclass
@@ -90,6 +92,7 @@ class MapLayout:
     player: Cell
     enemies: list[Cell]
     door: Cell | None
+    rival: Cell | None = None  # second player's start ('Q'), used by versus mode
 
     @property
     def shape(self) -> tuple[int, int]:
@@ -98,10 +101,11 @@ class MapLayout:
 
 
 def load_map(name_or_path: str) -> MapLayout:
-    """Parse a map CSV, by file path or by name (``map_1``) inside ``src/maps``."""
+    """Parse a map CSV, by file path or by name (``map_1``, ``arena_1``) inside ``src/maps`` or ``src/arenas``."""
     path = Path(name_or_path)
     if not path.exists():
-        path = MAP_DIR / f"{name_or_path.removesuffix('.csv')}.csv"
+        stem = name_or_path.removesuffix(".csv")
+        path = next((d / f"{stem}.csv" for d in (MAP_DIR, ARENA_DIR) if (d / f"{stem}.csv").exists()), path)
     with open(path, newline="", encoding="utf-8-sig") as file:
         rows = list(csv.reader(file))
     rows = [row for row in rows if any(cell.strip() for cell in row)]  # drop blank header rows
@@ -111,6 +115,7 @@ def load_map(name_or_path: str) -> MapLayout:
     player: Cell | None = None
     enemies: list[Cell] = []
     door: Cell | None = None
+    rival: Cell | None = None
     for r, row in enumerate(rows):
         for c in range(width):
             token = row[c].strip() if c < len(row) else "#"
@@ -126,9 +131,11 @@ def load_map(name_or_path: str) -> MapLayout:
                 enemies.append((r, c))
             elif token == "D":
                 door = (r, c)
+            elif token == "Q":
+                rival = (r, c)
     if player is None:
         raise ValueError(f"map {path} has no player start 'P'")
-    return MapLayout(path.stem, solid, wall_hp, player, enemies, door)
+    return MapLayout(path.stem, solid, wall_hp, player, enemies, door, rival)
 
 
 class Engine:
@@ -209,6 +216,10 @@ class Engine:
                     break
         return cells
 
+    def hazard_mask(self) -> np.ndarray:
+        """Cells that are deadly right now, apart from bomb blasts. Subclasses add their own hazards."""
+        return self.flames > 0
+
     def danger_map(self) -> np.ndarray:
         """Per-cell urgency in [0, 1]: 1 means a flame is there or about to be."""
         danger = (self.flames > 0).astype(np.float32)
@@ -227,7 +238,7 @@ class Engine:
         bombs = list(self.bombs)
         if extra_bomb is not None:
             bombs.append(Bomb(extra_bomb, self.config.bomb_fuse, self.config.bomb_range))
-        unsafe = self.flames > 0
+        unsafe = self.hazard_mask().copy()
         for bomb in bombs:
             for cell in self.blast_cells(bomb):
                 unsafe[cell] = True
@@ -402,6 +413,11 @@ def available_maps() -> list[str]:
     return sorted(path.stem for path in MAP_DIR.glob("*.csv"))
 
 
+def available_arenas() -> list[str]:
+    """Names of the versus-only maps."""
+    return sorted(path.stem for path in ARENA_DIR.glob("*.csv"))
+
+
 __all__ = [
     "ACTION_NAMES",
     "BOMB",
@@ -414,6 +430,7 @@ __all__ = [
     "EngineConfig",
     "MapLayout",
     "StepEvents",
+    "available_arenas",
     "available_maps",
     "load_map",
 ]
