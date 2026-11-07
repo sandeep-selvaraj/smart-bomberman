@@ -82,3 +82,60 @@ uv run smart-bomberman evaluate runs/r3a_transfer/best.zip --maps map_1 --episod
 Round 1 ran before the escape features existed (13-dim state, no threat
 bonus, enemy standoff 2), so it can't be reproduced exactly from this
 commit without removing those features.
+
+## Battle mode: training Two-Fuse
+
+Two-Fuse is the Battle-mode agent (`src/game/ai/versus_*.py`, `policies.py`).
+Two fighters share an arena with the map's wandering enemies, and the last
+one standing wins. From step 150 (step 200 in human games) sudden death
+closes one cell per step, spiralling inwards, so every match ends.
+
+### Setup
+
+* **Observation.** Extends the single-player one rather than replacing it.
+  The first 7 planes and 19 state values keep their meaning, with the
+  opponent as "the target" and also marked in the enemy plane. Two planes
+  are added (opponent, closing cells) and five state values (opponent's bomb
+  available, opponent's distance to safety, sudden-death flag, time to sudden
+  death, closing urgency on the agent's own cell). The engine counts cells
+  about to close as hazards, so the danger map and escape features cover the
+  shrinking arena.
+* **Warm start.** `warm_start_policy` copies the single-player agent's
+  weights into the larger network. Old inputs map to their new columns, and
+  new inputs start at zero weight. A test checks that the result picks
+  exactly the same actions as the original. Out of the box it beats random
+  every time and wins about 20% against the scripted bot.
+* **League self-play.** A snapshot is saved every 250k steps. Each training
+  match faces the latest snapshot 50% of the time, an older one 30%, and a
+  scripted bot 20%. Snapshots play greedy or sampled with equal odds.
+  Starting corners are a coin flip.
+* **Rewards.** Win +5, loss -5, dying together -2. Small terms for walls and
+  enemies destroyed, distance shaping toward the opponent (standoff 3), and a
+  +0.2 bonus for a bomb placed near the opponent with a way out.
+* **Champion.** A round robin between the last 8 snapshots, the scripted bot
+  and random, 12 games per pair, fitted to Elo (Bradley-Terry).
+
+### Results (run `two_fuse_v1`: 5M steps, 10 envs, about 75 minutes)
+
+Eval vs the scripted bot (30 games every 250k steps) was flat around 30-50%
+for the first 3.5M steps, then rose to 57-83% from 4M. The tournament put the
+final snapshot first, at 1149 Elo. The scripted bot rated 1084 and random 41.
+
+Over 200 games vs the scripted bot (arena_1, map_2, map_3):
+
+| Policy | Win | Loss | Draw |
+|---|---|---|---|
+| warm start, no versus training | ~20% | ~80% | 0% |
+| `snap_004500000`, greedy | 60% | 39% | 1% |
+| champion (`models/two_fuse.zip`), greedy | **66%** | 30.5% | 3.5% |
+| champion, sampled | 59% | 37% | 4% |
+
+### Caveats and next steps
+
+* The late snapshots were still beating the earlier ones, so a longer run
+  should be stronger: `train-versus --init_from models/two_fuse.zip` picks up
+  from the champion.
+* 12 games per pair is a coarse tournament. Elo gaps under ~50 points between
+  snapshots are within noise.
+* The scripted bot is the only fixed yardstick. Playing human testers would
+  be a better one.

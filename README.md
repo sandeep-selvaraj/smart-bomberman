@@ -23,6 +23,7 @@ Released under [MIT](/LICENSE).
 - [Installation](#installation)
 - [Run the game](#run-the-game)
 - [Game controls](#game-controls)
+- [Battle mode: you vs Two-Fuse](#battle-mode-you-vs-two-fuse)
 - [AI agent](#ai-agent)
 - [AI agents from the 2023 project](#ai-agents-from-the-2023-project)
 - [Notes](#notes)
@@ -47,6 +48,45 @@ uv run smart-bomberman play
 
 - Arrow keys to move
 - 'X' to place bomb
+
+## Battle mode: you vs Two-Fuse
+
+<p align="center">
+  <img src="docs/versus_two_fuse.gif" width="544" alt="Two-Fuse (purple) beating the scripted bot in the arena">
+</p>
+
+Two-Fuse is the Battle-mode agent. Like the coin-flipping villain it's named after, it flips a coin
+before every round, and the coin decides which corner you start in. The last one standing wins.
+The map's wandering enemies kill either of you, and once sudden death starts the arena closes in
+one cell at a time from the edges until someone is crushed.
+
+```bash
+uv run smart-bomberman versus                       # best of 3 on the arena, difficulty normal
+uv run smart-bomberman versus --difficulty hard     # Two-Fuse plays its best move every time
+uv run smart-bomberman versus --arena map_2 --enemies false --rounds 5
+```
+
+- Arrow keys to move, `X` or `Space` to bomb, `Esc` to quit
+- `--difficulty`: `easy` (a scripted bot), `normal` (the trained model, sampled) or `hard` (the trained model, greedy)
+- `--tps` sets the game speed in ticks per second (default 7). You and Two-Fuse both act once per tick.
+- Red tiles close soon. Crimson tiles have closed.
+
+Two-Fuse is trained by league self-play. It starts from the single-player agent below: that agent's
+weights are copied into the larger Battle-mode network, so it already knows how to bomb a target and
+dodge blasts. It then plays against snapshots of itself and against scripted bots, and an Elo
+tournament between the last snapshots picks the champion (`models/two_fuse.zip`).
+
+| Two-Fuse vs the scripted bot (200 games, arena_1 / map_2 / map_3) | Win | Loss | Draw |
+|---|---|---|---|
+| single-player agent copied in, before versus training | ~20% | ~80% | 0% |
+| **hard** (5M steps of self-play, greedy) | **66%** | 30.5% | 3.5% |
+| **normal** (same model, sampled) | **59%** | 37% | 4% |
+
+```bash
+uv run smart-bomberman train-versus --timesteps 5000000            # about 75 minutes on a 12-core laptop CPU
+uv run smart-bomberman duel models/two_fuse.zip heuristic          # head-to-head record
+uv run smart-bomberman versus --player heuristic --save-gif match.gif   # record a bot vs Two-Fuse match
+```
 
 ## AI agent
 
