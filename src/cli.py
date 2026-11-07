@@ -84,7 +84,7 @@ def train_versus(**kwargs):
 
 
 def duel(a: str, b: str = "heuristic", maps: str = "arena_1,map_2,map_3", games: int = 40, stochastic: bool = False):
-    """Pit two Battle-mode policies (model paths, 'heuristic' or 'random') against each other."""
+    """Pit two Battle-mode policies against each other: model paths or heuristic, camper, wanderer, random."""
     from game.ai.policies import make_policy
     from game.ai.versus_train import duel as _duel
 

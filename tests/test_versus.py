@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from game.ai.engine import BOMB, DOWN, LEFT, NOOP, RIGHT, UP, MapLayout, available_arenas, load_map
-from game.ai.policies import HeuristicPolicy, RandomPolicy
+from game.ai.policies import HeuristicPolicy, RandomPolicy, camper, wanderer
 from game.ai.versus_engine import VersusConfig, VersusEngine, mirror_spawn
 from game.ai.versus_env import BASE_STATE_SIZE, VersusEnv, warm_start_policy
 from game.ai.versus_train import SINGLE_PLAYER_MODEL, duel, elo_ratings
@@ -154,6 +154,16 @@ def test_warm_start_reproduces_the_single_player_policy():
     old_probs = old.policy.get_distribution(old.policy.obs_to_tensor(old_obs)[0]).distribution.probs
     new_probs = model.policy.get_distribution(model.policy.obs_to_tensor(new_obs)[0]).distribution.probs
     assert np.allclose(old_probs.detach().numpy(), new_probs.detach().numpy(), atol=1e-5)
+
+
+@pytest.mark.parametrize("bot", [camper, wanderer])
+def test_passive_bots_never_attack(bot):
+    policy = bot(seed=0)
+    engine = VersusEngine(load_map("arena_1"), rng=np.random.default_rng(0))
+    while not engine.finished:
+        action = policy.act(engine, 1)
+        assert action != BOMB
+        engine.step_versus([NOOP, action])
 
 
 def test_heuristic_bot_beats_random():

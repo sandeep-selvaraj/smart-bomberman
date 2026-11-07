@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import OrderedDict
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -39,17 +40,23 @@ class HeuristicPolicy:
 
     It is Two-Fuse's "easy" mode and a sparring partner during training.
     ``wander`` is the chance of a random safe move, which keeps it from being
-    perfectly predictable.
+    perfectly predictable. With ``aggressive=False`` it never bombs or hunts and
+    only dodges: a passive opponent that a good agent has to go and corner.
     """
 
-    def __init__(self, wander: float = 0.1, seed: int | None = None):
-        self.name = "heuristic"
+    def __init__(self, wander: float = 0.1, aggressive: bool = True, seed: int | None = None, name: str = "heuristic"):
+        self.name = name
         self.wander = wander
         self.rng = np.random.default_rng(seed)
+        self.rules = (
+            (self._flee, self._strike, self._back_off, self._wander, self._advance)
+            if aggressive
+            else (self._flee, self._back_off, self._wander)
+        )
 
     def act(self, engine: VersusEngine, me: int) -> int:
         view = _BotView(engine, me)
-        for rule in (self._flee, self._strike, self._back_off, self._wander, self._advance):
+        for rule in self.rules:
             action = rule(view)
             if action is not None:
                 return action
@@ -142,14 +149,30 @@ class ModelPolicy:
         return int(action)
 
 
+def camper(seed: int | None = None) -> HeuristicPolicy:
+    """Never attacks; dodges blasts, enemies and closing walls, and otherwise mostly stays put."""
+    return HeuristicPolicy(wander=0.1, aggressive=False, seed=seed, name="camper")
+
+
+def wanderer(seed: int | None = None) -> HeuristicPolicy:
+    """Never attacks; walks around at random while dodging, like a new player finding their feet."""
+    return HeuristicPolicy(wander=0.8, aggressive=False, seed=seed, name="wanderer")
+
+
+SCRIPTED: dict[str, Callable[..., Policy]] = {
+    "random": RandomPolicy,
+    "heuristic": lambda seed=None: HeuristicPolicy(seed=seed),
+    "camper": camper,
+    "wanderer": wanderer,
+}
+
+
 def make_policy(spec: str, deterministic: bool = True, seed: int | None = None) -> Policy:
-    """``random``, ``heuristic``, or the path to a trained model."""
-    if spec == "random":
-        return RandomPolicy(seed)
-    if spec == "heuristic":
-        return HeuristicPolicy(seed=seed)
+    """A scripted bot (``random``, ``heuristic``, ``camper``, ``wanderer``) or the path to a trained model."""
+    if spec in SCRIPTED:
+        return SCRIPTED[spec](seed=seed)
     if not Path(spec).exists():
-        raise FileNotFoundError(f"no model at {spec!r} (use 'random', 'heuristic' or a .zip path)")
+        raise FileNotFoundError(f"no model at {spec!r} (use {', '.join(SCRIPTED)} or a .zip path)")
     return ModelPolicy(spec, deterministic=deterministic)
 
 
@@ -162,12 +185,20 @@ class OpponentSampler:
     snapshots and bots keeps the learner from forgetting how to beat them.
     """
 
-    def __init__(self, league_dir: str | Path, latest: float = 0.5, past: float = 0.3, cache_size: int = 4):
+    def __init__(self, league_dir: str | Path, latest: float = 0.4, past: float = 0.25, cache_size: int = 4):
         self.league_dir = Path(league_dir)
         self.latest, self.past = latest, past
         self.cache_size = cache_size
         self._cache: OrderedDict[Path, ModelPolicy] = OrderedDict()
-        self._bots: list[Policy] = [HeuristicPolicy(), HeuristicPolicy(wander=0.3), RandomPolicy()]
+        # attackers teach defence; campers and wanderers teach hunting an opponent that will not come to you
+        self._bots: list[Policy] = [
+            HeuristicPolicy(),
+            HeuristicPolicy(wander=0.3),
+            camper(),
+            wanderer(),
+            RandomPolicy(),
+        ]
+        self._bot_odds = [0.35, 0.15, 0.25, 0.15, 0.10]
 
     def snapshots(self) -> list[Path]:
         """Saved snapshots, oldest first."""
@@ -181,7 +212,7 @@ class OpponentSampler:
             return self._load(snaps[-1], rng)
         if len(snaps) > 1 and roll < self.latest + self.past:
             return self._load(snaps[int(rng.integers(len(snaps) - 1))], rng)
-        return self._bots[int(rng.choice(len(self._bots), p=[0.6, 0.3, 0.1]))]
+        return self._bots[int(rng.choice(len(self._bots), p=self._bot_odds))]
 
     def _load(self, path: Path, rng: np.random.Generator) -> Policy:
         if path not in self._cache:
