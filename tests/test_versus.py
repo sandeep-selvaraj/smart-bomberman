@@ -112,6 +112,14 @@ def test_sudden_death_closes_from_the_border_and_ends_every_match():
     assert "crushed" in {fighter.killed_by for fighter in engine.players}
 
 
+def test_sudden_death_squeezes_both_corners_alike():
+    engine = VersusEngine(load_map("arena_1"))
+    height, width = engine.shape
+    order = engine.closing_order
+    for first, second in zip(order[0:40:2], order[1:40:2], strict=True):
+        assert second == (height - 1 - first[0], width - 1 - first[1])
+
+
 def test_closing_cells_count_as_danger():
     engine = engine_for(["#######", "#P    #", "#    Q#", "#######"], sudden_death_start=4, sudden_death_warning=6)
     danger = engine.danger_map()

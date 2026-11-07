@@ -124,7 +124,7 @@ class VersusEngine(Engine):
         self.winner: int | None = None
 
     def _spiral_cells(self) -> list[Cell]:
-        """Every open cell, ordered from the border inwards, clockwise ring by ring."""
+        """Every open cell, from the border inwards ring by ring, alternating between mirror halves."""
         top, left = 0, 0
         bottom, right = self.shape[0] - 1, self.shape[1] - 1
         order: list[Cell] = []
@@ -136,7 +136,16 @@ class VersusEngine(Engine):
             if right > left:
                 order += [(r, left) for r in range(bottom - 1, top, -1)]
             top, left, bottom, right = top + 1, left + 1, bottom - 1, right - 1
-        return [cell for cell in order if not self.solid[cell]]
+        # close the mirror cell right after each one, so neither starting corner is squeezed first
+        height, width = self.shape
+        fair: list[Cell] = []
+        seen: set[Cell] = set()
+        for cell in order:
+            for c in (cell, (height - 1 - cell[0], width - 1 - cell[1])):
+                if c not in seen and not self.solid[c]:
+                    seen.add(c)
+                    fair.append(c)
+        return fair
 
     # ---------------------------------------------------------------- queries
     @property
