@@ -158,6 +158,13 @@ def test_elo_ranks_the_stronger_player_higher():
     assert ratings["strong"] > ratings["middle"] > ratings["weak"]
 
 
+def test_unknown_difficulty_is_rejected():
+    from game.ai.versus_game import two_fuse
+
+    with pytest.raises(ValueError):
+        two_fuse("legendary")
+
+
 def test_up_and_down_are_the_engine_moves():
     engine = engine_for(["#####", "#P  #", "#  Q#", "#####"])
     engine.step_versus([DOWN, UP])
