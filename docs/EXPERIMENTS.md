@@ -130,12 +130,52 @@ Over 200 games vs the scripted bot (arena_1, map_2, map_3):
 | champion (`models/two_fuse.zip`), greedy | **66%** | 30.5% | 3.5% |
 | champion, sampled | 59% | 37% | 4% |
 
+### What v1 got wrong
+
+Played by hand, v1 just shuffled left and right and never bombed. Every
+sparring partner it had walked toward it, so it learned to wait for the
+opponent, and against a human who held back it waited forever. The 66% above
+hid this because the scripted bot always attacks. The arena did not help: 70
+breakable walls meant even the scripted bot spent most of a round tunnelling.
+
+### Run `two_fuse_v2`: 6M more steps from the v1 champion
+
+Changes:
+
+* **Passive sparring bots.** `camper` only dodges and `wanderer` walks at
+  random. Neither ever bombs. Bot odds per bot match: heuristic 35%, heuristic
+  with more random moves 15%, camper 25%, wanderer 15%, random 10%. League odds
+  are now latest snapshot 40%, older snapshot 25%, bots 35%.
+* **Rewards.** Step cost doubled to -0.01, plus +2 for a win before sudden
+  death, so waiting for the walls no longer pays.
+* **Arena.** Regenerated at 25% breakable density (28 walls, down from 70).
+* **Fair sudden death.** The spiral now closes each cell's mirror right after
+  it, so neither starting corner is squeezed first.
+* **Evaluation.** Every 500k steps, 30 games against each of heuristic,
+  camper and wanderer, logging win rate and mean match length.
+
+During training the eval rose from about 40% against all three bots at 0.5M
+to 83% / 83% / 73% at 4.5M, then dropped back to 53-77%. The tournament picked
+`snap_004750000` (1191 Elo, heuristic 995, wanderer 980, camper 977). In 200
+games, though, `snap_004500000` was ahead against every bot, so that one is
+installed:
+
+| 200 games, greedy (sampled) | vs heuristic | vs camper | vs wanderer | mean steps vs camper |
+|---|---|---|---|---|
+| v1 | 52% (45%) | 42% (41%) | 43% (43%) | 327 |
+| `snap_004750000` (tournament pick) | 71% (68%) | 69% (65%) | 70% (60%) | 266 |
+| **`snap_004500000` (installed)** | **76% (72%)** | **77% (73%)** | **69% (71%)** | 262 |
+
+Against an opponent that never moves (30 games): v1 killed it with a bomb 4
+times and won before sudden death 20% of the time. The walls crushed it in 20
+games. v2 killed it with a bomb 19 times, won before sudden death 50% of the
+time, and placed 11.6 bombs per game (v1 placed 5.5).
+
 ### Caveats and next steps
 
-* The late snapshots were still beating the earlier ones, so a longer run
-  should be stronger: `train-versus --init_from models/two_fuse.zip` picks up
-  from the champion.
+* Half of the games against a passive opponent still go to sudden death.
 * 12 games per pair is a coarse tournament. Elo gaps under ~50 points between
-  snapshots are within noise.
-* The scripted bot is the only fixed yardstick. Playing human testers would
-  be a better one.
+  snapshots are within noise, and here it picked the weaker snapshot. Longer
+  duels against the fixed bots are the better final check.
+* Playing human testers is still the real yardstick. By hand, hard is now
+  very hard and easy is fair.

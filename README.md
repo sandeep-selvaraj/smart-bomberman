@@ -73,18 +73,22 @@ uv run smart-bomberman versus --arena map_2 --enemies false --rounds 5
 
 Two-Fuse is trained by league self-play. It starts from the single-player agent below: that agent's
 weights are copied into the larger Battle-mode network, so it already knows how to bomb a target and
-dodge blasts. It then plays against snapshots of itself and against scripted bots, and an Elo
-tournament between the last snapshots picks the champion (`models/two_fuse.zip`).
+dodge blasts. It then plays against snapshots of itself and against three scripted bots: an
+attacker (`heuristic`) and two that never attack (`camper`, `wanderer`), so it has to learn to go
+and hunt an opponent who won't come to it. Win rates against all three are checked during training,
+and the strongest snapshot is installed as `models/two_fuse.zip`.
 
-| Two-Fuse vs the scripted bot (200 games, arena_1 / map_2 / map_3) | Win | Loss | Draw |
+| Two-Fuse win rate (200 games each, arena_1 / map_2 / map_3) | vs heuristic | vs camper | vs wanderer |
 |---|---|---|---|
-| single-player agent copied in, before versus training | ~20% | ~80% | 0% |
-| **hard** (5M steps of self-play, greedy) | **66%** | 30.5% | 3.5% |
-| **normal** (same model, sampled) | **59%** | 37% | 4% |
+| single-player agent copied in, before versus training | ~13% | ~20% | ~17% |
+| v1 (5M steps, only attacking sparring bots) | 52% | 42% | 43% |
+| **hard** (v2: 4.5M more steps with all three bots, greedy) | **76%** | **77%** | **69%** |
+| **normal** (same model, sampled) | **72%** | **73%** | **71%** |
 
 ```bash
-uv run smart-bomberman train-versus --timesteps 5000000            # about 75 minutes on a 12-core laptop CPU
-uv run smart-bomberman duel models/two_fuse.zip heuristic          # head-to-head record
+uv run smart-bomberman train-versus --timesteps 5000000            # v1: about 75 minutes on a 12-core laptop CPU
+uv run smart-bomberman train-versus --init_from models/two_fuse.zip --timesteps 6000000   # continue training (v2)
+uv run smart-bomberman duel models/two_fuse.zip camper             # head-to-head record
 uv run smart-bomberman versus --player heuristic --save-gif match.gif   # record a bot vs Two-Fuse match
 ```
 
