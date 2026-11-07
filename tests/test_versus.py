@@ -4,8 +4,10 @@ import numpy as np
 import pytest
 
 from game.ai.engine import BOMB, DOWN, LEFT, NOOP, RIGHT, UP, MapLayout, available_arenas, load_map
+from game.ai.policies import HeuristicPolicy, RandomPolicy
 from game.ai.versus_engine import VersusConfig, VersusEngine, mirror_spawn
-from game.ai.versus_env import VersusEnv
+from game.ai.versus_env import BASE_STATE_SIZE, VersusEnv, warm_start_policy
+from game.ai.versus_train import SINGLE_PLAYER_MODEL, duel, elo_ratings
 
 QUIET = {"enemy_move_every": 1000}  # enemies that never move, so tests stay deterministic
 
@@ -127,6 +129,33 @@ def test_env_observation_and_episode_stats():
         done = terminated or truncated
     stats = info["episode_stats"]
     assert stats["won"] + stats["lost"] + stats["draw"] == 1
+
+
+def test_warm_start_reproduces_the_single_player_policy():
+    from stable_baselines3 import PPO
+
+    env = VersusEnv("arena_1", opponent="random")
+    model = PPO("MultiInputPolicy", env, policy_kwargs={"net_arch": [256, 256]}, device="cpu")
+    warm_start_policy(str(SINGLE_PLAYER_MODEL), model)
+    old = PPO.load(str(SINGLE_PLAYER_MODEL), device="cpu")
+    rng = np.random.default_rng(0)
+    old_obs = {k: rng.random((1, *space.shape), dtype=np.float32) for k, space in old.observation_space.items()}
+    new_obs = {k: rng.random((1, *space.shape), dtype=np.float32) for k, space in env.observation_space.items()}
+    new_obs["local"][:, :7] = old_obs["local"]
+    new_obs["state"][:, :BASE_STATE_SIZE] = old_obs["state"]
+    old_probs = old.policy.get_distribution(old.policy.obs_to_tensor(old_obs)[0]).distribution.probs
+    new_probs = model.policy.get_distribution(model.policy.obs_to_tensor(new_obs)[0]).distribution.probs
+    assert np.allclose(old_probs.detach().numpy(), new_probs.detach().numpy(), atol=1e-5)
+
+
+def test_heuristic_bot_beats_random():
+    record = duel(HeuristicPolicy(seed=0), RandomPolicy(seed=0), "arena_1,map_2", games=6)
+    assert record["win_rate"] >= 5 / 6
+
+
+def test_elo_ranks_the_stronger_player_higher():
+    ratings = elo_ratings(["strong", "weak", "middle"], {(0, 1): (9.0, 10), (0, 2): (7.0, 10), (2, 1): (7.0, 10)})
+    assert ratings["strong"] > ratings["middle"] > ratings["weak"]
 
 
 def test_up_and_down_are_the_engine_moves():

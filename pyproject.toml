@@ -98,7 +98,7 @@ ignore = [
 
 [tool.ruff.lint.pylint]
 # Training entry points expose their hyperparameters as keyword arguments.
-max-args = 14
-max-positional-args = 14
+max-args = 16
+max-positional-args = 16
 max-locals = 25
 max-branches = 14
