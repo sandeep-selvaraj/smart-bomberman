@@ -1,0 +1,151 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  current: "play" | "crosstable" | "learn";
+}
+
+const { title, description, current } = Astro.props;
+const links = [
+  { id: "play", href: "/", label: "Play" },
+  { id: "crosstable", href: "/crosstable", label: "Crosstable" },
+  { id: "learn", href: "/learn", label: "How they learned" },
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1e1e28" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="bar">
+      <a class="mark" href="/" aria-label="smart-bomberman, play">SMART-BOMBERMAN</a>
+      <nav aria-label="Main">
+        <ul>
+          {
+            links.map((link) => (
+              <li>
+                <a href={link.href} aria-current={current === link.id ? "page" : undefined}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="credits">
+      <div class="credits-panel panel">
+        <p class="origin">
+          Started as the <strong>Visual Computing Team Project 2023</strong> at TU Dresden, Faculty IMLD, by Divyendu Dutta, Juhyun Jonathan Seo, Ken Nakahara and Sandeep Selvaraj.
+        </p>
+        <p class="links">
+          <a href="https://github.com/sandeep-selvaraj/smart-bomberman">Source on GitHub</a>
+          <span aria-hidden="true">·</span>
+          <span>MIT licence</span>
+          <span aria-hidden="true">·</span>
+          <a href="/learn#results">How the numbers were measured</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: var(--gutter);
+    top: -40px;
+    background: var(--you);
+    color: var(--bg-deep);
+    padding: 8px 12px;
+    z-index: 10;
+  }
+  .skip:focus {
+    top: 8px;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 var(--gutter);
+    min-height: 64px;
+    background: var(--bg-deep);
+    border-bottom: 3px solid var(--edge);
+  }
+  .mark {
+    font-family: var(--pixel);
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0;
+    text-decoration: none;
+    color: var(--you);
+  }
+  nav ul {
+    display: flex;
+    gap: clamp(16px, 3vw, 40px);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav a {
+    font-family: var(--pixel);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 20px 0 17px;
+    display: inline-block;
+    border-bottom: 3px solid transparent;
+  }
+  nav a:hover {
+    color: var(--text);
+  }
+  nav a[aria-current="page"] {
+    color: var(--text);
+    border-bottom-color: var(--you);
+  }
+  .credits {
+    padding: 72px var(--gutter) 48px;
+  }
+  .credits-panel {
+    max-width: 1344px;
+    margin: 0 auto;
+    padding: 22px 26px;
+    display: grid;
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+  .origin {
+    max-width: var(--measure);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    color: var(--text-dim);
+  }
+  @media (max-width: 640px) {
+    .bar {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-top: 12px;
+      gap: 0;
+    }
+    nav a {
+      padding: 12px 0;
+    }
+  }
+</style>

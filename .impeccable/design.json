@@ -1,0 +1,545 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-07T18:37:44.303541+00:00",
+  "title": "Design System: smart-bomberman",
+  "extensions": {
+    "colorMeta": {
+      "you": {
+        "role": "primary",
+        "displayName": "Your Jacket Yellow",
+        "canonical": "#f2b51d",
+        "tonalRamp": [
+          "#3a2f12",
+          "#685118",
+          "#9a7518",
+          "#d39c13",
+          "#eab93e",
+          "#e6c97f",
+          "#eadcb8",
+          "#f7f4ed"
+        ]
+      },
+      "danger": {
+        "role": "secondary",
+        "displayName": "HUD Alarm Red",
+        "canonical": "#ff5a5a",
+        "tonalRamp": [
+          "#3c1010",
+          "#6c1313",
+          "#a21010",
+          "#df0707",
+          "#f53333",
+          "#ed7878",
+          "#edb5b5",
+          "#f8ecec"
+        ]
+      },
+      "fuse": {
+        "role": "secondary",
+        "displayName": "Lit Fuse Orange",
+        "canonical": "#ff8a1f",
+        "tonalRamp": [
+          "#3c2510",
+          "#6c3e13",
+          "#a25610",
+          "#df6e07",
+          "#f59033",
+          "#edb078",
+          "#edd0b5",
+          "#f8f2ec"
+        ]
+      },
+      "camper": {
+        "role": "tertiary",
+        "displayName": "Camper Green",
+        "canonical": "#5fb36a",
+        "tonalRamp": [
+          "#1e2e20",
+          "#305034",
+          "#3f7346",
+          "#4c9956",
+          "#71b67a",
+          "#9ec7a3",
+          "#c7dbca",
+          "#f0f4f1"
+        ]
+      },
+      "wanderer": {
+        "role": "tertiary",
+        "displayName": "Wanderer Teal",
+        "canonical": "#3fc9b8",
+        "tonalRamp": [
+          "#1a3330",
+          "#275953",
+          "#308278",
+          "#36afa0",
+          "#5ecabd",
+          "#92d3cb",
+          "#c1e1dd",
+          "#eff6f5"
+        ]
+      },
+      "heuristic": {
+        "role": "tertiary",
+        "displayName": "Heuristic Steel",
+        "canonical": "#c4ccd4",
+        "tonalRamp": [
+          "#23262a",
+          "#394047",
+          "#4e5965",
+          "#627384",
+          "#8594a3",
+          "#a9b2bc",
+          "#cdd1d6",
+          "#f1f2f3"
+        ]
+      },
+      "two-fuse": {
+        "role": "tertiary",
+        "displayName": "Two-Fuse Bone",
+        "canonical": "#ece6d6",
+        "tonalRamp": [
+          "#2e2a1e",
+          "#50472f",
+          "#74653e",
+          "#9a854b",
+          "#b7a470",
+          "#c8bc9d",
+          "#dbd6c7",
+          "#f4f3f0"
+        ]
+      },
+      "two-fuse-hard": {
+        "role": "tertiary",
+        "displayName": "Two-Fuse Hard Red",
+        "canonical": "#ff6a5a",
+        "tonalRamp": [
+          "#3c1410",
+          "#6c1c13",
+          "#a21e10",
+          "#df1c07",
+          "#f54633",
+          "#ed8478",
+          "#edbab5",
+          "#f8eeec"
+        ]
+      },
+      "spark": {
+        "role": "tertiary",
+        "displayName": "Spark Orange",
+        "canonical": "#ff7a1a",
+        "tonalRamp": [
+          "#3c2310",
+          "#6c3913",
+          "#a24d10",
+          "#df6107",
+          "#f58433",
+          "#eda978",
+          "#edcdb5",
+          "#f8f1ec"
+        ]
+      },
+      "hud-navy": {
+        "role": "neutral",
+        "displayName": "HUD Navy",
+        "canonical": "#1e1e28",
+        "tonalRamp": [
+          "#232329",
+          "#393946",
+          "#4f4f64",
+          "#636382",
+          "#8686a2",
+          "#aaaabb",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "hud-deep": {
+        "role": "neutral",
+        "displayName": "HUD Deep",
+        "canonical": "#14141c",
+        "tonalRamp": [
+          "#23232a",
+          "#383847",
+          "#4d4d65",
+          "#616185",
+          "#8484a4",
+          "#a9a9bc",
+          "#ccccd6",
+          "#f1f1f3"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Menu Panel",
+        "canonical": "#2a2a37",
+        "tonalRamp": [
+          "#232329",
+          "#3a3a46",
+          "#4f4f63",
+          "#646481",
+          "#8787a1",
+          "#ababba",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "panel-raised": {
+        "role": "neutral",
+        "displayName": "Raised Panel",
+        "canonical": "#333345",
+        "tonalRamp": [
+          "#23232a",
+          "#393946",
+          "#4e4e64",
+          "#636383",
+          "#8585a2",
+          "#aaaabb",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "frame": {
+        "role": "neutral",
+        "displayName": "Frame Black",
+        "canonical": "#0c0c12",
+        "tonalRamp": [
+          "#22222b",
+          "#373749",
+          "#4b4b68",
+          "#5d5d88",
+          "#8181a7",
+          "#a7a7be",
+          "#cbcbd7",
+          "#f1f1f3"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#46465c",
+        "tonalRamp": [
+          "#232329",
+          "#3a3a46",
+          "#4f4f63",
+          "#646481",
+          "#8787a1",
+          "#ababba",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Text",
+        "canonical": "#f4f4f6",
+        "tonalRamp": [
+          "#242428",
+          "#3b3b44",
+          "#525261",
+          "#68687e",
+          "#8a8a9e",
+          "#adadb8",
+          "#ceced4",
+          "#f2f2f3"
+        ]
+      },
+      "text-dim": {
+        "role": "neutral",
+        "displayName": "Text Dim",
+        "canonical": "#b7b7c9",
+        "tonalRamp": [
+          "#232329",
+          "#393946",
+          "#4f4f64",
+          "#636382",
+          "#8686a2",
+          "#aaaabb",
+          "#cdcdd5",
+          "#f1f1f3"
+        ]
+      },
+      "text-faint": {
+        "role": "neutral",
+        "displayName": "Text Faint",
+        "canonical": "#9a9ab0",
+        "tonalRamp": [
+          "#242429",
+          "#3a3a45",
+          "#505062",
+          "#666680",
+          "#8888a0",
+          "#ababba",
+          "#ceced5",
+          "#f2f2f3"
+        ]
+      },
+      "floor": {
+        "role": "neutral",
+        "displayName": "Arena Floor",
+        "canonical": "#808080",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#949494",
+          "#b2b2b2",
+          "#d1d1d1",
+          "#f2f2f2"
+        ]
+      },
+      "floor-light": {
+        "role": "neutral",
+        "displayName": "Arena Floor Light",
+        "canonical": "#838383",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#949494",
+          "#b2b2b2",
+          "#d1d1d1",
+          "#f2f2f2"
+        ]
+      },
+      "floor-dark": {
+        "role": "neutral",
+        "displayName": "Arena Floor Dark",
+        "canonical": "#7b7b7b",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#949494",
+          "#b2b2b2",
+          "#d1d1d1",
+          "#f2f2f2"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page titles in Silkscreen; game-moment words (countdown, YOU WIN / YOU LOSE) run larger."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section and panel titles in Silkscreen."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Fighter names, buttons, wordmark, stakes values, HUD timer."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All reading text in Archivo; long-form 1.06rem/1.6 held to 68ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase Silkscreen HUD and roster status, VS card meta strip."
+      },
+      "table-head": {
+        "displayName": "Table head",
+        "purpose": "Uppercase Archivo column headings in standings and crosstable."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel-bevel",
+        "value": "inset 0 2px 0 rgb(255 255 255 / 0.09), inset 0 -3px 0 rgb(0 0 0 / 0.35)",
+        "purpose": "Game-menu bevel on panels, quiet buttons and roster cards."
+      },
+      {
+        "name": "button-bevel",
+        "value": "inset 0 3px 0 rgb(255 255 255 / 0.35), inset 0 -4px 0 rgb(0 0 0 / 0.22)",
+        "purpose": "Deeper bevel on the yellow primary button."
+      },
+      {
+        "name": "button-pressed",
+        "value": "inset 0 -1px 0 rgb(0 0 0 / 0.22)",
+        "purpose": "Active state, paired with translateY(2px)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All state transitions and game-moment entrances."
+      },
+      {
+        "name": "press",
+        "value": "140ms",
+        "purpose": "Button brightness and press, roster card lift."
+      },
+      {
+        "name": "sudden-death-drop",
+        "value": "500ms drop + blink 900ms steps(2, start) x3",
+        "purpose": "Sudden-death banner entrance."
+      },
+      {
+        "name": "result-slam",
+        "value": "380ms scale(1.35) to 1",
+        "purpose": "YOU WIN / YOU LOSE entrance."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "1ms durations, single iteration",
+        "purpose": "prefers-reduced-motion collapses all animation."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "640px"
+      },
+      {
+        "name": "hud-stack",
+        "value": "720px"
+      },
+      {
+        "name": "roster-list",
+        "value": "760px"
+      },
+      {
+        "name": "one-column",
+        "value": "1000px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Yellow arcade button for the player's own actions (Start match, Record result).",
+      "html": "<button class=\"ds-btn\">START MATCH</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:.6em;border:3px solid var(--edge,#0c0c12);border-radius:4px;padding:.75em 1.3em;background:var(--you,#f2b51d);color:var(--bg-deep,#14141c);font-family:var(--pixel,'Silkscreen',monospace);font-size:1rem;font-weight:700;letter-spacing:0;cursor:pointer;box-shadow:inset 0 3px 0 rgb(255 255 255 / .35),inset 0 -4px 0 rgb(0 0 0 / .22);transition:filter 140ms cubic-bezier(.16,1,.3,1),transform 140ms cubic-bezier(.16,1,.3,1)}.ds-btn:hover{filter:brightness(1.08)}.ds-btn:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-btn:active{transform:translateY(2px);box-shadow:inset 0 -1px 0 rgb(0 0 0 / .22)}.ds-btn:disabled{background:var(--line,#46465c);color:var(--text-dim,#b7b7c9);cursor:not-allowed;filter:none;transform:none}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary game-menu button on the raised panel fill.",
+      "html": "<button class=\"ds-btn-quiet\">PICK OPPONENT</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;justify-content:center;border:3px solid var(--edge,#0c0c12);border-radius:4px;padding:.75em 1.3em;background:var(--panel-2,#333345);color:var(--text,#f4f4f6);font-family:var(--pixel,'Silkscreen',monospace);font-size:1rem;font-weight:700;cursor:pointer;box-shadow: inset 0 2px 0 var(--bevel-light, rgb(255 255 255 / 0.09)), inset 0 -3px 0 var(--bevel-dark, rgb(0 0 0 / 0.35));transition:filter 140ms cubic-bezier(.16,1,.3,1),transform 140ms cubic-bezier(.16,1,.3,1)}.ds-btn-quiet:hover{filter:brightness(1.08)}.ds-btn-quiet:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-btn-quiet:active{transform:translateY(2px)}"
+    },
+    {
+      "name": "Menu Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Bevelled game-menu panel in a 3px dark frame; every container uses it.",
+      "html": "<section class=\"ds-panel\"><h2>WHERE YOU STAND</h2><p>Your first recorded match puts you on this table.</p></section>",
+      "css": ".ds-panel{background:var(--panel,#2a2a37);color:var(--text,#f4f4f6);border:3px solid var(--edge,#0c0c12);border-radius:4px;padding:16px 22px;box-shadow: inset 0 2px 0 var(--bevel-light, rgb(255 255 255 / 0.09)), inset 0 -3px 0 var(--bevel-dark, rgb(0 0 0 / 0.35));font-family:var(--font,'Archivo',system-ui,sans-serif)}.ds-panel h2{margin:0 0 8px;font-family:var(--pixel,'Silkscreen',monospace);font-weight:700;font-size:1.15rem;line-height:1.1}.ds-panel p{margin:0;color:var(--text-dim,#b7b7c9)}"
+    },
+    {
+      "name": "Handle Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text field for the player's handle, on HUD Deep in the dark frame.",
+      "html": "<input class=\"ds-input\" placeholder=\"your handle\" aria-label=\"Handle\">",
+      "css": ".ds-input{font-family:var(--font,'Archivo',system-ui,sans-serif);font-size:1.05rem;padding:.6em .7em;border:3px solid var(--edge,#0c0c12);border-radius:4px;background:var(--bg-deep,#14141c);color:var(--text,#f4f4f6)}.ds-input:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-input[aria-invalid=true]{border-color:var(--danger,#ff5a5a)}"
+    },
+    {
+      "name": "HUD Nav",
+      "kind": "nav",
+      "refersTo": "hud-bar",
+      "description": "Top HUD bar: yellow pixel wordmark, pixel nav with a yellow underline on the current page.",
+      "html": "<header class=\"ds-bar\"><a class=\"ds-mark\" href=\"#\">SMART-BOMBERMAN</a><nav><a href=\"#\" aria-current=\"page\">Play</a><a href=\"#\">Crosstable</a><a href=\"#\">How they learned</a></nav></header>",
+      "css": ".ds-bar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 24px;min-height:64px;background:var(--bg-deep,#14141c);border-bottom:3px solid var(--edge,#0c0c12)}.ds-mark{font-family:var(--pixel,'Silkscreen',monospace);font-weight:700;font-size:1.2rem;color:var(--you,#f2b51d);text-decoration:none}.ds-bar nav{display:flex;gap:32px}.ds-bar nav a{font-family:var(--pixel,'Silkscreen',monospace);font-size:.9rem;color:var(--text-dim,#b7b7c9);text-decoration:none;padding:20px 0 17px;border-bottom:3px solid transparent}.ds-bar nav a:hover{color:var(--text,#f4f4f6)}.ds-bar nav a:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-bar nav a[aria-current=page]{color:var(--text,#f4f4f6);border-bottom-color:var(--you,#f2b51d)}"
+    },
+    {
+      "name": "Sudden Death Timer",
+      "kind": "custom",
+      "refersTo": "sudden-death-banner",
+      "description": "Match HUD timer; flips to a red banner when sudden death begins.",
+      "html": "<div class=\"ds-timer\"><span class=\"ds-timer-label\">SUDDEN DEATH IN</span><span class=\"ds-timer-value\">0:29</span></div><div class=\"ds-timer ds-fallen\"><span class=\"ds-timer-label\">SUDDEN DEATH</span></div>",
+      "css": ".ds-timer{display:inline-grid;justify-items:center;min-width:170px;padding:6px 14px;border-radius:3px;font-family:var(--pixel,'Silkscreen',monospace);background:var(--bg-deep,#14141c);color:var(--text,#f4f4f6);margin:4px}.ds-timer-label{font-size:.78rem;color:var(--text-dim,#b7b7c9);text-transform:uppercase;letter-spacing:.06em}.ds-timer-value{font-size:1.7rem;font-weight:700;line-height:1.1}.ds-fallen{background:var(--danger,#ff5a5a)}.ds-fallen .ds-timer-label{color:var(--bg-deep,#14141c);font-size:1.35rem;letter-spacing:0}"
+    },
+    {
+      "name": "Roster Card",
+      "kind": "custom",
+      "refersTo": "roster-card",
+      "description": "Character-select card: sprite, name in signature colour, Elo, status. Locked cards dim the agent's own sprite.",
+      "html": "<div class=\"ds-roster\"><button class=\"ds-card ds-current\"><span class=\"ds-art\" style=\"background:#5fb36a\"></span><span class=\"ds-name\" style=\"color:#5fb36a\">CAMPER</span><span class=\"ds-elo\">903</span><span class=\"ds-status ds-next\">NEXT</span></button><button class=\"ds-card ds-locked\" disabled><span class=\"ds-art\" style=\"background:#3fc9b8\"></span><span class=\"ds-name\">WANDERER</span><span class=\"ds-elo\">926</span><span class=\"ds-status\">LOCKED</span></button></div>",
+      "css": ".ds-roster{display:flex;gap:10px}.ds-card{display:grid;justify-items:center;gap:4px;width:128px;padding:12px 8px;border:3px solid var(--edge,#0c0c12);border-radius:4px;background:var(--panel-2,#333345);color:var(--text,#f4f4f6);cursor:pointer;box-shadow: inset 0 2px 0 var(--bevel-light, rgb(255 255 255 / 0.09)), inset 0 -3px 0 var(--bevel-dark, rgb(0 0 0 / 0.35));transition:transform 140ms cubic-bezier(.16,1,.3,1)}.ds-card:hover:not(:disabled){transform:translateY(-2px)}.ds-card:focus-visible{outline:3px solid var(--you,#f2b51d);outline-offset:3px}.ds-current{border-color:var(--you,#f2b51d);background:#3a3a2c}.ds-art{width:48px;height:48px;image-rendering:pixelated}.ds-locked .ds-art{filter:grayscale(.75) brightness(.7);opacity:.6}.ds-name{margin-top:6px;font-family:var(--pixel,'Silkscreen',monospace);font-size:.95rem;font-weight:700}.ds-locked .ds-name{color:var(--text-faint,#9a9ab0)}.ds-elo{font-family:var(--pixel,'Silkscreen',monospace);font-size:.9rem}.ds-status{font-family:var(--pixel,'Silkscreen',monospace);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint,#9a9ab0)}.ds-next{color:var(--you,#f2b51d)}"
+    },
+    {
+      "name": "Stakes Strip",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "VS card win/draw/loss deltas: gains yellow, losses red, on HUD Deep.",
+      "html": "<dl class=\"ds-stakes\"><div><dd class=\"ds-up\">+15</dd><dt>Win</dt></div><div><dd>-5</dd><dt>Draw</dt></div><div><dd class=\"ds-down\">-25</dd><dt>Loss</dt></div></dl>",
+      "css": ".ds-stakes{display:grid;grid-template-columns:repeat(3,1fr);margin:0;border:3px solid var(--edge,#0c0c12);border-radius:4px;background:var(--bg-deep,#14141c);color:var(--text,#f4f4f6);width:320px}.ds-stakes div{display:flex;flex-direction:column;padding:8px 0 6px;text-align:center}.ds-stakes div+div{border-left:2px solid var(--line,#46465c)}.ds-stakes dt{font-family:var(--font,'Archivo',sans-serif);font-size:.85rem;color:var(--text-dim,#b7b7c9)}.ds-stakes dd{margin:0;font-family:var(--pixel,'Silkscreen',monospace);font-size:1.4rem;font-weight:700}.ds-up{color:var(--you,#f2b51d)}.ds-down{color:var(--danger,#ff5a5a)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Game, Unframed",
+    "overview": "The site is the actual game, not a page about it. The page is the original pygame HUD bar's navy; the arena keeps the original grey checker floor and the repo's own generic wall, brick, stone, bomb and explosion sprites, drawn pixel-crisp; the opponents are original 16x16 characters picked from a character-select roster. Everything around the arena borrows the vocabulary of a game menu: bevelled panels in a dark frame, a yellow action button, pixel lettering for the game's own words, a VS card, a HUD that flips red for sudden death.\n\nDensity is game-HUD dense on Play and reading-comfortable on How they learned. Pixel lettering is reserved for words the game would say (names, ratings, timers, buttons, section titles); everything a person reads at length is set in a plain sans. The confirmed rejections are the earlier tournament-table world (felt, chalk, score sheets: the site must not look like a chess table) and any reuse of the Bomberman franchise's characters, balloon enemies or title art.",
+    "keyCharacteristics": [
+      "HUD navy page, grey checker arena, original tile sprites at crisp pixel scale.",
+      "Original characters, each with one signature colour that its name wears everywhere.",
+      "Yellow belongs to you; red means danger and sudden death.",
+      "Bevelled game-menu panels in a 3px near-black frame.",
+      "Silkscreen for the game's words, Archivo for reading."
+    ],
+    "rules": [
+      {
+        "name": "The Yours Is Yellow Rule",
+        "body": "Yellow marks the player and the player's actions only. No agent, chart series or decoration wears it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Signature Rule",
+        "body": "An agent's name always wears its character's signature colour; a locked roster entry drops to Text Faint until it opens.",
+        "section": "colors"
+      },
+      {
+        "name": "The Red Means Danger Rule",
+        "body": "Red is reserved for danger, sudden death, losses and errors. It is never decorative.",
+        "section": "colors"
+      },
+      {
+        "name": "The Game Words Rule",
+        "body": "Silkscreen sets only what the game itself would print: names, ratings, timers, scores, buttons, nav and titles. Sentences go in Archivo.",
+        "section": "typography"
+      },
+      {
+        "name": "The Legible Pixels Rule",
+        "body": "A pixel face must keep C, O, 5 and S distinct. Silkscreen passes; Pixelify Sans does not.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Numbers are tabular everywhere (set on body).",
+        "section": "typography"
+      },
+      {
+        "name": "The Bevel Not Blur Rule",
+        "body": "Depth comes from inset bevel lines and the dark frame. Never a soft drop shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** use HUD Navy (#1e1e28) for the page and the grey checker floor with the repo's own tile sprites for the arena, drawn pixel-crisp.",
+      "**Do** draw characters from the original 16x16 grids in web/src/art/characters.json.",
+      "**Do** keep Your Jacket Yellow for the player and the player's actions; keep HUD Alarm Red for danger and sudden death.",
+      "**Do** colour every agent's name with its character's signature colour.",
+      "**Do** frame panels in 3px Frame Black (#0c0c12) with the inset bevel.",
+      "**Do** tell chart series apart by dash pattern plus direct labels in a single hue.",
+      "**Do** show locked roster opponents as their own sprite, dimmed.",
+      "**Do** run live matches on arena_1."
+    ],
+    "donts": [
+      "**Don't** use the Bomberman franchise characters, the balloon enemies or the official title art that exist in src/graphics (player.png, enemy.png, enemy_later.png, bomberman_title.png).",
+      "**Don't** return to the tournament-table world: no felt, chalk or score-sheet look.",
+      "**Don't** use Pixelify Sans or any pixel face whose C reads as O or 5 as S.",
+      "**Don't** set sentences or long reading text in Silkscreen.",
+      "**Don't** render locked opponents as silhouettes.",
+      "**Don't** separate chart series by hue alone.",
+      "**Don't** smooth or blur raster art; never resample sprites with smoothing on."
+    ]
+  }
+}

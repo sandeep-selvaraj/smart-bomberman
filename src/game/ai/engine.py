@@ -242,7 +242,7 @@ class Engine:
         for bomb in bombs:
             for cell in self.blast_cells(bomb):
                 unsafe[cell] = True
-        bomb_cells = {bomb.cell for bomb in bombs}
+        bomb_cells = list(dict.fromkeys(bomb.cell for bomb in bombs))  # placement order, so ports can reproduce it
         walkable = ~self.solid & (self.wall_hp == 0)
         for cell in bomb_cells:
             walkable[cell] = False

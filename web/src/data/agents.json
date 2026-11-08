@@ -1,0 +1,132 @@
+{
+ "games_per_pair": 200,
+ "maps": [
+  "arena_1",
+  "map_2",
+  "map_3"
+ ],
+ "agents": [
+  {
+   "id": "wanderer",
+   "name": "Wanderer",
+   "about": "Never bombs. Walks at random and dodges.",
+   "elo": 926
+  },
+  {
+   "id": "camper",
+   "name": "Camper",
+   "about": "Never bombs. Holds its ground and dodges.",
+   "elo": 903
+  },
+  {
+   "id": "heuristic",
+   "name": "Heuristic",
+   "about": "A scripted duelist: flees, strikes when close, closes in.",
+   "elo": 959
+  },
+  {
+   "id": "two_fuse_normal",
+   "name": "Two-Fuse \u00b7 normal",
+   "about": "The trained agent, sampling its moves.",
+   "elo": 1094
+  },
+  {
+   "id": "two_fuse_hard",
+   "name": "Two-Fuse \u00b7 hard",
+   "about": "The trained agent, always its best move.",
+   "elo": 1118
+  }
+ ],
+ "records": [
+  {
+   "a": "wanderer",
+   "b": "camper",
+   "games": 200,
+   "win_rate": 0.46,
+   "loss_rate": 0.46,
+   "draw_rate": 0.08,
+   "mean_steps": 333.485
+  },
+  {
+   "a": "wanderer",
+   "b": "heuristic",
+   "games": 200,
+   "win_rate": 0.255,
+   "loss_rate": 0.47,
+   "draw_rate": 0.275,
+   "mean_steps": 279.14
+  },
+  {
+   "a": "wanderer",
+   "b": "two_fuse_normal",
+   "games": 200,
+   "win_rate": 0.295,
+   "loss_rate": 0.675,
+   "draw_rate": 0.03,
+   "mean_steps": 269.465
+  },
+  {
+   "a": "wanderer",
+   "b": "two_fuse_hard",
+   "games": 200,
+   "win_rate": 0.295,
+   "loss_rate": 0.685,
+   "draw_rate": 0.02,
+   "mean_steps": 283.82
+  },
+  {
+   "a": "camper",
+   "b": "heuristic",
+   "games": 200,
+   "win_rate": 0.2,
+   "loss_rate": 0.465,
+   "draw_rate": 0.335,
+   "mean_steps": 293.34
+  },
+  {
+   "a": "camper",
+   "b": "two_fuse_normal",
+   "games": 200,
+   "win_rate": 0.23,
+   "loss_rate": 0.745,
+   "draw_rate": 0.025,
+   "mean_steps": 264.45
+  },
+  {
+   "a": "camper",
+   "b": "two_fuse_hard",
+   "games": 200,
+   "win_rate": 0.24,
+   "loss_rate": 0.74,
+   "draw_rate": 0.02,
+   "mean_steps": 265.285
+  },
+  {
+   "a": "heuristic",
+   "b": "two_fuse_normal",
+   "games": 200,
+   "win_rate": 0.25,
+   "loss_rate": 0.715,
+   "draw_rate": 0.035,
+   "mean_steps": 203.46
+  },
+  {
+   "a": "heuristic",
+   "b": "two_fuse_hard",
+   "games": 200,
+   "win_rate": 0.205,
+   "loss_rate": 0.76,
+   "draw_rate": 0.035,
+   "mean_steps": 204.43
+  },
+  {
+   "a": "two_fuse_normal",
+   "b": "two_fuse_hard",
+   "games": 200,
+   "win_rate": 0.31,
+   "loss_rate": 0.42,
+   "draw_rate": 0.27,
+   "mean_steps": 297.575
+  }
+ ]
+}

@@ -1,0 +1,194 @@
+/*
+ * The game, on the web: the pygame HUD's navy (30, 30, 40) is the page, the
+ * arena keeps its grey floor and original tiles, panels are bevelled like a
+ * game menu, and pixel lettering is for the game's own words. Reading text
+ * stays in a plain sans.
+ */
+@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource/silkscreen/400.css";
+@import "@fontsource/silkscreen/700.css";
+
+:root {
+  --bg: #1e1e28; /* the pygame HUD bar */
+  --bg-deep: #14141c;
+  --panel: #2a2a37;
+  --panel-2: #333345;
+  --edge: #0c0c12;
+  --bevel-light: rgb(255 255 255 / 0.09);
+  --bevel-dark: rgb(0 0 0 / 0.35);
+  --line: #46465c;
+  --text: #f4f4f6;
+  --text-dim: #b7b7c9;
+  --text-faint: #9a9ab0;
+  --floor: #808080; /* the arena floor of the original game */
+
+  /* state */
+  --you: #f2b51d;
+  --danger: #ff5a5a; /* the original HUD's SUDDEN DEATH red */
+  --fuse: #ff8a1f;
+
+  /* characters (see src/art/sprites.ts SIGNATURE) */
+  --camper: #5fb36a;
+  --wanderer: #3fc9b8;
+  --heuristic: #c4ccd4;
+  --two-fuse: #ece6d6;
+  --two-fuse-hard: #ff6a5a;
+
+  --pixel: "Silkscreen", monospace;
+  --font: "Archivo Variable", "Archivo", system-ui, sans-serif;
+  --gutter: clamp(16px, 3.4vw, 48px);
+  --measure: 68ch;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--line) var(--bg-deep);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--you);
+  color: var(--bg-deep);
+}
+
+:focus-visible {
+  outline: 3px solid var(--you);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--pixel);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* A game-menu panel: flat fill, a dark frame and a one-pixel bevel. */
+.panel {
+  background: var(--panel);
+  color: var(--text);
+  border: 3px solid var(--edge);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 2px 0 var(--bevel-light),
+    inset 0 -3px 0 var(--bevel-dark);
+}
+
+.pixel {
+  font-family: var(--pixel);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The game's button: yellow is your colour, so your actions wear it. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  border: 3px solid var(--edge);
+  border-radius: 4px;
+  padding: 0.75em 1.3em;
+  background: var(--you);
+  color: var(--bg-deep);
+  font-family: var(--pixel);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  cursor: pointer;
+  box-shadow:
+    inset 0 3px 0 rgb(255 255 255 / 0.35),
+    inset 0 -4px 0 rgb(0 0 0 / 0.22);
+  transition:
+    filter 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
+}
+
+.btn:hover {
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.22);
+}
+
+.btn:disabled {
+  background: var(--line);
+  color: var(--text-dim);
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+.btn-quiet {
+  background: var(--panel-2);
+  color: var(--text);
+  box-shadow:
+    inset 0 2px 0 var(--bevel-light),
+    inset 0 -3px 0 var(--bevel-dark);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

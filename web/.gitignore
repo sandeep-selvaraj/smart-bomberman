@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+.env*
+
+# the root .gitignore ignores lib/ (a Python habit); the site keeps code there
+!src/lib/

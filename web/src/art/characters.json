@@ -1,0 +1,55 @@
+{
+  "you": {
+    "name": "You",
+    "palette": { "k": "#14141c", "H": "#5a3a1e", "S": "#f2c39a", "r": "#c0603a", "Y": "#f2b51d", "B": "#2f4f9e" },
+    "frames": [
+      ["................", ".....kkkkkk.....", "....kHHHHHHk....", "...kHHHHHHHHk...", "...kHHSSSSHHk...", "...kSSkSSkSSk...", "...kSSSSSSSSk...", "....kSSrrSSk....", ".....kkkkkk.....", "...kkYYYYYYkk...", "..kYYkYYYYkYYk..", "..kSkYYYYYYkSk..", "...kkBBBBBBkk...", "....kBBkkBBk....", "....kBBkkBBk....", "....kkk..kkk...."],
+      ["................", ".....kkkkkk.....", "....kHHHHHHk....", "...kHHHHHHHHk...", "...kHHSSSSHHk...", "...kSSkSSkSSk...", "...kSSSSSSSSk...", "....kSSrrSSk....", ".....kkkkkk.....", "...kkYYYYYYkk...", "..kYYkYYYYkYYk..", "..kSkYYYYYYkSk..", "...kkBBBBBBkk...", "....kBBkkBBk....", "...kBBk..kBBk...", "...kkk....kkk..."]
+    ]
+  },
+  "spark": {
+    "name": "Spark",
+    "palette": { "k": "#14141c", "r": "#c8321e", "O": "#ff7a1a", "y": "#ffd23f", "w": "#ffffff" },
+    "frames": [
+      ["................", ".......r........", "......rOr..r....", ".....rOOOr.rr...", "....rOOOOOOOr...", "...rOOyyyyyOOr..", "..rOOyyyyyyyOOr.", "..rOywkyyywkyOr.", "..rOyyyyyyyyyOr.", "..rOOyyyyyyyOOr.", "...rOOyyyyyOOr..", "....rOOOOOOOr...", ".....rrOOOrr....", ".......rr.......", "................", "................"],
+      ["................", "........r.......", "...r..rOr.......", "..rr.rOOOr......", "....rOOOOOOOr...", "...rOOyyyyyOOr..", "..rOOyyyyyyyOOr.", "..rOywkyyywkyOr.", "..rOyyyyyyyyyOr.", "..rOOyyyyyyyOOr.", "...rOOyyyyyOOr..", "....rOOOOOOOr...", ".....rrOOOrr....", ".......rr.......", "................", "................"]
+    ]
+  },
+  "camper": {
+    "name": "Camper",
+    "palette": { "k": "#14141c", "G": "#3f8f4a", "g": "#2a6233", "d": "#1d2a20", "w": "#ffffff", "y": "#c9a35a" },
+    "frames": [
+      ["................", ".......kk.......", "......kGGk......", ".....kGGGGk.....", ".....kGgGGk.....", "....kGGgGGGk....", "...kGGgddgGGk...", "...kGgddddgGk...", "..kGGdwddwdGGk..", "..kGgddddddgGk..", ".kGGgddddddgGGk.", ".kGgGddddddGgGk.", "kGGGGGGGGGGGGGGk", "kkkkkkkkkkkkkkkk", "..y..........y..", "................"],
+      ["................", ".......kk.......", "......kGGk......", ".....kGGGGk.....", ".....kGgGGk.....", "....kGGgGGGk....", "...kGGgddgGGk...", "...kGgddddgGk...", "..kGGdkddkdGGk..", "..kGgddddddgGk..", ".kGGgddddddgGGk.", ".kGgGddddddGgGk.", "kGGGGGGGGGGGGGGk", "kkkkkkkkkkkkkkkk", "..y..........y..", "................"]
+    ]
+  },
+  "wanderer": {
+    "name": "Wanderer",
+    "palette": { "k": "#14141c", "l": "#6cc04a", "T": "#2fb5a5", "t": "#1f7f74", "w": "#ffffff" },
+    "frames": [
+      ["................", ".......l........", "......lll.......", ".......k........", ".....kkkkkk.....", "...kkTTTTTTkk...", "..kTTTTTTTTTTk..", "..kTwwTTTTwwTk..", ".kTTwkTTTTwkTTk.", ".kTTTTTTTTTTTTk.", ".kTTTTTkkTTTTTk.", ".kTtTTTTTTTTtTk.", "..kttTTTTTTttk..", "...kkkkkkkkkk...", "...kk......kk...", "................"],
+      ["................", "........l.......", ".......lll......", ".......k........", ".....kkkkkk.....", "...kkTTTTTTkk...", "..kTTTTTTTTTTk..", "..kTwwTTTTwwTk..", ".kTTkwTTTTkwTTk.", ".kTTTTTTTTTTTTk.", ".kTTTTTkkTTTTTk.", ".kTtTTTTTTTTtTk.", "..kttTTTTTTttk..", "...kkkkkkkkkk...", "....kk....kk....", "................"]
+    ]
+  },
+  "heuristic": {
+    "name": "Heuristic",
+    "palette": { "k": "#14141c", "y": "#ffd23f", "M": "#a7b0ba", "m": "#68717c", "R": "#ff4a3d" },
+    "frames": [
+      [".......y........", ".......k........", "....kkkkkkkk....", "...kMMMMMMMMk...", "...kMkkkkkkMk...", "...kMkRRRRkMk...", "...kMkkkkkkMk...", "...kMMMMMMMMk...", "...kMMkMMkMMk...", "....kkkkkkkk....", "..kmMMMMMMMMmk..", ".kmkMMyMMyMMkmk.", ".kk.kMMMMMMk.kk.", "....kmmmmmmk....", "....kmk..kmk....", "....kkk..kkk...."],
+      [".......y........", ".......k........", "....kkkkkkkk....", "...kMMMMMMMMk...", "...kMkkkkkkMk...", "...kMkRRmmkMk...", "...kMkkkkkkMk...", "...kMMMMMMMMk...", "...kMMkMMkMMk...", "....kkkkkkkk....", "..kmMMMMMMMMmk..", ".kmkMMyMMyMMkmk.", ".kk.kMMMMMMk.kk.", "....kmmmmmmk....", "...kmk....kmk...", "...kkk....kkk..."]
+    ]
+  },
+  "two_fuse_normal": {
+    "name": "Two-Fuse",
+    "palette": { "k": "#14141c", "f": "#ffd23f", "o": "#ff8a1f", "L": "#ece6d6", "R": "#3d4352", "w": "#ffffff", "y": "#ffd23f" },
+    "frames": [
+      ["...f........f...", "....o......o....", ".....o....o.....", ".....kkkkkk.....", "...kkLLLRRRkk...", "..kLLLLLRRRRRk..", ".kLLLLLLRRRRRRk.", ".kLLwwLLRRyyRRk.", ".kLLwkLLRkyRRRk.", ".kLLLLLLRRRRRRk.", ".kLLkkkLRkRkRRk.", ".kLLLLLLRRRRRRk.", "..kLLLLLRRRRRk..", "...kkLLLRRRkk...", "....kLLk.kRRk...", "....kkk...kkk..."],
+      ["....f......f....", "....o......o....", ".....o....o.....", ".....kkkkkk.....", "...kkLLLRRRkk...", "..kLLLLLRRRRRk..", ".kLLLLLLRRRRRRk.", ".kLLwwLLRRyyRRk.", ".kLLwkLLRkyRRRk.", ".kLLLLLLRRRRRRk.", ".kLLkkkLRkRkRRk.", ".kLLLLLLRRRRRRk.", "..kLLLLLRRRRRk..", "...kkLLLRRRkk...", "...kLLk...kRRk..", "...kkk.....kkk.."]
+    ]
+  },
+  "two_fuse_hard": {
+    "name": "Two-Fuse",
+    "palette": { "k": "#14141c", "f": "#fff27a", "o": "#ff5a1f", "L": "#ece6d6", "R": "#b3302a", "w": "#ffffff", "y": "#fff27a" },
+    "frames": "two_fuse_normal"
+  }
+}
