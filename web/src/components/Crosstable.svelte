@@ -53,16 +53,25 @@
   }
 
   /** An agent's score against another, as a share of points over the measured games. */
-  function agentScore(a: AgentId, b: AgentId): string {
+  function agentShare(a: AgentId, b: AgentId): number | null {
     const direct = RATING_RECORDS.find((r) => r.a === a && r.b === b);
     const reverse = RATING_RECORDS.find((r) => r.a === b && r.b === a);
-    const share = direct
-      ? direct.win_rate + direct.draw_rate / 2
-      : reverse
-        ? reverse.loss_rate + reverse.draw_rate / 2
-        : null;
-    return share === null ? "" : `${Math.round(share * 100)}%`;
+    if (direct) return direct.win_rate + direct.draw_rate / 2;
+    if (reverse) return reverse.loss_rate + reverse.draw_rate / 2;
+    return null;
   }
+
+  /** The opponent each agent scores best against: its strongest matchup, highlighted in its row. */
+  const BEST = Object.fromEntries(
+    AGENTS.map((row) => {
+      let best: AgentId | null = null;
+      for (const other of AGENTS) {
+        if (other.id === row.id) continue;
+        if (best === null || (agentShare(row.id, other.id) ?? 0) > (agentShare(row.id, best) ?? 0)) best = other.id;
+      }
+      return [row.id, best];
+    }),
+  ) as Record<AgentId, AgentId>;
 
   let rows = $derived.by((): Row[] => {
     const list: Row[] = players.map((p) => ({
@@ -140,7 +149,19 @@
               <td class="n">{RATING_GAMES * (AGENTS.length - 1)}</td>
               <td class="n wdl">{agentRecord(row.id)}</td>
               {#each AGENTS as other (other.id)}
-                <td class="n vs" class:self={other.id === row.id}>{other.id === row.id ? "" : agentScore(row.id, other.id)}</td>
+                {#if other.id === row.id}
+                  <td class="n vs self"></td>
+                {:else}
+                  {@const share = agentShare(row.id, other.id) ?? 0}
+                  <td
+                    class="n vs score"
+                    class:best={BEST[row.id] === other.id}
+                    style:--share={share.toFixed(3)}
+                    style:--tint={SIGNATURE[characterOf(row.id)]}
+                  >
+                    {Math.round(share * 100)}%{#if BEST[row.id] === other.id}<span class="visually-hidden">, best matchup</span>{/if}
+                  </td>
+                {/if}
               {/each}
             </tr>
           {:else}
@@ -172,8 +193,9 @@
 
   <p class="legend-note">
     A player's cell is their wins–draws–losses against that agent, every game verified by replay. An agent's cell is its
-    score against that agent (a win counts 1, a draw ½) over {RATING_GAMES} games per pair: a separate measurement from
-    the win rates on the training page.
+    score against that agent (a win counts 1, a draw ½) over {RATING_GAMES} games per pair, a separate measurement from
+    the win rates on the training page. The bar under each score is drawn in that agent's colour, and its best matchup
+    is lit up.
   </p>
   <div class="foot">
     {#if status === "loading"}
@@ -267,6 +289,28 @@
   .vs {
     border-left: 1px solid var(--line);
     min-width: 6.5ch;
+  }
+  /* a score bar along the bottom of each agent cell, in that agent's colour; its best matchup is lit */
+  .score {
+    position: relative;
+  }
+  .score::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    bottom: 5px;
+    height: 4px;
+    width: calc((100% - 20px) * var(--share));
+    background: var(--tint);
+    opacity: 0.4;
+    border-radius: 0 2px 2px 0;
+  }
+  .score.best {
+    color: var(--tint);
+    font-weight: 800;
+  }
+  .score.best::after {
+    opacity: 1;
   }
   .self {
     background: repeating-linear-gradient(135deg, var(--line) 0 1px, transparent 1px 6px);
