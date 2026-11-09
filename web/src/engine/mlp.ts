@@ -31,9 +31,31 @@ export class PolicyNet {
 
   /** Action logits for an observation. */
   logits(obs: Observation): Float64Array {
+    return this.activations(obs).at(-1)!;
+  }
+
+  /** The incoming weights of one unit: `layer` 0 is the first Linear. */
+  weightsInto(layer: number, unit: number): Float32Array {
+    const spec = this.layers[layer]!;
+    const row = spec.offset + unit * spec.in;
+    return this.weights.subarray(row, row + spec.in);
+  }
+
+  /** The bias of one unit. */
+  bias(layer: number, unit: number): number {
+    const spec = this.layers[layer]!;
+    return this.weights[spec.offset + spec.in * spec.out + unit]!;
+  }
+
+  /**
+   * Every layer's values for an observation: the 753 inputs, each hidden
+   * layer after tanh, then the action logits.
+   */
+  activations(obs: Observation): Float64Array[] {
     let x = new Float64Array(LOCAL_SIZE + STATE_SIZE);
     x.set(obs.local, 0);
     x.set(obs.state, LOCAL_SIZE);
+    const all = [x];
     this.layers.forEach((layer, k) => {
       const out = new Float64Array(layer.out);
       const w = this.weights;
@@ -45,9 +67,46 @@ export class PolicyNet {
         out[o] = k < this.layers.length - 1 ? Math.tanh(sum) : sum;
       }
       x = out;
+      all.push(out);
     });
-    return x;
+    return all;
   }
+}
+
+/** One traced connection: unit `from` of a layer feeding unit `to` of the next. */
+export interface Link {
+  from: number;
+  to: number;
+  /** weight × the sending unit's value: what it adds to the receiver before tanh. */
+  value: number;
+}
+
+function strongest(net: PolicyNet, layer: number, unit: number, input: ArrayLike<number>, keep: number): Link[] {
+  const w = net.weightsInto(layer, unit);
+  const links: Link[] = [];
+  for (let i = 0; i < w.length; i++) {
+    const value = w[i]! * input[i]!;
+    if (value !== 0) links.push({ from: i, to: unit, value });
+  }
+  return links.sort((a, b) => Math.abs(b.value) - Math.abs(a.value)).slice(0, keep);
+}
+
+/**
+ * Walk back from one action: the last-layer units that add most to (or take
+ * most from) its logit, the units that drive those, and the inputs that
+ * drive those. `keep` is how many senders to follow per receiver at each
+ * stage, outputs first. Returns the links per stage, inputs first.
+ */
+export function trace(net: PolicyNet, acts: Float64Array[], action: number, keep: number[] = [8, 3, 3]): Link[][] {
+  const stages: Link[][] = [];
+  let receivers = [action];
+  for (let layer = acts.length - 2; layer >= 0; layer--) {
+    const width = keep[acts.length - 2 - layer] ?? 3;
+    const links = receivers.flatMap((unit) => strongest(net, layer, unit, acts[layer]!, width));
+    stages.unshift(links);
+    receivers = [...new Set(links.map((l) => l.from))];
+  }
+  return stages;
 }
 
 /** Load the exported network from `base` (e.g. "/models/two_fuse"). */
