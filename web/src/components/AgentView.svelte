@@ -3,7 +3,8 @@
    * What Two-Fuse sees, live: a seeded match of Two-Fuse against
    * the heuristic bot, the 9x9 window it reads outlined on the board, one of
    * its input planes drawn cell for cell beside it, and the move
-   * probabilities its network gives.
+   * probabilities its network gives. NetworkView opens over the same match
+   * to show the layers in between.
    */
   import { onMount } from "svelte";
   import type { VersusEngine } from "../engine/engine";
@@ -12,9 +13,9 @@
   import { observe, VIEW } from "../engine/observation";
   import type { Policy } from "../engine/policies";
   import Board from "./Board.svelte";
+  import NetworkView from "./NetworkView.svelte";
 
   const SEED = 222732;
-  const TPS = 4;
   const PLANES = [
     { index: 0, label: "Walls", note: "Solid walls; outside the map counts as wall." },
     { index: 1, label: "Breakable", note: "Walls a bomb can open." },
@@ -32,20 +33,24 @@
   let running = $state(false);
   let ready = $state(false);
   let failed = $state(false);
-  let net: PolicyNet | null = null;
+  let inside = $state(false);
+  let insideSpeed = $state(1);
+  // the network view needs time for a step to play through the layers
+  let tps = $derived(inside ? insideSpeed : 4);
+  let net = $state.raw<PolicyNet | null>(null);
   let me: Policy | null = null;
   let them: Policy | null = null;
-  let timer: ReturnType<typeof setInterval> | null = null;
 
   let reading = $derived.by(() => {
     void tick;
     const obs = observe(engine, 0);
-    const logits = net ? Array.from(net.logits(obs)) : [];
+    const acts = net ? net.activations(obs) : [];
+    const logits = Array.from(acts.at(-1) ?? []);
     const peak = Math.max(...logits);
     const exp = logits.map((l) => Math.exp(l - peak));
     const total = exp.reduce((a, b) => a + b, 0) || 1;
     const probs = exp.map((e) => e / total);
-    return { local: obs.local, probs, best: probs.indexOf(Math.max(...probs)), steps: engine.steps };
+    return { local: obs.local, acts, probs, best: probs.indexOf(Math.max(...probs)), steps: engine.steps };
   });
 
   function reset() {
@@ -69,9 +74,13 @@
 
   function toggle() {
     running = !running;
-    if (timer) clearInterval(timer);
-    timer = running ? setInterval(step, 1000 / TPS) : null;
   }
+
+  $effect(() => {
+    if (!running) return;
+    const timer = setInterval(step, 1000 / tps);
+    return () => clearInterval(timer);
+  });
 
   onMount(() => {
     loadPolicyNet("/models/two_fuse")
@@ -81,14 +90,13 @@
         ready = true;
       })
       .catch(() => (failed = true));
-    return () => timer && clearInterval(timer);
   });
 </script>
 
 <figure class="view">
   <div class="panes">
     <div class="pane board panel">
-      <Board skins={["two_fuse_hard", "heuristic"]} {engine} {tick} tickMs={1000 / TPS} viewFor={0} label="The match Two-Fuse is playing, with its 9 by 9 view outlined" />
+      <Board skins={["two_fuse_hard", "heuristic"]} {engine} {tick} tickMs={1000 / tps} viewFor={0} label="The match Two-Fuse is playing, with its 9 by 9 view outlined" />
       <div class="controls">
     <button class="btn" type="button" onclick={toggle} disabled={!ready}>{running ? "Pause" : tick ? "Resume" : "Play"}</button>
     <button class="btn btn-step" type="button" onclick={step} disabled={!ready || running}>One step</button>
@@ -120,8 +128,23 @@
           </li>
         {/each}
       </ol>
+      <button class="btn btn-quiet inside" type="button" onclick={() => (inside = true)} disabled={!ready}>See inside the network</button>
     </div>
   </div>
+  <NetworkView
+    bind:open={inside}
+    bind:speed={insideSpeed}
+    {net}
+    {engine}
+    {tick}
+    tickMs={1000 / tps}
+    acts={reading.acts}
+    probs={reading.probs}
+    best={reading.best}
+    {running}
+    ontoggle={toggle}
+    onstep={step}
+  />
 </figure>
 
 <style>
@@ -232,6 +255,11 @@
   }
   .moves .num {
     text-align: right;
+  }
+  .inside {
+    margin-top: 16px;
+    width: 100%;
+    font-size: 0.85rem;
   }
   .controls {
     display: flex;
